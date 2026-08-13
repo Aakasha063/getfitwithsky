@@ -37,9 +37,9 @@ export function suggestNextSet(opts: {
     };
   }
 
-  const match = working.find((s) => s.set_number === setNumber) ?? working[working.length - 1];
-  const prevWeight = match.weight_kg ?? null;
-  const prevReps = match.reps ?? null;
+  const match = working.find((s) => s.set_number === setNumber) ?? working[working.length - 1]!;
+  const prevWeight = match?.weight_kg ?? null;
+  const prevReps = match?.reps ?? null;
 
   if (repMax !== null && prevWeight !== null) {
     const allTopped = working.every((s) => (s.reps ?? 0) >= repMax);
