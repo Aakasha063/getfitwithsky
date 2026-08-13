@@ -53,7 +53,10 @@ function BodyPage() {
       weight_kg: weight ? Number(weight) : null,
       waist_cm: waist ? Number(waist) : null,
     });
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setWeight("");
     setWaist("");
     toast.success("Measurement saved");
