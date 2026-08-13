@@ -79,21 +79,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "V-Taper Training Log" },
+      { title: "Get Fit With Sky" },
       {
         name: "description",
         content:
-          "Track the V-taper fat-loss training block: log every set with double-progression guidance, rest timers and progress charts.",
+          "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",
       },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "V-Taper Training Log" },
+      { property: "og:title", content: "Get Fit With Sky" },
       {
         property: "og:description",
-        content: "Log every set with progression guidance, rest timers and progress charts.",
+        content: "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Get Fit With Sky" },
+      { name: "twitter:description", content: "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c17f545d-36ef-4698-af62-b4cb10d06da3" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c17f545d-36ef-4698-af62-b4cb10d06da3" },
     ],
     links: [
       {
@@ -106,7 +110,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
