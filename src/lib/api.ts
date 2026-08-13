@@ -136,7 +136,7 @@ export async function fetchSessionDetail(sessionId: string) {
 export async function fetchPreviousPerformance(params: {
   userId: string;
   exerciseId: string;
-  excludeExerciseSessionId?: string;
+  excludeExerciseSessionId?: string | undefined;
 }) {
   const { userId, exerciseId, excludeExerciseSessionId } = params;
   const { data, error } = await supabase
