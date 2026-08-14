@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Info, Check, Timer, Flag } from "lucide-react";
+import { Info, Check, Timer, Flag, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RestTimer } from "@/components/RestTimer";
@@ -14,12 +14,14 @@ import {
   finishSession,
   logSet,
   startSession,
+  deleteSet,
   type Exercise,
 } from "@/lib/api";
 import { suggestNextSet } from "@/lib/progression";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/workout/$slug")({
   head: () => ({
@@ -121,6 +123,7 @@ function WorkoutPage() {
               restNote={we.rest_note}
               notes={we.notes}
               isCompound={we.exercises.is_compound}
+              isCardio={we.exercises.category === "cardio"}
               exerciseId={we.exercise_id}
               exerciseSessionId={es?.id ?? null}
               loggedSets={(detail?.sets ?? []).filter((s) => s.exercise_session_id === es?.id)}
