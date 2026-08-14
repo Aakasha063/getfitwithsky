@@ -24,12 +24,12 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/workout/$slug")({
   head: () => ({
     meta: [
-      { title: "Live Session — V-Taper Log" },
+      { title: "Live Session — LIFT" },
       {
         name: "description",
         content: "Run your workout: log every set, see last time's numbers and rest between sets.",
       },
-      { property: "og:title", content: "Live Session — V-Taper Log" },
+      { property: "og:title", content: "Live Session — LIFT" },
       { property: "og:description", content: "Log sets with double-progression guidance." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
