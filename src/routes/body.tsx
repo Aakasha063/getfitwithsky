@@ -15,12 +15,12 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/body")({
   head: () => ({
     meta: [
-      { title: "Body Metrics — V-Taper Log" },
+      { title: "Body Metrics — LIFT" },
       {
         name: "description",
         content: "Log bodyweight, waist and other measurements to track your fat-loss phase.",
       },
-      { property: "og:title", content: "Body Metrics — V-Taper Log" },
+      { property: "og:title", content: "Body Metrics — LIFT" },
       { property: "og:description", content: "Track bodyweight and measurements over time." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

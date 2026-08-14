@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <Dumbbell className="h-4 w-4" />
             </span>
-            <span className="font-display text-lg font-semibold tracking-tight">V-Taper</span>
+            <span className="font-display text-lg font-semibold tracking-tight">LIFT</span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
             {NAV.map((item) => (

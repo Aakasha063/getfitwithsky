@@ -10,13 +10,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Get Fit With Sky" },
+      { title: "LIFT — Today's Training" },
       {
         name: "description",
         content:
           "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",
       },
-      { property: "og:title", content: "Get Fit With Sky" },
+      { property: "og:title", content: "LIFT" },
       {
         property: "og:description",
         content: "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",

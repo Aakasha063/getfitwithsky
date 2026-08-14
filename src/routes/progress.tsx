@@ -26,12 +26,12 @@ import {
 export const Route = createFileRoute("/progress")({
   head: () => ({
     meta: [
-      { title: "Progress & PRs — V-Taper Log" },
+      { title: "Progress & PRs — LIFT" },
       {
         name: "description",
         content: "Strength trends, estimated 1RM charts, bodyweight trend and personal records.",
       },
-      { property: "og:title", content: "Progress & PRs — V-Taper Log" },
+      { property: "og:title", content: "Progress & PRs — LIFT" },
       { property: "og:description", content: "Strength trends and personal records." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

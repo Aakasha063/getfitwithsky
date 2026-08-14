@@ -9,9 +9,9 @@ import { Card } from "@/components/ui/card";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Workout History — V-Taper Log" },
+      { title: "Workout History — LIFT" },
       { name: "description", content: "Every logged training session with duration and status." },
-      { property: "og:title", content: "Workout History — V-Taper Log" },
+      { property: "og:title", content: "Workout History — LIFT" },
       { property: "og:description", content: "Every logged training session." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
