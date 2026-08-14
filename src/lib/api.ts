@@ -62,7 +62,10 @@ export async function startSession(params: {
     .eq("day_id", day.id)
     .eq("status", "in_progress")
     .maybeSingle();
-  if (existing.data) return existing.data;
+  if (existing.data) {
+    await ensureExerciseSessions(userId, existing.data.id, exercises);
+    return existing.data;
+  }
 
   const { data: session, error } = await supabase
     .from("workout_sessions")
@@ -77,18 +80,36 @@ export async function startSession(params: {
     .single();
   if (error) throw error;
 
-  const rows = exercises.map((we) => ({
-    user_id: userId,
-    session_id: session.id,
-    exercise_id: we.exercise_id,
-    workout_exercise_id: we.id,
-    position: we.position,
-    target_sets: we.sets,
-    target_rep_range: we.rep_range,
-  }));
-  const { error: esErr } = await supabase.from("exercise_sessions").insert(rows);
-  if (esErr) throw esErr;
+  await ensureExerciseSessions(userId, session.id, exercises);
   return session;
+}
+
+/** Make sure every planned exercise has a row for this session (handles plan updates). */
+async function ensureExerciseSessions(
+  userId: string,
+  sessionId: string,
+  exercises: WorkoutExercise[],
+) {
+  const { data: current, error } = await supabase
+    .from("exercise_sessions")
+    .select("workout_exercise_id")
+    .eq("session_id", sessionId);
+  if (error) throw error;
+  const have = new Set((current ?? []).map((r) => r.workout_exercise_id));
+  const missing = exercises.filter((we) => !have.has(we.id));
+  if (missing.length === 0) return;
+  const { error: esErr } = await supabase.from("exercise_sessions").insert(
+    missing.map((we) => ({
+      user_id: userId,
+      session_id: sessionId,
+      exercise_id: we.exercise_id,
+      workout_exercise_id: we.id,
+      position: we.position,
+      target_sets: we.sets,
+      target_rep_range: we.rep_range,
+    })),
+  );
+  if (esErr) throw esErr;
 }
 
 export async function fetchSessionDetail(sessionId: string) {
