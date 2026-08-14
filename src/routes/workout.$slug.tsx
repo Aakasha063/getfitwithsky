@@ -156,6 +156,7 @@ function ExerciseCard(props: {
   restNote: string | null;
   notes: string | null;
   isCompound: boolean;
+  isCardio: boolean;
   exerciseId: string;
   exerciseSessionId: string | null;
   loggedSets: { id: string; set_number: number; weight_kg: number | null; reps: number | null }[];
@@ -171,7 +172,7 @@ function ExerciseCard(props: {
         exerciseId: props.exerciseId,
         excludeExerciseSessionId: props.exerciseSessionId ?? undefined,
       }),
-    enabled: !!props.userId,
+    enabled: !!props.userId && !props.isCardio,
   });
 
   const nextSetNumber = props.loggedSets.length + 1;
@@ -185,17 +186,21 @@ function ExerciseCard(props: {
 
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editWeight, setEditWeight] = useState("");
+  const [editReps, setEditReps] = useState("");
 
   const done = props.loggedSets.length >= props.sets;
 
   async function submit() {
     if (!props.userId || !props.exerciseSessionId) return;
+    if (done) return;
     await logSet({
       userId: props.userId,
       exerciseSessionId: props.exerciseSessionId,
       exerciseId: props.exerciseId,
       setNumber: nextSetNumber,
-      weight: weight ? Number(weight) : (suggestion.weight ?? null),
+      weight: props.isCardio ? null : weight ? Number(weight) : (suggestion.weight ?? null),
       reps: reps ? Number(reps) : (suggestion.reps ?? null),
       rir: null,
     });
@@ -204,17 +209,48 @@ function ExerciseCard(props: {
     props.onLogged();
   }
 
+  async function saveEdit(id: string, setNumber: number) {
+    if (!props.userId || !props.exerciseSessionId) return;
+    await logSet({
+      userId: props.userId,
+      exerciseSessionId: props.exerciseSessionId,
+      exerciseId: props.exerciseId,
+      setNumber,
+      weight: props.isCardio ? null : editWeight ? Number(editWeight) : null,
+      reps: editReps ? Number(editReps) : null,
+      rir: null,
+      existingId: id,
+    });
+    setEditing(null);
+    props.onLogged();
+  }
+
+  async function removeSet(id: string) {
+    await deleteSet(id);
+    setEditing(null);
+    props.onLogged();
+  }
+
   return (
-    <Card className="p-4">
+    <Card
+      className={cn(
+        "p-4 transition-colors",
+        done && "border-primary/60 bg-primary/10",
+      )}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-medium">{props.name}</h3>
-            {done && <Check className="h-4 w-4 text-primary" />}
+            {done && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">
+                <Check className="h-3 w-3" /> Complete
+              </span>
+            )}
           </div>
           <p className="num mt-0.5 text-sm text-muted-foreground">
-            {props.sets} × {props.repRange}
-            {props.rir ? ` · RIR ${props.rir}` : ""}
+            {props.isCardio ? props.repRange : `${props.sets} × ${props.repRange}`}
+            {!props.isCardio && props.rir ? ` · RIR ${props.rir}` : ""}
             {props.restNote ? ` · rest ${props.restNote}` : ""}
           </p>
           {props.notes && <p className="mt-1 text-xs text-muted-foreground">{props.notes}</p>}
@@ -224,6 +260,7 @@ function ExerciseCard(props: {
         </Button>
       </div>
 
+      {!props.isCardio && (
       <div className="mt-3 rounded-lg bg-secondary/60 p-3 text-xs">
         <p className="font-medium text-foreground">
           {suggestion.label} · target set {Math.min(nextSetNumber, props.sets)}
@@ -236,39 +273,91 @@ function ExerciseCard(props: {
           </p>
         )}
       </div>
+      )}
 
       {props.loggedSets.length > 0 && (
         <div className="num mt-3 flex flex-wrap gap-2 text-xs">
           {props.loggedSets
             .sort((a, b) => a.set_number - b.set_number)
-            .map((s) => (
-              <span key={s.id} className="rounded-md border border-border px-2 py-1">
-                {s.set_number}: {s.weight_kg ?? "—"} kg × {s.reps ?? "—"}
-              </span>
-            ))}
+            .map((s) =>
+              editing === s.id ? (
+                <span key={s.id} className="flex items-center gap-1.5 rounded-md border border-primary/60 p-1.5">
+                  {!props.isCardio && (
+                    <Input
+                      className="num h-8 w-20"
+                      inputMode="decimal"
+                      placeholder="kg"
+                      value={editWeight}
+                      onChange={(e) => setEditWeight(e.target.value)}
+                    />
+                  )}
+                  <Input
+                    className="num h-8 w-20"
+                    inputMode="numeric"
+                    placeholder={props.isCardio ? "min" : "reps"}
+                    value={editReps}
+                    onChange={(e) => setEditReps(e.target.value)}
+                  />
+                  <Button size="sm" className="h-8" onClick={() => saveEdit(s.id, s.set_number)}>
+                    Save
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" aria-label="Delete set" onClick={() => removeSet(s.id)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" aria-label="Cancel edit" onClick={() => setEditing(null)}>
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </span>
+              ) : (
+                <button
+                  key={s.id}
+                  type="button"
+                  aria-label={`Edit set ${s.set_number}`}
+                  onClick={() => {
+                    setEditing(s.id);
+                    setEditWeight(s.weight_kg !== null ? String(s.weight_kg) : "");
+                    setEditReps(s.reps !== null ? String(s.reps) : "");
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 hover:border-primary"
+                >
+                  {props.isCardio
+                    ? `${s.reps ?? "—"} min`
+                    : `${s.set_number}: ${s.weight_kg ?? "—"} kg × ${s.reps ?? "—"}`}
+                  <Pencil className="h-3 w-3 text-muted-foreground" />
+                </button>
+              ),
+            )}
         </div>
       )}
 
-      <div className="mt-3 flex items-center gap-2">
-        <Input
-          className="num"
-          inputMode="decimal"
-          placeholder={suggestion.weight ? `${suggestion.weight} kg` : "kg"}
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-        />
-        <Input
-          className="num"
-          inputMode="numeric"
-          placeholder={suggestion.reps ? `${suggestion.reps} reps` : "reps"}
-          value={reps}
-          onChange={(e) => setReps(e.target.value)}
-        />
-        <Button onClick={submit} disabled={!props.exerciseSessionId}>
-          <Timer className="mr-1.5 h-4 w-4" />
-          Log
-        </Button>
-      </div>
+      {done ? (
+        <p className="mt-3 text-xs text-muted-foreground">
+          All {props.sets} {props.isCardio ? "entries" : "sets"} logged. Tap a set above to edit it.
+        </p>
+      ) : (
+        <div className="mt-3 flex items-center gap-2">
+          {!props.isCardio && (
+            <Input
+              className="num"
+              inputMode="decimal"
+              placeholder={suggestion.weight ? `${suggestion.weight} kg` : "kg"}
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+            />
+          )}
+          <Input
+            className="num"
+            inputMode="numeric"
+            placeholder={props.isCardio ? "minutes" : suggestion.reps ? `${suggestion.reps} reps` : "reps"}
+            value={reps}
+            onChange={(e) => setReps(e.target.value)}
+          />
+          <Button onClick={submit} disabled={!props.exerciseSessionId}>
+            <Timer className="mr-1.5 h-4 w-4" />
+            Log
+          </Button>
+        </div>
+      )}
     </Card>
   );
 }
