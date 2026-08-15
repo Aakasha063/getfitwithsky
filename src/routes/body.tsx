@@ -64,6 +64,18 @@ function BodyPage() {
   const qc = useQueryClient();
   const [weight, setWeight] = useState("");
   const [waist, setWaist] = useState("");
+  const [sex, setSex] = useState<"male" | "female">("male");
+  const [height, setHeight] = useState("");
+  const [neck, setNeck] = useState("");
+  const [bfWaist, setBfWaist] = useState("");
+  const [hip, setHip] = useState("");
+  const bodyFat = navyBodyFat({
+    sex,
+    height: Number(height),
+    neck: Number(neck),
+    waist: Number(bfWaist),
+    hip: Number(hip),
+  });
 
   const { data } = useQuery({
     queryKey: ["metrics", user?.id],
@@ -86,6 +98,23 @@ function BodyPage() {
     setWeight("");
     setWaist("");
     toast.success("Measurement saved");
+    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+  }
+
+  async function saveBodyFat() {
+    if (!user || bodyFat == null) return;
+    const { error } = await supabase.from("body_metrics").insert({
+      user_id: user.id,
+      measured_on: todayISO(),
+      body_fat_percent: bodyFat,
+      height_cm: Number(height),
+      waist_cm: Number(bfWaist),
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Body fat ${bodyFat}% saved`);
     qc.invalidateQueries({ queryKey: ["metrics", user.id] });
   }
 
@@ -112,6 +141,57 @@ function BodyPage() {
         </div>
       </Card>
 
+      <Card className="mt-4 p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold">Body fat calculator</h2>
+          <div className="flex rounded-md border border-border p-0.5">
+            {(["male", "female"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSex(s)}
+                className={`rounded px-3 py-1 text-xs capitalize transition-colors ${
+                  sex === s ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          US Navy method — measure in centimetres.
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-4">
+          <div className="space-y-2">
+            <Label htmlFor="h">Height</Label>
+            <Input id="h" inputMode="decimal" value={height} onChange={(e) => setHeight(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="n">Neck</Label>
+            <Input id="n" inputMode="decimal" value={neck} onChange={(e) => setNeck(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="bw">Waist</Label>
+            <Input id="bw" inputMode="decimal" value={bfWaist} onChange={(e) => setBfWaist(e.target.value)} />
+          </div>
+          {sex === "female" && (
+            <div className="space-y-2">
+              <Label htmlFor="hp">Hip</Label>
+              <Input id="hp" inputMode="decimal" value={hip} onChange={(e) => setHip(e.target.value)} />
+            </div>
+          )}
+        </div>
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs text-muted-foreground">Estimated body fat</p>
+            <p className="num text-2xl font-semibold">{bodyFat != null ? `${bodyFat}%` : "—"}</p>
+          </div>
+          <Button variant="outline" disabled={bodyFat == null} onClick={saveBodyFat}>
+            Save to log
+          </Button>
+        </div>
+      </Card>
+
       <div className="mt-6 space-y-2">
         {rows.map((m) => (
           <Card key={m.id} className="flex items-center justify-between p-4 text-sm">
@@ -119,6 +199,7 @@ function BodyPage() {
             <span className="num">
               {m.weight_kg ? `${m.weight_kg} kg` : "—"}
               {m.waist_cm ? ` · waist ${m.waist_cm} cm` : ""}
+              {m.body_fat_percent ? ` · ${m.body_fat_percent}% bf` : ""}
             </span>
           </Card>
         ))}
