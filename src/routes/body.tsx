@@ -72,6 +72,15 @@ function BodyPage() {
   const [age, setAge] = useState("");
   const [activity, setActivity] = useState("1.55");
   const [goal, setGoal] = useState<"cut" | "recomp" | "maintain" | "bulk">("cut");
+  const [calculated, setCalculated] = useState<{
+    bmr: number;
+    tdee: number;
+    targetCals: number;
+    protein: number;
+    fat: number;
+    carbs: number;
+  } | null>(null);
+
   const bodyFat = navyBodyFat({
     sex,
     height: Number(height),
@@ -122,31 +131,54 @@ function BodyPage() {
   }
 
   const rows = [...(data ?? [])].reverse();
-
   const latestWeight = [...(data ?? [])].reverse().find((m) => m.weight_kg)?.weight_kg ?? null;
   const calcWeight = Number(weight) || Number(latestWeight) || 0;
   const calcHeight = Number(height);
   const calcAge = Number(age);
-  const bmr =
-    calcWeight > 0 && (bodyFat != null || (calcHeight > 0 && calcAge > 0))
-      ? bodyFat != null
-        ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100))
-        : 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + (sex === "male" ? 5 : -161)
-      : null;
-  const tdee = bmr != null ? bmr * Number(activity) : null;
+
   const GOALS = {
     cut: { label: "Fat loss", factor: 0.8 },
     recomp: { label: "Slow cut / recomp", factor: 0.9 },
     maintain: { label: "Maintain", factor: 1 },
     bulk: { label: "Lean gain", factor: 1.1 },
   } as const;
-  const targetCals = tdee != null ? Math.round((tdee * GOALS[goal].factor) / 10) * 10 : null;
-  const protein = calcWeight > 0 ? Math.round(calcWeight * 2) : null;
-  const fat = calcWeight > 0 ? Math.round(calcWeight * 0.9) : null;
-  const carbs =
-    targetCals != null && protein != null && fat != null
-      ? Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4))
-      : null;
+
+  function calculateCalories() {
+    if (calcWeight <= 0) {
+      toast.error("Enter your bodyweight or save a measurement");
+      return;
+    }
+    if (bodyFat == null && (calcHeight <= 0 || calcAge <= 0)) {
+      toast.error("Enter height and age, or calculate body fat above");
+      return;
+    }
+    const bmr =
+      bodyFat != null
+        ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100))
+        : 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + (sex === "male" ? 5 : -161);
+    const tdee = bmr * Number(activity);
+    const targetCals = Math.round((tdee * GOALS[goal].factor) / 10) * 10;
+    const protein = Math.round(calcWeight * 2);
+    const fat = Math.round(calcWeight * 0.9);
+    const carbs = Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4));
+    setCalculated({ bmr, tdee, targetCals, protein, fat, carbs });
+  }
+
+  async function saveCalories() {
+    if (!user || calculated == null) return;
+    const { error } = await supabase.from("body_metrics").insert({
+      user_id: user.id,
+      measured_on: todayISO(),
+      weight_kg: calcWeight > 0 ? calcWeight : null,
+      target_calories: calculated.targetCals,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Target ${calculated.targetCals} kcal saved`);
+    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+  }
 
   return (
     <div>
@@ -186,9 +218,7 @@ function BodyPage() {
             ))}
           </div>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">
-          US Navy method — measure in centimetres.
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">US Navy method — measure in centimetres.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="h">Height</Label>
@@ -264,33 +294,42 @@ function BodyPage() {
           </div>
         </div>
 
-        {targetCals != null ? (
-          <div className="mt-4 grid gap-3 sm:grid-cols-4">
-            <div className="rounded-lg bg-primary/10 p-3">
-              <p className="text-xs text-muted-foreground">{GOALS[goal].label} target</p>
-              <p className="num text-2xl font-semibold">{targetCals} kcal</p>
+        <div className="mt-4">
+          <Button onClick={calculateCalories}>Calculate target</Button>
+        </div>
+
+        {calculated != null ? (
+          <div className="mt-4">
+            <div className="grid gap-3 sm:grid-cols-4">
+              <div className="rounded-lg bg-primary/10 p-3">
+                <p className="text-xs text-muted-foreground">{GOALS[goal].label} target</p>
+                <p className="num text-2xl font-semibold">{calculated.targetCals} kcal</p>
+              </div>
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-xs text-muted-foreground">Protein</p>
+                <p className="num text-lg font-semibold">{calculated.protein} g</p>
+              </div>
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-xs text-muted-foreground">Fat</p>
+                <p className="num text-lg font-semibold">{calculated.fat} g</p>
+              </div>
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-xs text-muted-foreground">Carbs</p>
+                <p className="num text-lg font-semibold">{calculated.carbs} g</p>
+              </div>
             </div>
-            <div className="rounded-lg bg-secondary p-3">
-              <p className="text-xs text-muted-foreground">Protein</p>
-              <p className="num text-lg font-semibold">{protein} g</p>
-            </div>
-            <div className="rounded-lg bg-secondary p-3">
-              <p className="text-xs text-muted-foreground">Fat</p>
-              <p className="num text-lg font-semibold">{fat} g</p>
-            </div>
-            <div className="rounded-lg bg-secondary p-3">
-              <p className="text-xs text-muted-foreground">Carbs</p>
-              <p className="num text-lg font-semibold">{carbs} g</p>
+            <div className="mt-3 flex items-center justify-between gap-4">
+              <p className="text-xs text-muted-foreground">
+                Maintenance ≈ <span className="num">{Math.round(calculated.tdee / 10) * 10}</span> kcal/day.
+              </p>
+              <Button variant="outline" onClick={saveCalories}>
+                Save target
+              </Button>
             </div>
           </div>
         ) : (
           <p className="mt-4 text-sm text-muted-foreground">
-            Enter your bodyweight (or log one above) plus height and age to see your target.
-          </p>
-        )}
-        {tdee != null && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            Maintenance ≈ <span className="num">{Math.round(tdee / 10) * 10}</span> kcal/day.
+            Enter your bodyweight (or log one above) plus height and age, then click Calculate target.
           </p>
         )}
       </Card>
@@ -303,6 +342,7 @@ function BodyPage() {
               {m.weight_kg ? `${m.weight_kg} kg` : "—"}
               {m.waist_cm ? ` · waist ${m.waist_cm} cm` : ""}
               {m.body_fat_percent ? ` · ${m.body_fat_percent}% bf` : ""}
+              {m.target_calories ? ` · ${m.target_calories} kcal` : ""}
             </span>
           </Card>
         ))}
