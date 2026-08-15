@@ -123,6 +123,31 @@ function BodyPage() {
 
   const rows = [...(data ?? [])].reverse();
 
+  const latestWeight = [...(data ?? [])].reverse().find((m) => m.weight_kg)?.weight_kg ?? null;
+  const calcWeight = Number(weight) || Number(latestWeight) || 0;
+  const calcHeight = Number(height);
+  const calcAge = Number(age);
+  const bmr =
+    calcWeight > 0 && (bodyFat != null || (calcHeight > 0 && calcAge > 0))
+      ? bodyFat != null
+        ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100))
+        : 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + (sex === "male" ? 5 : -161)
+      : null;
+  const tdee = bmr != null ? bmr * Number(activity) : null;
+  const GOALS = {
+    cut: { label: "Fat loss", factor: 0.8 },
+    recomp: { label: "Slow cut / recomp", factor: 0.9 },
+    maintain: { label: "Maintain", factor: 1 },
+    bulk: { label: "Lean gain", factor: 1.1 },
+  } as const;
+  const targetCals = tdee != null ? Math.round((tdee * GOALS[goal].factor) / 10) * 10 : null;
+  const protein = calcWeight > 0 ? Math.round(calcWeight * 2) : null;
+  const fat = calcWeight > 0 ? Math.round(calcWeight * 0.9) : null;
+  const carbs =
+    targetCals != null && protein != null && fat != null
+      ? Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4))
+      : null;
+
   return (
     <div>
       <h1 className="text-2xl font-semibold">Body metrics</h1>
