@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +12,13 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — V-Taper Training Log" },
+      { title: "Sign in — LIFT" },
       {
         name: "description",
         content:
-          "Sign in to your V-Taper training log to run your workouts, log sets and track progress.",
+          "Sign in to LIFT to run your workouts, log sets and track progress.",
       },
-      { property: "og:title", content: "Sign in — V-Taper Training Log" },
+      { property: "og:title", content: "Sign in — LIFT" },
       {
         property: "og:description",
         content: "Sign in to run your workouts, log sets and track progress.",
@@ -69,11 +70,10 @@ function AuthPage() {
   }
 
   async function google() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) toast.error(error.message);
+    if (result?.error) toast.error(result.error.message ?? "Google sign-in failed");
   }
 
   return (
@@ -83,7 +83,7 @@ function AuthPage() {
           <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Dumbbell className="h-5 w-5" />
           </span>
-          <h1 className="text-2xl font-semibold">V-Taper Training Log</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">LIFT</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Your fat-loss phase, tracked set by set.
           </p>
