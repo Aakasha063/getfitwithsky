@@ -221,6 +221,7 @@ function BodyPage() {
       </Card>
 
       <div className="mt-6 space-y-2">
+*** placeholder
         {rows.map((m) => (
           <Card key={m.id} className="flex items-center justify-between p-4 text-sm">
             <span className="text-muted-foreground">{m.measured_on}</span>
