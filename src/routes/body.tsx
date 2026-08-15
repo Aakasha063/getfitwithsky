@@ -72,6 +72,14 @@ function BodyPage() {
   const [age, setAge] = useState("");
   const [activity, setActivity] = useState("1.55");
   const [goal, setGoal] = useState<"cut" | "recomp" | "maintain" | "bulk">("cut");
+  const [calculated, setCalculated] = useState<{
+    bmr: number;
+    tdee: number;
+    targetCals: number;
+    protein: number;
+    fat: number;
+    carbs: number;
+  } | null>(null);
   const bodyFat = navyBodyFat({
     sex,
     height: Number(height),
@@ -86,67 +94,55 @@ function BodyPage() {
     enabled: !!user,
   });
 
-  async function save() {
-    if (!user) return;
-    const { error } = await supabase.from("body_metrics").insert({
-      user_id: user.id,
-      measured_on: todayISO(),
-      weight_kg: weight ? Number(weight) : null,
-      waist_cm: waist ? Number(waist) : null,
-    });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    setWeight("");
-    setWaist("");
-    toast.success("Measurement saved");
-    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
-  }
-
-  async function saveBodyFat() {
-    if (!user || bodyFat == null) return;
-    const { error } = await supabase.from("body_metrics").insert({
-      user_id: user.id,
-      measured_on: todayISO(),
-      body_fat_percent: bodyFat,
-      height_cm: Number(height),
-      waist_cm: Number(bfWaist),
-    });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success(`Body fat ${bodyFat}% saved`);
-    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
-  }
-
-  const rows = [...(data ?? [])].reverse();
-
   const latestWeight = [...(data ?? [])].reverse().find((m) => m.weight_kg)?.weight_kg ?? null;
   const calcWeight = Number(weight) || Number(latestWeight) || 0;
   const calcHeight = Number(height);
   const calcAge = Number(age);
-  const bmr =
-    calcWeight > 0 && (bodyFat != null || (calcHeight > 0 && calcAge > 0))
-      ? bodyFat != null
-        ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100))
-        : 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + (sex === "male" ? 5 : -161)
-      : null;
-  const tdee = bmr != null ? bmr * Number(activity) : null;
+
   const GOALS = {
     cut: { label: "Fat loss", factor: 0.8 },
     recomp: { label: "Slow cut / recomp", factor: 0.9 },
     maintain: { label: "Maintain", factor: 1 },
     bulk: { label: "Lean gain", factor: 1.1 },
   } as const;
-  const targetCals = tdee != null ? Math.round((tdee * GOALS[goal].factor) / 10) * 10 : null;
-  const protein = calcWeight > 0 ? Math.round(calcWeight * 2) : null;
-  const fat = calcWeight > 0 ? Math.round(calcWeight * 0.9) : null;
-  const carbs =
-    targetCals != null && protein != null && fat != null
-      ? Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4))
-      : null;
+
+  function calculateCalories() {
+    if (calcWeight <= 0) {
+      toast.error("Enter your bodyweight or save a measurement");
+      return;
+    }
+    if (bodyFat == null && (calcHeight <= 0 || calcAge <= 0)) {
+      toast.error("Enter height and age, or calculate body fat above");
+      return;
+    }
+    const bmr =
+      bodyFat != null
+        ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100))
+        : 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + (sex === "male" ? 5 : -161);
+    const tdee = bmr * Number(activity);
+    const targetCals = Math.round((tdee * GOALS[goal].factor) / 10) * 10;
+    const protein = Math.round(calcWeight * 2);
+    const fat = Math.round(calcWeight * 0.9);
+    const carbs = Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4));
+    setCalculated({ bmr, tdee, targetCals, protein, fat, carbs });
+  }
+
+  async function saveCalories() {
+    if (!user || calculated == null) return;
+    const { error } = await supabase.from("body_metrics").insert({
+      user_id: user.id,
+      measured_on: todayISO(),
+      weight_kg: calcWeight > 0 ? calcWeight : null,
+      target_calories: calculated.targetCals,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Target ${calculated.targetCals} kcal saved`);
+    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+  }
+
 
   return (
     <div>
