@@ -220,8 +220,82 @@ function BodyPage() {
         </div>
       </Card>
 
+      <Card className="mt-4 p-4">
+        <h2 className="text-sm font-semibold">Daily calorie target</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {bodyFat != null
+            ? "Katch-McArdle (using your body fat estimate above)."
+            : "Mifflin-St Jeor — fill height above and your age below."}
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="age">Age</Label>
+            <Input id="age" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="act">Activity</Label>
+            <select
+              id="act"
+              value={activity}
+              onChange={(e) => setActivity(e.target.value)}
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="1.2">Sedentary</option>
+              <option value="1.375">Light (1-3 days)</option>
+              <option value="1.55">Moderate (3-5 days)</option>
+              <option value="1.725">High (6-7 days)</option>
+              <option value="1.9">Very high</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="goal">Goal</Label>
+            <select
+              id="goal"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value as typeof goal)}
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              {(Object.keys(GOALS) as (keyof typeof GOALS)[]).map((g) => (
+                <option key={g} value={g}>
+                  {GOALS[g].label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {targetCals != null ? (
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+            <div className="rounded-lg bg-primary/10 p-3">
+              <p className="text-xs text-muted-foreground">{GOALS[goal].label} target</p>
+              <p className="num text-2xl font-semibold">{targetCals} kcal</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground">Protein</p>
+              <p className="num text-lg font-semibold">{protein} g</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground">Fat</p>
+              <p className="num text-lg font-semibold">{fat} g</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground">Carbs</p>
+              <p className="num text-lg font-semibold">{carbs} g</p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Enter your bodyweight (or log one above) plus height and age to see your target.
+          </p>
+        )}
+        {tdee != null && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Maintenance ≈ <span className="num">{Math.round(tdee / 10) * 10}</span> kcal/day.
+          </p>
+        )}
+      </Card>
+
       <div className="mt-6 space-y-2">
-*** placeholder
         {rows.map((m) => (
           <Card key={m.id} className="flex items-center justify-between p-4 text-sm">
             <span className="text-muted-foreground">{m.measured_on}</span>
