@@ -69,6 +69,9 @@ function BodyPage() {
   const [neck, setNeck] = useState("");
   const [bfWaist, setBfWaist] = useState("");
   const [hip, setHip] = useState("");
+  const [age, setAge] = useState("");
+  const [activity, setActivity] = useState("1.55");
+  const [goal, setGoal] = useState<"cut" | "recomp" | "maintain" | "bulk">("cut");
   const bodyFat = navyBodyFat({
     sex,
     height: Number(height),
@@ -119,6 +122,31 @@ function BodyPage() {
   }
 
   const rows = [...(data ?? [])].reverse();
+
+  const latestWeight = [...(data ?? [])].reverse().find((m) => m.weight_kg)?.weight_kg ?? null;
+  const calcWeight = Number(weight) || Number(latestWeight) || 0;
+  const calcHeight = Number(height);
+  const calcAge = Number(age);
+  const bmr =
+    calcWeight > 0 && (bodyFat != null || (calcHeight > 0 && calcAge > 0))
+      ? bodyFat != null
+        ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100))
+        : 10 * calcWeight + 6.25 * calcHeight - 5 * calcAge + (sex === "male" ? 5 : -161)
+      : null;
+  const tdee = bmr != null ? bmr * Number(activity) : null;
+  const GOALS = {
+    cut: { label: "Fat loss", factor: 0.8 },
+    recomp: { label: "Slow cut / recomp", factor: 0.9 },
+    maintain: { label: "Maintain", factor: 1 },
+    bulk: { label: "Lean gain", factor: 1.1 },
+  } as const;
+  const targetCals = tdee != null ? Math.round((tdee * GOALS[goal].factor) / 10) * 10 : null;
+  const protein = calcWeight > 0 ? Math.round(calcWeight * 2) : null;
+  const fat = calcWeight > 0 ? Math.round(calcWeight * 0.9) : null;
+  const carbs =
+    targetCals != null && protein != null && fat != null
+      ? Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4))
+      : null;
 
   return (
     <div>
@@ -190,6 +218,81 @@ function BodyPage() {
             Save to log
           </Button>
         </div>
+      </Card>
+
+      <Card className="mt-4 p-4">
+        <h2 className="text-sm font-semibold">Daily calorie target</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {bodyFat != null
+            ? "Katch-McArdle (using your body fat estimate above)."
+            : "Mifflin-St Jeor — fill height above and your age below."}
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="age">Age</Label>
+            <Input id="age" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="act">Activity</Label>
+            <select
+              id="act"
+              value={activity}
+              onChange={(e) => setActivity(e.target.value)}
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="1.2">Sedentary</option>
+              <option value="1.375">Light (1-3 days)</option>
+              <option value="1.55">Moderate (3-5 days)</option>
+              <option value="1.725">High (6-7 days)</option>
+              <option value="1.9">Very high</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="goal">Goal</Label>
+            <select
+              id="goal"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value as typeof goal)}
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              {(Object.keys(GOALS) as (keyof typeof GOALS)[]).map((g) => (
+                <option key={g} value={g}>
+                  {GOALS[g].label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {targetCals != null ? (
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+            <div className="rounded-lg bg-primary/10 p-3">
+              <p className="text-xs text-muted-foreground">{GOALS[goal].label} target</p>
+              <p className="num text-2xl font-semibold">{targetCals} kcal</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground">Protein</p>
+              <p className="num text-lg font-semibold">{protein} g</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground">Fat</p>
+              <p className="num text-lg font-semibold">{fat} g</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3">
+              <p className="text-xs text-muted-foreground">Carbs</p>
+              <p className="num text-lg font-semibold">{carbs} g</p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Enter your bodyweight (or log one above) plus height and age to see your target.
+          </p>
+        )}
+        {tdee != null && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Maintenance ≈ <span className="num">{Math.round(tdee / 10) * 10}</span> kcal/day.
+          </p>
+        )}
       </Card>
 
       <div className="mt-6 space-y-2">
