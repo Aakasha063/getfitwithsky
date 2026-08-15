@@ -69,6 +69,9 @@ function BodyPage() {
   const [neck, setNeck] = useState("");
   const [bfWaist, setBfWaist] = useState("");
   const [hip, setHip] = useState("");
+  const [age, setAge] = useState("");
+  const [activity, setActivity] = useState("1.55");
+  const [goal, setGoal] = useState<"cut" | "recomp" | "maintain" | "bulk">("cut");
   const bodyFat = navyBodyFat({
     sex,
     height: Number(height),
