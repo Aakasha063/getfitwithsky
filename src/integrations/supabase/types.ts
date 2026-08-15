@@ -24,6 +24,7 @@ export type Database = {
           id: string
           measured_on: string
           notes: string | null
+          target_calories: number | null
           thigh_cm: number | null
           updated_at: string
           user_id: string
@@ -39,6 +40,7 @@ export type Database = {
           id?: string
           measured_on?: string
           notes?: string | null
+          target_calories?: number | null
           thigh_cm?: number | null
           updated_at?: string
           user_id: string
@@ -54,6 +56,7 @@ export type Database = {
           id?: string
           measured_on?: string
           notes?: string | null
+          target_calories?: number | null
           thigh_cm?: number | null
           updated_at?: string
           user_id?: string
