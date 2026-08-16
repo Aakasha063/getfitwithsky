@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Dumbbell, LineChart, History, Scale, LogOut, CalendarDays } from "lucide-react";
+import { Dumbbell, LineChart, History, Scale, LogOut, CalendarDays, Trophy } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
@@ -12,6 +12,7 @@ const NAV = [
   { to: "/progress", label: "Progress", icon: LineChart },
   { to: "/history", label: "History", icon: History },
   { to: "/body", label: "Body", icon: Scale },
+  { to: "/profile", label: "Profile", icon: Trophy },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {

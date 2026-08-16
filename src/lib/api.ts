@@ -402,3 +402,58 @@ export async function fetchCardio(userId: string) {
   if (error) throw error;
   return data ?? [];
 }
+
+export async function fetchSessionCardio(sessionId: string) {
+  const { data, error } = await supabase
+    .from("cardio_sessions")
+    .select("*")
+    .eq("session_id", sessionId);
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchSessionPRs(sessionId: string) {
+  const { data, error } = await supabase
+    .from("personal_records")
+    .select("*, exercises(name)")
+    .eq("session_id", sessionId);
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchLeaderboard(periodDays = 30) {
+  const { data, error } = await supabase.rpc("get_leaderboard", {
+    period_days: periodDays,
+  });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchProfile(userId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function saveProfile(userId: string, patch: Partial<Tables<"profiles">>) {
+  const { error } = await supabase
+    .from("profiles")
+    .upsert({ id: userId, ...patch, updated_at: new Date().toISOString() });
+  if (error) throw error;
+}
+
+/** All sets for a user, used for lifetime gamification stats. */
+export async function fetchAllSets(userId: string) {
+  const { data, error } = await supabase
+    .from("sets")
+    .select("weight_kg, reps, is_warmup, performed_at")
+    .eq("user_id", userId)
+    .eq("is_warmup", false)
+    .order("performed_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
