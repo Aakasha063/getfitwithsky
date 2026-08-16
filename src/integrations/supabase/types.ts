@@ -700,7 +700,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_leaderboard: {
+        Args: { period_days?: number }
+        Returns: {
+          active_weeks: number
+          display_name: string
+          last_session: string
+          sessions: number
+          sets_count: number
+          total_volume: number
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
