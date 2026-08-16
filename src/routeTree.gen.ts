@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BodyRouteImport } from './routes/body'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as PlanRouteImport } from './routes/plan'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as HistoryIdRouteImport } from './routes/history.$id'
 import { Route as WorkoutSlugRouteImport } from './routes/workout.$slug'
@@ -43,6 +44,11 @@ const PlanRoute = PlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/body': typeof BodyRoute
   '/history': typeof HistoryRouteWithChildren
   '/plan': typeof PlanRoute
+  '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/history/$id': typeof HistoryIdRoute
   '/workout/$slug': typeof WorkoutSlugRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/body': typeof BodyRoute
   '/history': typeof HistoryRouteWithChildren
   '/plan': typeof PlanRoute
+  '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/history/$id': typeof HistoryIdRoute
   '/workout/$slug': typeof WorkoutSlugRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/body': typeof BodyRoute
   '/history': typeof HistoryRouteWithChildren
   '/plan': typeof PlanRoute
+  '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/history/$id': typeof HistoryIdRoute
   '/workout/$slug': typeof WorkoutSlugRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/body'
     | '/history'
     | '/plan'
+    | '/profile'
     | '/progress'
     | '/history/$id'
     | '/workout/$slug'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/body'
     | '/history'
     | '/plan'
+    | '/profile'
     | '/progress'
     | '/history/$id'
     | '/workout/$slug'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/body'
     | '/history'
     | '/plan'
+    | '/profile'
     | '/progress'
     | '/history/$id'
     | '/workout/$slug'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   BodyRoute: typeof BodyRoute
   HistoryRoute: typeof HistoryRouteWithChildren
   PlanRoute: typeof PlanRoute
+  ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   WorkoutSlugRoute: typeof WorkoutSlugRoute
 }
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/plan'
       fullPath: '/plan'
       preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress': {
@@ -211,6 +231,7 @@ const rootRouteChildren: RootRouteChildren = {
   BodyRoute: BodyRoute,
   HistoryRoute: HistoryRouteWithChildren,
   PlanRoute: PlanRoute,
+  ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   WorkoutSlugRoute: WorkoutSlugRoute,
 }
