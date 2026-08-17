@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const router = useRouter();
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot_password">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -49,6 +49,13 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Account created. You're all set.");
+      } else if (mode === "forgot_password") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth?reset=true`,
+        });
+        if (error) throw error;
+        toast.success("Password reset email sent.");
+        setMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -117,14 +124,27 @@ function AuthPage() {
                 style={INPUT_STYLE}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label htmlFor="password" style={{ fontSize: 13 }}>Password</label>
-              <input
-                id="password" type="password" required minLength={6}
-                value={password} onChange={(e) => setPassword(e.target.value)}
-                style={INPUT_STYLE}
-              />
-            </div>
+            {mode !== "forgot_password" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label htmlFor="password" style={{ fontSize: 13 }}>Password</label>
+                  {mode === "signin" && (
+                    <button
+                      type="button"
+                      onClick={() => setMode("forgot_password")}
+                      style={{ background: "transparent", border: "none", color: "oklch(0.63 0.006 250)", fontSize: 12, cursor: "pointer", padding: 0 }}
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <input
+                  id="password" type="password" required minLength={6}
+                  value={password} onChange={(e) => setPassword(e.target.value)}
+                  style={INPUT_STYLE}
+                />
+              </div>
+            )}
             <button
               type="submit"
               disabled={busy}
@@ -134,7 +154,7 @@ function AuthPage() {
                 fontSize: 14, fontWeight: 600, cursor: busy ? "wait" : "pointer",
               }}
             >
-              {mode === "signin" ? "Sign in" : "Create account"}
+              {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
             </button>
           </form>
 
@@ -167,13 +187,24 @@ function AuthPage() {
 
         {/* Toggle */}
         <p style={{ marginTop: 20, textAlign: "center", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
-          {mode === "signin" ? "No account yet? " : "Already have an account? "}
-          <button
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            style={{ background: "transparent", border: "none", color: "oklch(0.92 0.25 110)", fontSize: 14, cursor: "pointer", padding: 0 }}
-          >
-            {mode === "signin" ? "Sign up" : "Sign in"}
-          </button>
+          {mode === "forgot_password" ? (
+            <button
+              onClick={() => setMode("signin")}
+              style={{ background: "transparent", border: "none", color: "oklch(0.92 0.25 110)", fontSize: 14, cursor: "pointer", padding: 0 }}
+            >
+              Back to sign in
+            </button>
+          ) : (
+            <>
+              {mode === "signin" ? "No account yet? " : "Already have an account? "}
+              <button
+                onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                style={{ background: "transparent", border: "none", color: "oklch(0.92 0.25 110)", fontSize: 14, cursor: "pointer", padding: 0 }}
+              >
+                {mode === "signin" ? "Sign up" : "Sign in"}
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>
