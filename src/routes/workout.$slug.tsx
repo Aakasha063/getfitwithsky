@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RestTimer } from "@/components/RestTimer";
@@ -44,6 +44,7 @@ function WorkoutPage() {
   const qc = useQueryClient();
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [finishing, setFinishing] = useState(false);
   const [rest, setRest] = useState<{ seconds: number; key: number } | null>(null);
   const [info, setInfo] = useState<Exercise | null>(null);
   const [startedAt] = useState(() => Date.now());
@@ -72,8 +73,9 @@ function WorkoutPage() {
     [plan],
   );
 
-  async function finish() {
-    if (!user || !sessionId) return;
+  const finish = useCallback(async () => {
+    if (!user || !sessionId || finishing) return;
+    setFinishing(true);
     const duration = Math.round((Date.now() - startedAt) / 1000);
     const prs = await finishSession({ userId: user.id, sessionId, durationSeconds: duration });
     toast.success(
@@ -81,7 +83,13 @@ function WorkoutPage() {
     );
     qc.invalidateQueries();
     router.navigate({ to: "/history" });
-  }
+  }, [user, sessionId, finishing, startedAt, qc, router]);
+
+  useEffect(() => {
+    if (completedSets > 0 && totalSets > 0 && completedSets >= totalSets) {
+      finish();
+    }
+  }, [completedSets, totalSets, finish]);
 
   if (!plan) return (
     <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>Loading…</p>

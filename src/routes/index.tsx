@@ -53,6 +53,11 @@ function Dashboard() {
   const completed = (history ?? []).filter((s) => s.status === "completed").length;
   const prCount = prs?.length ?? 0;
 
+  const todayISOStr = new Date().toISOString().slice(0, 10);
+  const isTodayCompleted = today && (history ?? []).some(
+    (s) => s.day_id === today.id && s.session_date === todayISOStr && s.status === "completed"
+  );
+
   const todayLabel = new Date().toLocaleDateString(undefined, {
     weekday: "long",
     day: "numeric",
@@ -89,25 +94,34 @@ function Dashboard() {
             {today.cardio_note && (
               <p style={{ margin: "8px 0 0", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>Cardio: {today.cardio_note}</p>
             )}
-            <Link
-              to="/workout/$slug"
-              params={{ slug: today.slug }}
-              style={{ textDecoration: "none" }}
-            >
-              <button style={{
-                marginTop: 20,
-                display: "inline-flex", alignItems: "center", gap: 6,
-                height: 46, padding: "0 20px",
-                borderRadius: 9, border: "none",
-                background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-                fontSize: 14, fontWeight: 600, cursor: "pointer",
-              }}>
-                Start workout
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" />
+            {isTodayCompleted ? (
+              <div style={{ marginTop: 20, display: "inline-flex", alignItems: "center", gap: 6, height: 46, padding: "0 20px", borderRadius: 9, background: "oklch(0.92 0.25 110 / 10%)", color: "oklch(0.92 0.25 110)", fontSize: 14, fontWeight: 600 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
-              </button>
-            </Link>
+                Well done, workout completed for today
+              </div>
+            ) : (
+              <Link
+                to="/workout/$slug"
+                params={{ slug: today.slug }}
+                style={{ textDecoration: "none" }}
+              >
+                <button style={{
+                  marginTop: 20,
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  height: 46, padding: "0 20px",
+                  borderRadius: 9, border: "none",
+                  background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
+                  fontSize: 14, fontWeight: 600, cursor: "pointer",
+                }}>
+                  Start workout
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" />
+                  </svg>
+                </button>
+              </Link>
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 16, borderLeft: "1px solid oklch(0.27 0.005 250)", paddingLeft: 24 }}>
             <div style={{ display: "flex", gap: 40 }}>
