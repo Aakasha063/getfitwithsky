@@ -117,14 +117,6 @@ function levelFor(score: number) {
   return { current, next, pct };
 }
 
-function initials(nameOrEmail: string) {
-  const base = nameOrEmail.trim();
-  if (!base) return "AT";
-  const parts = base.split(/[\s._-]+/).filter(Boolean);
-  if (parts.length >= 2) return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
-  return base.slice(0, 2).toUpperCase();
-}
-
 const AVATAR_TONES = [
   "from-primary/80 to-primary/30",
   "from-sky-400/70 to-sky-500/20",
