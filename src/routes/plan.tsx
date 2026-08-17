@@ -42,10 +42,10 @@ function PlanPage() {
 
   const dow = new Date().getDay();
   const now = new Date();
-  // Use local time for timezone safety. Make Monday=1, Sunday=7.
-  const day = now.getDay() || 7; 
+  // Make Sunday=0 the start of the week to naturally absorb timezone offsets
+  const day = now.getDay(); 
   const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - day + 1);
+  startOfWeek.setDate(now.getDate() - day);
   const y = startOfWeek.getFullYear();
   const m = String(startOfWeek.getMonth() + 1).padStart(2, "0");
   const dt = String(startOfWeek.getDate()).padStart(2, "0");
