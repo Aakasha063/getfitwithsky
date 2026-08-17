@@ -92,6 +92,7 @@ function BodyPage() {
 
   // Body fat calculator
   const [sex, setSex] = useState<"male" | "female">("male");
+  const [unit, setUnit] = useState<"cm" | "inch">("cm");
   const [height, setHeight] = useState("");
   const [neck, setNeck] = useState("");
   const [bfWaist, setBfWaist] = useState("");
@@ -165,8 +166,13 @@ function BodyPage() {
   }));
   const chartPoints = buildChart(chartData);
 
+  const hVal = unit === "inch" ? Number(height) * 2.54 : Number(height);
+  const nVal = unit === "inch" ? Number(neck) * 2.54 : Number(neck);
+  const wVal = unit === "inch" ? Number(bfWaist) * 2.54 : Number(bfWaist);
+  const hipVal = unit === "inch" ? Number(hip) * 2.54 : Number(hip);
+
   const bodyFat = navyBodyFat({
-    sex, height: Number(height), neck: Number(neck), waist: Number(bfWaist), hip: Number(hip),
+    sex, height: hVal, neck: nVal, waist: wVal, hip: hipVal,
   });
 
   const calcWeight = Number(weightInput) || latestWeight?.weight_kg || 0;
@@ -190,7 +196,7 @@ function BodyPage() {
     if (!user || bodyFat == null) return;
     const { error } = await supabase.from("body_metrics").insert({
       user_id: user.id, measured_on: todayISO(), body_fat_percent: bodyFat,
-      height_cm: Number(height), waist_cm: Number(bfWaist),
+      height_cm: hVal, waist_cm: wVal,
     });
     if (error) { toast.error(error.message); return; }
     toast.success(`Body fat ${bodyFat}% saved`);
@@ -339,23 +345,41 @@ function BodyPage() {
 
       {/* Body fat estimate */}
       <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>Body fat estimate</h2>
-          <div style={{ display: "flex", borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", padding: 2 }}>
-            {(["male", "female"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => setSex(s)}
-                style={{
-                  borderRadius: 6, padding: "4px 12px", fontSize: 12, textTransform: "capitalize",
-                  border: "none", cursor: "pointer",
-                  background: sex === s ? "oklch(0.22 0.005 250)" : "transparent",
-                  color: sex === s ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
-                }}
-              >
-                {s}
-              </button>
-            ))}
+          <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ display: "flex", borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", padding: 2 }}>
+              {(["cm", "inch"] as const).map((u) => (
+                <button
+                  key={u}
+                  onClick={() => setUnit(u)}
+                  style={{
+                    borderRadius: 6, padding: "4px 12px", fontSize: 12, textTransform: "lowercase",
+                    border: "none", cursor: "pointer",
+                    background: unit === u ? "oklch(0.22 0.005 250)" : "transparent",
+                    color: unit === u ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+                  }}
+                >
+                  {u}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", padding: 2 }}>
+              {(["male", "female"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSex(s)}
+                  style={{
+                    borderRadius: 6, padding: "4px 12px", fontSize: 12, textTransform: "capitalize",
+                    border: "none", cursor: "pointer",
+                    background: sex === s ? "oklch(0.22 0.005 250)" : "transparent",
+                    color: sex === s ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -368,7 +392,7 @@ function BodyPage() {
               ...(sex === "female" ? [{ label: "Hip", value: hip, set: setHip }] : []),
             ].map(({ label, value, set }) => (
               <div key={label} style={{ display: "flex", flexDirection: "column", gap: 6, width: 88 }}>
-                <label style={LABEL_STYLE}>{label}</label>
+                <label style={LABEL_STYLE}>{label} ({unit})</label>
                 <input inputMode="decimal" value={value} onChange={(e) => set(e.target.value)} style={INPUT_STYLE} />
               </div>
             ))}
