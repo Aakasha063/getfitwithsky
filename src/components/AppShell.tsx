@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Dumbbell, LineChart, History, Scale, LogOut, CalendarDays, Trophy } from "lucide-react";
+import { Dumbbell, Scale, LogOut, CalendarDays, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
@@ -9,10 +9,8 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { to: "/", label: "Today", icon: Dumbbell },
   { to: "/plan", label: "Plan", icon: CalendarDays },
-  { to: "/progress", label: "Progress", icon: LineChart },
-  { to: "/history", label: "History", icon: History },
   { to: "/body", label: "Body", icon: Scale },
-  { to: "/profile", label: "Profile", icon: Trophy },
+  { to: "/profile", label: "Profile", icon: User },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -50,7 +48,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.to}
                 className={cn(
                   "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                  pathname === item.to && "bg-secondary text-foreground",
+                  (pathname === item.to ||
+                    (item.to === "/profile" &&
+                      (pathname.startsWith("/profile") ||
+                        pathname.startsWith("/history") ||
+                        pathname.startsWith("/progress")))) &&
+                    "bg-secondary text-foreground",
                 )}
               >
                 {item.label}
@@ -76,7 +79,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex items-center justify-around px-2 py-2">
           {NAV.map((item) => {
             const Icon = item.icon;
-            const active = pathname === item.to;
+            const active =
+              pathname === item.to ||
+              (item.to === "/profile" &&
+                (pathname.startsWith("/profile") ||
+                  pathname.startsWith("/history") ||
+                  pathname.startsWith("/progress")));
             return (
               <Link
                 key={item.to}
