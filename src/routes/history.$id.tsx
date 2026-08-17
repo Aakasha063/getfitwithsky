@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Trophy } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   fetchSessionCardio,
   fetchSessionDetail,
@@ -21,10 +18,6 @@ export const Route = createFileRoute("/history/$id")({
           "Full breakdown of a logged training session: every set, weight, reps, RIR, volume, cardio and PRs.",
       },
       { property: "og:title", content: "Session Detail — LIFT" },
-      {
-        property: "og:description",
-        content: "Every set, weight, rep and PR from this training session.",
-      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -51,84 +44,73 @@ function SessionDetail() {
     queryFn: () => fetchSessionPRs(id),
   });
 
-  if (isLoading) return <p className="text-sm text-muted-foreground">Loading session…</p>;
-  if (!data) return <p className="text-sm text-muted-foreground">Session not found.</p>;
+  if (isLoading) return <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>Loading session…</p>;
+  if (!data) return <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>Session not found.</p>;
 
   const { session, exSessions, sets } = data;
   const working = sets.filter((s) => !s.is_warmup);
-  const totalVolume = working.reduce(
-    (sum, s) => sum + (s.weight_kg ?? 0) * (s.reps ?? 0),
-    0,
-  );
+  const totalVolume = working.reduce((sum, s) => sum + (s.weight_kg ?? 0) * (s.reps ?? 0), 0);
   const totalReps = working.reduce((sum, s) => sum + (s.reps ?? 0), 0);
-  const heaviest = working.reduce(
-    (max, s) => Math.max(max, s.weight_kg ?? 0),
-    0,
-  );
+
+  const dateFull = new Date(session.session_date).toLocaleDateString(undefined, {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* Back link */}
       <Link
         to="/history"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, color: "oklch(0.63 0.006 250)", textDecoration: "none", width: "fit-content" }}
       >
-        <ArrowLeft className="h-4 w-4" /> History
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="19" y1="12" x2="5" y2="12" /><polyline points="11,18 5,12 11,6" />
+        </svg>
+        History
       </Link>
 
+      {/* Title */}
       <div>
-        <p className="text-sm text-muted-foreground">
-          {new Date(session.session_date).toLocaleDateString(undefined, {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold">{session.title}</h1>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Badge variant="secondary" className="capitalize">
+        <p style={{ margin: 0, fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{dateFull}</p>
+        <h1 style={{ margin: "4px 0 0", fontSize: 24, fontWeight: 600 }}>{session.title}</h1>
+        <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
+          <span style={{ borderRadius: 6, background: "oklch(0.22 0.005 250)", padding: "2px 10px", fontSize: 12, fontWeight: 600, textTransform: "capitalize" }}>
             {session.status.replace("_", " ")}
-          </Badge>
-          {session.is_deload && <Badge variant="outline">Deload</Badge>}
-          {session.mood && <Badge variant="outline">Mood: {session.mood}</Badge>}
+          </span>
+          {session.mood && (
+            <span style={{ borderRadius: 6, border: "1px solid oklch(0.27 0.005 250)", padding: "2px 10px", fontSize: 12, fontWeight: 600 }}>
+              Mood: {session.mood}
+            </span>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-4">
-        <Stat label="Duration" value={fmtDuration(session.duration_seconds)} />
-        <Stat label="Volume" value={`${Math.round(totalVolume).toLocaleString()} kg`} />
-        <Stat label="Working sets" value={String(working.length)} />
-        <Stat label="Total reps" value={String(totalReps)} />
+      {/* Stats grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+        {[
+          { label: "Duration", value: fmtDuration(session.duration_seconds) },
+          { label: "Volume", value: `${Math.round(totalVolume).toLocaleString()} kg` },
+          { label: "Working sets", value: String(working.length) },
+          { label: "Total reps", value: String(totalReps) },
+        ].map(({ label, value }) => (
+          <div key={label} style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 16 }}>
+            <p style={{ margin: 0, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)" }}>{label}</p>
+            <p style={{ margin: "4px 0 0", fontSize: 20, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{value}</p>
+          </div>
+        ))}
       </div>
 
-      {(session.energy || session.difficulty) && (
-        <Card className="p-4 text-sm">
-          <div className="flex flex-wrap gap-6">
-            {session.energy != null && (
-              <span className="text-muted-foreground">
-                Energy: <span className="text-foreground num">{session.energy}/5</span>
-              </span>
-            )}
-            {session.difficulty != null && (
-              <span className="text-muted-foreground">
-                Difficulty: <span className="text-foreground num">{session.difficulty}/5</span>
-              </span>
-            )}
-            {heaviest > 0 && (
-              <span className="text-muted-foreground">
-                Heaviest load: <span className="text-foreground num">{heaviest} kg</span>
-              </span>
-            )}
-          </div>
-        </Card>
-      )}
-
+      {/* PRs box */}
       {(prs ?? []).length > 0 && (
-        <Card className="border-primary/40 bg-primary/10 p-4">
-          <p className="flex items-center gap-2 text-sm font-medium">
-            <Trophy className="h-4 w-4 text-primary" /> Personal records this session
+        <div style={{ background: "oklch(0.92 0.25 110 / 10%)", border: "1px solid oklch(0.92 0.25 110 / 40%)", borderRadius: 12, padding: 16 }}>
+          <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 500 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.92 0.25 110)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z" />
+              <path d="M7 5H4a1 1 0 0 0-1 1c0 2.5 1.5 4 4 4M17 5h3a1 1 0 0 1 1 1c0 2.5-1.5 4-4 4" />
+            </svg>
+            Personal records this session
           </p>
-          <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+          <ul style={{ margin: "8px 0 0", paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 4, fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
             {(prs ?? []).map((p) => (
               <li key={p.id}>
                 {(p as { exercises?: { name: string } }).exercises?.name ?? "Exercise"} —{" "}
@@ -138,74 +120,68 @@ function SessionDetail() {
               </li>
             ))}
           </ul>
-        </Card>
+        </div>
       )}
 
-      <div className="space-y-3">
+      {/* Exercise tables */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {exSessions.map((es) => {
           const esSets = sets
             .filter((s) => s.exercise_session_id === es.id)
             .sort((a, b) => a.set_number - b.set_number);
           if (esSets.length === 0) return null;
           const isCardio = es.exercises.category === "cardio";
-          const vol = esSets.reduce(
-            (sum, s) => sum + (s.weight_kg ?? 0) * (s.reps ?? 0),
-            0,
-          );
+          const vol = esSets.reduce((sum, s) => sum + (s.weight_kg ?? 0) * (s.reps ?? 0), 0);
           const best = esSets.reduce(
-            (max, s) =>
-              s.weight_kg && s.reps ? Math.max(max, epley1RM(s.weight_kg, s.reps)) : max,
-            0,
+            (max, s) => s.weight_kg && s.reps ? Math.max(max, epley1RM(s.weight_kg, s.reps)) : max, 0,
           );
           return (
-            <Card key={es.id} className="p-4">
-              <div className="flex items-start justify-between gap-3">
+            <div key={es.id} style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
                 <div>
-                  <p className="font-medium">{es.exercises.name}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p style={{ margin: 0, fontWeight: 500, fontSize: 14 }}>{es.exercises.name}</p>
+                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "oklch(0.63 0.006 250)" }}>
                     {es.exercises.primary_muscle ?? es.exercises.category ?? ""}
                     {es.target_rep_range ? ` · target ${es.target_rep_range}` : ""}
                   </p>
                 </div>
                 {!isCardio && (
-                  <div className="text-right text-xs text-muted-foreground">
-                    <p className="num">{Math.round(vol).toLocaleString()} kg volume</p>
-                    {best > 0 && <p className="num">e1RM {Math.round(best * 10) / 10} kg</p>}
+                  <div style={{ textAlign: "right", fontSize: 12, color: "oklch(0.63 0.006 250)" }}>
+                    <p style={{ margin: 0, fontVariantNumeric: "tabular-nums" }}>{Math.round(vol).toLocaleString()} kg volume</p>
+                    {best > 0 && <p style={{ margin: 0, fontVariantNumeric: "tabular-nums" }}>e1RM {Math.round(best * 10) / 10} kg</p>}
                   </div>
                 )}
               </div>
 
-              <div className="mt-3 overflow-hidden rounded-md border border-border/60">
-                <table className="w-full text-sm">
-                  <thead className="bg-secondary/50 text-xs uppercase tracking-wide text-muted-foreground">
+              <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 60%)", overflow: "hidden" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead style={{ background: "oklch(0.22 0.005 250 / 50%)" }}>
                     <tr>
-                      <th className="px-3 py-2 text-left font-medium">Set</th>
+                      <th style={{ textAlign: "left", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Set</th>
                       {isCardio ? (
-                        <th className="px-3 py-2 text-right font-medium">Minutes</th>
+                        <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Minutes</th>
                       ) : (
                         <>
-                          <th className="px-3 py-2 text-right font-medium">Weight</th>
-                          <th className="px-3 py-2 text-right font-medium">Reps</th>
-                          <th className="px-3 py-2 text-right font-medium">RIR</th>
+                          <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Weight</th>
+                          <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Reps</th>
+                          <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>RIR</th>
                         </>
                       )}
                     </tr>
                   </thead>
                   <tbody>
                     {esSets.map((s) => (
-                      <tr key={s.id} className="border-t border-border/60">
-                        <td className="px-3 py-2">
-                          {s.is_warmup ? "Warm-up" : s.set_number}
-                        </td>
+                      <tr key={s.id} style={{ borderTop: "1px solid oklch(0.27 0.005 250 / 60%)" }}>
+                        <td style={{ padding: "8px 12px" }}>{s.is_warmup ? "Warm-up" : s.set_number}</td>
                         {isCardio ? (
-                          <td className="num px-3 py-2 text-right">{s.reps ?? "—"}</td>
+                          <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{s.reps ?? "—"}</td>
                         ) : (
                           <>
-                            <td className="num px-3 py-2 text-right">
+                            <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
                               {s.weight_kg != null ? `${s.weight_kg} kg` : "—"}
                             </td>
-                            <td className="num px-3 py-2 text-right">{s.reps ?? "—"}</td>
-                            <td className="num px-3 py-2 text-right">{s.rir ?? "—"}</td>
+                            <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{s.reps ?? "—"}</td>
+                            <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{s.rir ?? "—"}</td>
                           </>
                         )}
                       </tr>
@@ -213,19 +189,16 @@ function SessionDetail() {
                   </tbody>
                 </table>
               </div>
-
-              {es.notes && (
-                <p className="mt-2 text-xs text-muted-foreground">Note: {es.notes}</p>
-              )}
-            </Card>
+            </div>
           );
         })}
       </div>
 
+      {/* Cardio */}
       {(cardio ?? []).length > 0 && (
-        <Card className="p-4">
-          <p className="font-medium">Cardio</p>
-          <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+        <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 16 }}>
+          <p style={{ margin: 0, fontWeight: 500, fontSize: 14 }}>Cardio</p>
+          <ul style={{ margin: "8px 0 0", paddingLeft: 0, listStyle: "none", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
             {(cardio ?? []).map((c) => (
               <li key={c.id}>
                 {c.cardio_type} — {c.duration_minutes ?? "—"} min
@@ -234,24 +207,16 @@ function SessionDetail() {
               </li>
             ))}
           </ul>
-        </Card>
+        </div>
       )}
 
+      {/* Notes */}
       {session.notes && (
-        <Card className="p-4">
-          <p className="font-medium">Session notes</p>
-          <p className="mt-1 text-sm text-muted-foreground">{session.notes}</p>
-        </Card>
+        <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 16 }}>
+          <p style={{ margin: 0, fontWeight: 500, fontSize: 14 }}>Session notes</p>
+          <p style={{ margin: "6px 0 0", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{session.notes}</p>
+        </div>
       )}
     </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <Card className="p-4">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="num mt-1 text-xl font-semibold">{value}</p>
-    </Card>
   );
 }

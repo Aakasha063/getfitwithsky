@@ -1,15 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
 import { fetchHistory } from "@/lib/api";
 import { fmtDuration } from "@/lib/format";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
@@ -17,7 +12,6 @@ export const Route = createFileRoute("/history")({
       { title: "Workout History — LIFT" },
       { name: "description", content: "Every logged training session with duration and status." },
       { property: "og:title", content: "Workout History — LIFT" },
-      { property: "og:description", content: "Every logged training session." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -50,16 +44,20 @@ function HistoryPage() {
     enabled: !!user,
   });
 
+  const [activePreset, setActivePreset] = useState<string>("All");
   const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+
+  function selectPreset(preset: { label: string; days: number }) {
+    setActivePreset(preset.label);
+    setFrom(preset.days ? isoDaysAgo(preset.days) : "");
+  }
 
   const filtered = useMemo(() => {
     return (data ?? []).filter((s) => {
       if (from && s.session_date < from) return false;
-      if (to && s.session_date > to) return false;
       return true;
     });
-  }, [data, from, to]);
+  }, [data, from]);
 
   const totalMinutes = Math.round(
     filtered.reduce((sum, s) => sum + (s.duration_seconds ?? 0), 0) / 60,
@@ -67,71 +65,72 @@ function HistoryPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">History</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <h1 style={{ margin: 0, fontFamily: "'Inter'", fontSize: 34, fontWeight: 700, letterSpacing: "-0.02em" }}>
+        History
+      </h1>
+      <p style={{ margin: "6px 0 0", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
         {filtered.length} session{filtered.length === 1 ? "" : "s"} · {totalMinutes} min trained
       </p>
 
-      <Card className="mt-5 p-4">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="grid gap-1.5">
-            <Label htmlFor="from" className="text-xs">From</Label>
-            <Input
-              id="from"
-              type="date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="w-[150px]"
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="to" className="text-xs">To</Label>
-            <Input
-              id="to"
-              type="date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="w-[150px]"
-            />
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {PRESETS.map((p) => (
-              <Button
-                key={p.label}
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setTo("");
-                  setFrom(p.days ? isoDaysAgo(p.days) : "");
-                }}
-              >
-                {p.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </Card>
+      {/* Filter chips */}
+      <div style={{ marginTop: 20, background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 16, display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {PRESETS.map((p) => {
+          const active = activePreset === p.label;
+          return (
+            <button
+              key={p.label}
+              onClick={() => selectPreset(p)}
+              style={{
+                height: 32, padding: "0 14px", borderRadius: 8,
+                border: `1px solid ${active ? "oklch(0.96 0.002 250)" : "oklch(0.27 0.005 250)"}`,
+                background: active ? "oklch(0.22 0.005 250)" : "transparent",
+                color: "inherit", fontSize: 13, cursor: "pointer",
+              }}
+            >
+              {p.label}
+            </button>
+          );
+        })}
+      </div>
 
-      <div className="mt-4 space-y-2">
+      {/* Session list */}
+      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
         {filtered.map((s) => (
-          <Link key={s.id} to="/history/$id" params={{ id: s.id }} className="block">
-            <Card className="flex items-center justify-between p-4 transition-colors hover:border-primary/50">
+          <Link
+            key={s.id}
+            to="/history/$id"
+            params={{ id: s.id }}
+            style={{ textDecoration: "none" }}
+          >
+            <div style={{
+              cursor: "pointer",
+              background: "oklch(0.11 0.004 250)",
+              border: "1px solid oklch(0.27 0.005 250)",
+              borderRadius: 12, padding: 16,
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              transition: "border-color 0.15s",
+            }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "oklch(0.92 0.25 110 / 50%)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "oklch(0.27 0.005 250)")}
+            >
               <div>
-                <p className="font-medium">{s.title}</p>
-                <p className="text-sm text-muted-foreground">{s.session_date}</p>
+                <p style={{ margin: 0, fontWeight: 500, fontSize: 14 }}>{s.title}</p>
+                <p style={{ margin: "2px 0 0", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{s.session_date}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right text-sm text-muted-foreground">
-                  <p className="num">{fmtDuration(s.duration_seconds)}</p>
-                  <p className="text-xs capitalize">{s.status.replace("_", " ")}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ textAlign: "right", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
+                  <p style={{ margin: 0, fontVariantNumeric: "tabular-nums" }}>{fmtDuration(s.duration_seconds)}</p>
+                  <p style={{ margin: 0, fontSize: 12, textTransform: "capitalize" }}>{s.status.replace("_", " ")}</p>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.63 0.006 250)" strokeWidth="2" strokeLinecap="round">
+                  <polyline points="9,6 15,12 9,18" />
+                </svg>
               </div>
-            </Card>
+            </div>
           </Link>
         ))}
         {filtered.length === 0 && (
-          <p className="text-sm text-muted-foreground">No sessions in this range.</p>
+          <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>No sessions in this range.</p>
         )}
       </div>
     </div>

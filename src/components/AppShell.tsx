@@ -1,17 +1,35 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Dumbbell, Scale, LogOut, CalendarDays, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", label: "Today", icon: Dumbbell },
-  { to: "/plan", label: "Plan", icon: CalendarDays },
-  { to: "/body", label: "Body", icon: Scale },
-  { to: "/profile", label: "Profile", icon: User },
+  { to: "/", label: "Today" },
+  { to: "/plan", label: "Plan" },
+  { to: "/body", label: "Body" },
+  { to: "/profile", label: "Profile" },
 ] as const;
+
+// Dumbbell icon matching design reference
+function LiftIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <circle cx="5" cy="12" r="3" />
+      <circle cx="19" cy="12" r="3" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+    </svg>
+  );
+}
+
+function getInitials(email: string | undefined): string {
+  if (!email) return "?";
+  const parts = email.split("@")[0]!.split(/[._-]/);
+  return parts
+    .slice(0, 2)
+    .map((p) => (p[0] ?? "").toUpperCase())
+    .join("");
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth();
@@ -24,83 +42,112 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center" }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: 999,
+          border: "2px solid oklch(0.92 0.25 110)",
+          borderTopColor: "transparent",
+          animation: "spin 0.8s linear infinite",
+        }} />
       </div>
     );
   }
   if (!session) return null;
 
+  const initials = getInitials(session.user?.email);
+
+  function isActive(to: string) {
+    if (to === "/") return pathname === "/";
+    if (to === "/profile")
+      return (
+        pathname.startsWith("/profile") ||
+        pathname.startsWith("/history") ||
+        pathname.startsWith("/progress")
+      );
+    return pathname.startsWith(to);
+  }
+
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-0">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Dumbbell className="h-4 w-4" />
-            </span>
-            <span className="font-display text-lg font-semibold tracking-tight">LIFT</span>
-          </Link>
-          <nav className="hidden items-center gap-1 md:flex">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                  (pathname === item.to ||
-                    (item.to === "/profile" &&
-                      (pathname.startsWith("/profile") ||
-                        pathname.startsWith("/history") ||
-                        pathname.startsWith("/progress")))) &&
-                    "bg-secondary text-foreground",
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              router.navigate({ to: "/auth" });
-            }}
-            className="flex items-center gap-1.5 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    <div style={{ minHeight: "100vh", background: "oklch(0.045 0.003 250)", color: "oklch(0.96 0.002 250)", fontFamily: "'Inter',ui-sans-serif,system-ui,sans-serif" }}>
+      {/* Sticky header */}
+      <header style={{
+        position: "sticky", top: 0, zIndex: 30,
+        borderBottom: "1px solid oklch(0.27 0.005 250 / 60%)",
+        background: "oklch(0.045 0.003 250 / 85%)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+      }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", height: 76, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px" }}>
+          {/* Logo */}
+          <Link
+            to="/"
+            style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", textDecoration: "none" }}
           >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Sign out</span>
-          </button>
+            <span style={{
+              width: 28, height: 28, borderRadius: 6,
+              background: "oklch(0.92 0.25 110)",
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              color: "oklch(0.07 0.01 110)",
+            }}>
+              <LiftIcon />
+            </span>
+            <span style={{ fontFamily: "'Inter'", fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em", color: "oklch(0.96 0.002 250)" }}>
+              LIFT
+            </span>
+          </Link>
+
+          {/* Nav */}
+          <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            {NAV.map((item) => {
+              const active = isActive(item.to);
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    textDecoration: "none",
+                    color: active ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+                    background: active ? "oklch(0.22 0.005 250)" : "transparent",
+                    transition: "color 0.15s, background 0.15s",
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Avatar button → Profile */}
+          <Link
+            to="/profile"
+            aria-label="Profile"
+            style={{
+              width: 32, height: 32, borderRadius: 8,
+              background: "oklch(0.92 0.25 110)",
+              color: "oklch(0.07 0.01 110)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "'Inter'", fontSize: 12, fontWeight: 600,
+              textDecoration: "none", flexShrink: 0, overflow: "hidden",
+            }}
+          >
+            {initials}
+          </Link>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-5 py-8">{children}</main>
-
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 backdrop-blur md:hidden">
-        <div className="flex items-center justify-around px-2 py-2">
-          {NAV.map((item) => {
-            const Icon = item.icon;
-            const active =
-              pathname === item.to ||
-              (item.to === "/profile" &&
-                (pathname.startsWith("/profile") ||
-                  pathname.startsWith("/history") ||
-                  pathname.startsWith("/progress")));
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-[11px]",
-                  active ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      {/* Main content */}
+      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "48px 48px 96px" }}>
+        {children}
+      </main>
     </div>
   );
+}
+
+// Export signOut helper for Profile page
+export async function signOut() {
+  await supabase.auth.signOut();
 }

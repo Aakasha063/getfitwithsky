@@ -1,13 +1,9 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -15,14 +11,9 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — LIFT" },
       {
         name: "description",
-        content:
-          "Sign in to LIFT to run your workouts, log sets and track progress.",
+        content: "Sign in to LIFT to run your workouts, log sets and track progress.",
       },
       { property: "og:title", content: "Sign in — LIFT" },
-      {
-        property: "og:description",
-        content: "Sign in to run your workouts, log sets and track progress.",
-      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -76,67 +67,110 @@ function AuthPage() {
     if (result?.error) toast.error(result.error.message ?? "Google sign-in failed");
   }
 
+  const INPUT_STYLE = {
+    height: 40, width: "100%", borderRadius: 9, boxSizing: "border-box" as const,
+    border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit",
+    padding: "0 12px", fontSize: 14, outline: "none",
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center px-5 py-16">
-      <div className="w-full max-w-sm">
-        <div className="mb-10 flex flex-col items-center text-center">
-          <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Dumbbell className="h-5 w-5" />
-          </span>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">LIFT</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+    <div style={{
+      display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center",
+      padding: "64px 20px",
+      background: "oklch(0.045 0.003 250)",
+      color: "oklch(0.96 0.002 250)",
+      fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
+    }}>
+      <div style={{ width: "100%", maxWidth: 360 }}>
+        {/* Logo */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginBottom: 40 }}>
+          <div style={{
+            marginBottom: 16, width: 48, height: 48, borderRadius: 12,
+            background: "oklch(0.92 0.25 110)", display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="oklch(0.07 0.01 110)" strokeWidth="2.2" strokeLinecap="round">
+              <circle cx="5" cy="12" r="3" />
+              <circle cx="19" cy="12" r="3" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+          </div>
+          <h1 style={{ margin: 0, fontFamily: "'Inter'", fontSize: 22, fontWeight: 600, letterSpacing: "-0.02em" }}>LIFT</h1>
+          <p style={{ margin: "8px 0 0", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
             Your fat-loss phase, tracked set by set.
           </p>
         </div>
 
-        <form onSubmit={submit} className="space-y-4">
-          {mode === "signup" && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+        {/* Card */}
+        <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 14, padding: 24 }}>
+          <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {mode === "signup" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label htmlFor="name" style={{ fontSize: 13 }}>Name</label>
+                <input id="name" value={name} onChange={(e) => setName(e.target.value)} style={INPUT_STYLE} />
+              </div>
+            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <label htmlFor="email" style={{ fontSize: 13 }}>Email</label>
+              <input
+                id="email" type="email" required
+                value={email} onChange={(e) => setEmail(e.target.value)}
+                style={INPUT_STYLE}
+              />
             </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={busy}>
-            {mode === "signin" ? "Sign in" : "Create account"}
-          </Button>
-        </form>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <label htmlFor="password" style={{ fontSize: 13 }}>Password</label>
+              <input
+                id="password" type="password" required minLength={6}
+                value={password} onChange={(e) => setPassword(e.target.value)}
+                style={INPUT_STYLE}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={busy}
+              style={{
+                height: 44, width: "100%", borderRadius: 9, border: "none",
+                background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
+                fontSize: 14, fontWeight: 600, cursor: busy ? "wait" : "pointer",
+              }}
+            >
+              {mode === "signin" ? "Sign in" : "Create account"}
+            </button>
+          </form>
 
-        <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
-          or
-          <span className="h-px flex-1 bg-border" />
+          {/* Divider */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "20px 0" }}>
+            <span style={{ flex: 1, height: 1, background: "oklch(0.27 0.005 250)" }} />
+            <span style={{ fontSize: 12, color: "oklch(0.45 0.006 250)" }}>or</span>
+            <span style={{ flex: 1, height: 1, background: "oklch(0.27 0.005 250)" }} />
+          </div>
+
+          {/* Google */}
+          <button
+            onClick={google}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              height: 44, width: "100%", borderRadius: 9,
+              border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit",
+              fontSize: 14, fontWeight: 500, cursor: "pointer",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            Continue with Google
+          </button>
         </div>
 
-        <Button variant="outline" className="w-full" onClick={google}>
-          Continue with Google
-        </Button>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {mode === "signin" ? "No account yet?" : "Already have an account?"}{" "}
+        {/* Toggle */}
+        <p style={{ marginTop: 20, textAlign: "center", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
+          {mode === "signin" ? "No account yet? " : "Already have an account? "}
           <button
-            className="text-primary underline-offset-4 hover:underline"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            style={{ background: "transparent", border: "none", color: "oklch(0.92 0.25 110)", fontSize: 14, cursor: "pointer", padding: 0 }}
           >
             {mode === "signin" ? "Sign up" : "Sign in"}
           </button>
