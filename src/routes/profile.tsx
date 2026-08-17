@@ -1,7 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { Award, Flame, Medal, Trophy, Zap } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Award,
+  Crown,
+  Dumbbell,
+  Flame,
+  Gem,
+  History as HistoryIcon,
+  LineChart,
+  Medal,
+  Pencil,
+  Sparkles,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
@@ -19,6 +32,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/profile")({
@@ -47,9 +75,9 @@ export const Route = createFileRoute("/profile")({
 });
 
 const PERIODS = [
-  { label: "Last 7 days", days: 7 },
-  { label: "Last 30 days", days: 30 },
-  { label: "Last 90 days", days: 90 },
+  { label: "7d", days: 7 },
+  { label: "30d", days: 30 },
+  { label: "90d", days: 90 },
 ] as const;
 
 /** Iron Score: 1 pt per 1,000 kg lifted + 2 pts per working set + 25 pts per session + 40 pts per active week. */
@@ -89,11 +117,55 @@ function levelFor(score: number) {
   return { current, next, pct };
 }
 
+function initials(nameOrEmail: string) {
+  const base = nameOrEmail.trim();
+  if (!base) return "AT";
+  const parts = base.split(/[\s._-]+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
+  return base.slice(0, 2).toUpperCase();
+}
+
+const AVATAR_TONES = [
+  "from-primary/80 to-primary/30",
+  "from-sky-400/70 to-sky-500/20",
+  "from-orange-400/70 to-orange-500/20",
+  "from-fuchsia-400/70 to-fuchsia-500/20",
+  "from-emerald-400/70 to-emerald-500/20",
+];
+
+function Avatar({
+  seed,
+  label,
+  className,
+}: {
+  seed: string;
+  label: string;
+  className?: string;
+}) {
+  const tone =
+    AVATAR_TONES[
+      Math.abs([...seed].reduce((a, c) => a + c.charCodeAt(0), 0)) % AVATAR_TONES.length
+    ]!;
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br font-display font-semibold text-background ring-1 ring-border/60",
+        tone,
+        className,
+      )}
+      aria-hidden
+    >
+      {initials(label)}
+    </div>
+  );
+}
+
 function ProfilePage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [days, setDays] = useState<number>(30);
-  const [name, setName] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ name: "", goal: "", experience: "" });
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -121,10 +193,25 @@ function ProfilePage() {
     enabled: !!user,
   });
 
+  useEffect(() => {
+    if (profile)
+      setForm({
+        name: profile.name ?? "",
+        goal: profile.primary_goal ?? "",
+        experience: profile.training_experience ?? "",
+      });
+  }, [profile]);
+
   const save = useMutation({
-    mutationFn: () => saveProfile(user!.id, { name: (name ?? "").trim() || null }),
+    mutationFn: () =>
+      saveProfile(user!.id, {
+        name: form.name.trim() || null,
+        primary_goal: form.goal || null,
+        training_experience: form.experience || null,
+      }),
     onSuccess: () => {
-      toast.success("Profile saved");
+      toast.success("Profile updated");
+      setOpen(false);
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["leaderboard"] });
     },
@@ -149,63 +236,179 @@ function ProfilePage() {
   const completed = (history ?? []).filter((s) => s.status === "completed");
   const streak = useMemo(() => currentStreak(completed.map((s) => s.session_date)), [history]);
 
+  const displayName = profile?.name?.trim() || user?.email?.split("@")[0] || "Athlete";
+
   const badges = [
-    { label: "First rep", earned: completed.length >= 1, hint: "Complete 1 session" },
-    { label: "Ten sessions", earned: completed.length >= 10, hint: "Complete 10 sessions" },
-    { label: "Consistency", earned: streak >= 3, hint: "3-day training streak" },
-    { label: "Record breaker", earned: (prs?.length ?? 0) >= 1, hint: "Set a personal record" },
-    { label: "100 tonnes", earned: lifetimeVolume >= 100000, hint: "Lift 100,000 kg total" },
-    { label: "Iron addict", earned: (allSets?.length ?? 0) >= 500, hint: "Log 500 working sets" },
+    {
+      label: "First rep",
+      icon: Sparkles,
+      earned: completed.length >= 1,
+      hint: "Complete 1 session",
+      tone: "text-emerald-300",
+    },
+    {
+      label: "Ten sessions",
+      icon: Dumbbell,
+      earned: completed.length >= 10,
+      hint: "Complete 10 sessions",
+      tone: "text-sky-300",
+    },
+    {
+      label: "Consistency",
+      icon: Flame,
+      earned: streak >= 3,
+      hint: "3-day training streak",
+      tone: "text-orange-300",
+    },
+    {
+      label: "Record breaker",
+      icon: Trophy,
+      earned: (prs?.length ?? 0) >= 1,
+      hint: "Set a personal record",
+      tone: "text-amber-300",
+    },
+    {
+      label: "100 tonnes",
+      icon: Award,
+      earned: lifetimeVolume >= 100000,
+      hint: "Lift 100,000 kg total",
+      tone: "text-fuchsia-300",
+    },
+    {
+      label: "Iron addict",
+      icon: Crown,
+      earned: (allSets?.length ?? 0) >= 500,
+      hint: "Log 500 working sets",
+      tone: "text-primary",
+    },
   ];
+  const earnedCount = badges.filter((b) => b.earned).length;
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Profile</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{user?.email}</p>
-      </div>
-
-      <Card className="p-5">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="grid flex-1 gap-1.5">
-            <Label htmlFor="name">Display name (shown on the leaderboard)</Label>
-            <Input
-              id="name"
-              value={name ?? profile?.name ?? ""}
-              placeholder="Your athlete name"
-              onChange={(e) => setName(e.target.value)}
-            />
+      {/* Identity card */}
+      <Card className="relative overflow-hidden p-0">
+        <div className="h-24 bg-gradient-to-r from-primary/30 via-primary/10 to-transparent" />
+        <div className="-mt-10 flex flex-wrap items-end gap-4 px-5 pb-5">
+          <Avatar
+            seed={user?.id ?? "me"}
+            label={displayName}
+            className="h-20 w-20 text-2xl shadow-lg"
+          />
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display truncate text-2xl font-semibold">{displayName}</h1>
+            <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <Badge className="gap-1">
+                <Zap className="h-3.5 w-3.5" /> {level.current.name}
+              </Badge>
+              {myRank && <Badge variant="secondary">Rank #{myRank}</Badge>}
+              {profile?.primary_goal && (
+                <Badge variant="outline">{profile.primary_goal}</Badge>
+              )}
+            </div>
           </div>
-          <Button onClick={() => save.mutate()} disabled={save.isPending}>
-            Save
-          </Button>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Pencil className="h-3.5 w-3.5" /> Edit profile
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit profile</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="name">Display name</Label>
+                  <Input
+                    id="name"
+                    value={form.name}
+                    placeholder="Your athlete name"
+                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  />
+                  <p className="text-xs text-muted-foreground">Shown on the leaderboard.</p>
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>Primary goal</Label>
+                  <Select
+                    value={form.goal}
+                    onValueChange={(v) => setForm((f) => ({ ...f, goal: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a goal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Fat loss">Fat loss</SelectItem>
+                      <SelectItem value="Recomp">Recomp</SelectItem>
+                      <SelectItem value="Muscle gain">Muscle gain</SelectItem>
+                      <SelectItem value="Strength">Strength</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-1.5">
+                  <Label>Training experience</Label>
+                  <Select
+                    value={form.experience}
+                    onValueChange={(v) => setForm((f) => ({ ...f, experience: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose experience" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Beginner">Beginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Advanced">Advanced</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => save.mutate()} disabled={save.isPending}>
+                  Save changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
-      </Card>
 
-      <Card className="p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Iron Score</p>
-            <p className="num text-4xl font-semibold text-primary">{me?.score ?? 0}</p>
-          </div>
-          <div className="text-right">
-            <Badge className="gap-1">
-              <Zap className="h-3.5 w-3.5" /> {level.current.name}
-            </Badge>
-            {myRank && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Rank #{myRank} of {ranked.length}
+        <div className="border-t border-border/60 px-5 py-4">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Iron Score</p>
+              <p className="num font-display text-4xl font-semibold text-primary">
+                {me?.score ?? 0}
               </p>
-            )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {level.next
+                ? `${level.next.min - (me?.score ?? 0)} pts to ${level.next.name}`
+                : "Max level — Iron Legend."}
+            </p>
           </div>
+          <Progress value={level.pct} className="mt-3" />
         </div>
-        <Progress value={level.pct} className="mt-4" />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {level.next
-            ? `${level.next.min - (me?.score ?? 0)} pts to ${level.next.name}`
-            : "Max level reached — you're an Iron Legend."}
-        </p>
       </Card>
+
+      {/* Quick links */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <NavCard
+          to="/progress"
+          icon={LineChart}
+          title="Progress"
+          desc="Charts for volume, strength and bodyweight"
+        />
+        <NavCard
+          to="/history"
+          icon={HistoryIcon}
+          title="History"
+          desc="Every session, filterable by date"
+        />
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-4">
         <Stat icon={Flame} label="Streak" value={`${streak} d`} />
@@ -218,27 +421,51 @@ function ProfilePage() {
         />
       </div>
 
+      {/* Badges */}
       <div>
-        <h2 className="text-base font-medium">Badges</h2>
-        <div className="mt-3 grid gap-2 sm:grid-cols-3">
-          {badges.map((b) => (
-            <Card
-              key={b.label}
-              className={cn(
-                "p-3",
-                b.earned ? "border-primary/50 bg-primary/10" : "opacity-60",
-              )}
-            >
-              <p className="text-sm font-medium">{b.label}</p>
-              <p className="text-xs text-muted-foreground">{b.earned ? "Unlocked" : b.hint}</p>
-            </Card>
-          ))}
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-base font-medium">Badges</h2>
+          <span className="text-xs text-muted-foreground">
+            {earnedCount}/{badges.length} unlocked
+          </span>
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-6">
+          {badges.map((b) => {
+            const Icon = b.icon;
+            return (
+              <div key={b.label} className="flex flex-col items-center text-center">
+                <div
+                  className={cn(
+                    "relative grid h-16 w-16 place-items-center rounded-full border-2 transition-all",
+                    b.earned
+                      ? "border-primary/60 bg-gradient-to-br from-primary/25 to-primary/5 shadow-[0_0_20px_-6px_hsl(var(--primary))]"
+                      : "border-dashed border-border bg-secondary/40 grayscale",
+                  )}
+                  title={b.earned ? "Unlocked" : b.hint}
+                >
+                  <Icon
+                    className={cn("h-7 w-7", b.earned ? b.tone : "text-muted-foreground/60")}
+                  />
+                  {b.earned && (
+                    <span className="absolute -bottom-1 rounded-full bg-primary px-1.5 text-[9px] font-semibold uppercase text-primary-foreground">
+                      got it
+                    </span>
+                  )}
+                </div>
+                <p className="mt-2 text-[11px] font-medium leading-tight">{b.label}</p>
+                {!b.earned && (
+                  <p className="text-[10px] leading-tight text-muted-foreground">{b.hint}</p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
+      {/* Leaderboard */}
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-medium">Leaderboard</h2>
+          <h2 className="font-display text-base font-medium">Leaderboard</h2>
           <div className="flex gap-1.5">
             {PERIODS.map((p) => (
               <Button
@@ -252,6 +479,45 @@ function ProfilePage() {
             ))}
           </div>
         </div>
+
+        {/* Podium */}
+        {ranked.length > 0 && (
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            {ranked.slice(0, 3).map((r, i) => (
+              <Card
+                key={r.user_id}
+                className={cn(
+                  "flex items-center gap-3 p-4",
+                  i === 0 && "border-primary/50 bg-primary/5",
+                  r.user_id === user?.id && "ring-1 ring-primary/60",
+                )}
+              >
+                <div className="relative">
+                  <Avatar seed={r.user_id} label={r.display_name} className="h-12 w-12" />
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full border border-background",
+                      PODIUM[i]!.bg,
+                    )}
+                  >
+                    {i === 0 ? (
+                      <Gem className="h-3.5 w-3.5 text-background" />
+                    ) : (
+                      <Medal className="h-3.5 w-3.5 text-background" />
+                    )}
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{r.display_name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    <span className={PODIUM[i]!.text}>{PODIUM[i]!.label}</span> ·{" "}
+                    <span className="num">{r.score}</span> pts
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {me && leader && leader.user_id !== me.user_id && (
           <Card className="mt-3 p-4 text-sm">
@@ -286,12 +552,38 @@ function ProfilePage() {
                     r.user_id === user?.id && "bg-primary/10",
                   )}
                 >
-                  <td className="px-3 py-2">{i + 1}</td>
                   <td className="px-3 py-2">
-                    {r.display_name}
-                    {r.user_id === user?.id && (
-                      <span className="ml-1.5 text-xs text-primary">you</span>
+                    {i < 3 ? (
+                      <span
+                        className={cn(
+                          "grid h-6 w-6 place-items-center rounded-full",
+                          PODIUM[i]!.bg,
+                        )}
+                      >
+                        {i === 0 ? (
+                          <Gem className="h-3.5 w-3.5 text-background" />
+                        ) : (
+                          <Medal className="h-3.5 w-3.5 text-background" />
+                        )}
+                      </span>
+                    ) : (
+                      i + 1
                     )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        seed={r.user_id}
+                        label={r.display_name}
+                        className="h-8 w-8 rounded-xl text-[11px]"
+                      />
+                      <span className="truncate">
+                        {r.display_name}
+                        {r.user_id === user?.id && (
+                          <span className="ml-1.5 text-xs text-primary">you</span>
+                        )}
+                      </span>
+                    </div>
                   </td>
                   <td className="num px-3 py-2 text-right font-medium">{r.score}</td>
                   <td className="num px-3 py-2 text-right">{r.sessions}</td>
@@ -313,6 +605,38 @@ function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+const PODIUM = [
+  { label: "Diamond", bg: "bg-sky-300", text: "text-sky-300" },
+  { label: "Gold", bg: "bg-amber-300", text: "text-amber-300" },
+  { label: "Silver", bg: "bg-zinc-300", text: "text-zinc-300" },
+];
+
+function NavCard({
+  to,
+  icon: Icon,
+  title,
+  desc,
+}: {
+  to: string;
+  icon: typeof Flame;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <Link to={to}>
+      <Card className="flex items-center gap-3 p-4 transition-colors hover:border-primary/50 hover:bg-secondary/40">
+        <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/15 text-primary">
+          <Icon className="h-5 w-5" />
+        </span>
+        <div>
+          <p className="text-sm font-medium">{title}</p>
+          <p className="text-xs text-muted-foreground">{desc}</p>
+        </div>
+      </Card>
+    </Link>
   );
 }
 
@@ -363,7 +687,7 @@ function Stat({
       <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
         <Icon className="h-3.5 w-3.5" /> {label}
       </p>
-      <p className="num mt-1 text-2xl font-semibold">{value}</p>
+      <p className="num font-display mt-1 text-2xl font-semibold">{value}</p>
     </Card>
   );
 }
