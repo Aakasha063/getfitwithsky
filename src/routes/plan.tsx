@@ -42,13 +42,15 @@ function PlanPage() {
 
   const dow = new Date().getDay();
   const completedThisWeek = mandatory.filter((d) => {
-    // Check if history has a completed session this week for this day
     const now = new Date();
+    // Use local time for timezone safety. Make Monday=1, Sunday=7.
+    const day = now.getDay() || 7; 
     const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-    const startStr = startOfWeek.toISOString().slice(0, 10);
+    startOfWeek.setDate(now.getDate() - day + 1);
+    const startStr = startOfWeek.toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
+    
     return (history ?? []).some(
-      (s) => s.status === "completed" && s.session_date >= startStr,
+      (s) => s.day_id === d.id && s.status === "completed" && s.session_date >= startStr,
     );
   }).length;
   const weekPct = Math.round((completedThisWeek / 5) * 100);
