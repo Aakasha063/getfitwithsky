@@ -12,10 +12,13 @@ export type ExerciseSession = Tables<"exercise_sessions">;
 export async function fetchDays() {
   const { data, error } = await supabase
     .from("workout_days")
-    .select("*")
+    .select("*, workout_exercises(id)")
     .order("sort_order");
   if (error) throw error;
-  return data;
+  return data.map((d: any) => ({
+    ...d,
+    exercise_count: d.workout_exercises?.length ?? 0,
+  }));
 }
 
 export async function fetchDayWithExercises(slug: string) {
