@@ -133,6 +133,78 @@ const AVATAR_TONES = [
   "from-emerald-400/70 to-emerald-500/20",
 ];
 
+function hashOf(seed: string) {
+  let h = 0;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
+
+const SKINS = ["#f2c8a0", "#e0a878", "#c58b5c", "#8d5a37", "#5f3a24"];
+const HAIRS = ["#1c1917", "#3f2b1d", "#6b4423", "#a1662f", "#d8c39b", "#57534e"];
+
+/** Deterministic little lifter character built from the seed. */
+function CharacterFace({ seed }: { seed: string }) {
+  const h = hashOf(seed);
+  const skin = SKINS[h % SKINS.length]!;
+  const hair = HAIRS[(h >> 3) % HAIRS.length]!;
+  const style = (h >> 7) % 4; // hair style
+  const brow = (h >> 11) % 3;
+  const beard = (h >> 13) % 3 === 0;
+  return (
+    <svg viewBox="0 0 64 64" className="h-full w-full">
+      {/* shoulders */}
+      <path d="M10 64c0-11 10-17 22-17s22 6 22 17z" fill={skin} opacity="0.95" />
+      <path d="M10 64c0-8 6-13 13-15l9 6 9-6c7 2 13 7 13 15z" fill="currentColor" opacity="0.35" />
+      {/* neck */}
+      <rect x="27" y="38" width="10" height="10" rx="4" fill={skin} />
+      {/* head */}
+      <ellipse cx="32" cy="28" rx="14" ry="15" fill={skin} />
+      {/* ears */}
+      <circle cx="18" cy="29" r="3" fill={skin} />
+      <circle cx="46" cy="29" r="3" fill={skin} />
+      {/* hair */}
+      {style === 0 && <path d="M18 26c0-9 6-14 14-14s14 5 14 14c-3-5-8-7-14-7s-11 2-14 7z" fill={hair} />}
+      {style === 1 && <path d="M18 27c-1-11 6-16 14-16s15 5 14 16c-2-3-3-6-6-7-4 2-14 2-17-1-2 2-3 5-5 8z" fill={hair} />}
+      {style === 2 && (
+        <>
+          <path d="M19 24c2-8 7-12 13-12s11 4 13 12c-4-3-8-4-13-4s-9 1-13 4z" fill={hair} />
+          <path d="M17 24c-2 5-1 9 0 12 0-6 1-9 2-11zM47 24c2 5 1 9 0 12 0-6-1-9-2-11z" fill={hair} />
+        </>
+      )}
+      {style === 3 && <path d="M20 22c3-7 20-8 24 0 1 2 1 4 0 6-2-6-22-6-24 0-1-2-1-4 0-6z" fill={hair} />}
+      {/* brows */}
+      <g fill="#2b2118">
+        {brow === 0 && (
+          <>
+            <rect x="22" y="25" width="7" height="2" rx="1" />
+            <rect x="35" y="25" width="7" height="2" rx="1" />
+          </>
+        )}
+        {brow === 1 && (
+          <>
+            <path d="M22 26l7-2v2l-7 2z" />
+            <path d="M42 26l-7-2v2l7 2z" />
+          </>
+        )}
+        {brow === 2 && (
+          <>
+            <path d="M22 25l7 2v1l-7-1z" />
+            <path d="M42 25l-7 2v1l7-1z" />
+          </>
+        )}
+      </g>
+      {/* eyes */}
+      <circle cx="26" cy="31" r="2" fill="#221c17" />
+      <circle cx="38" cy="31" r="2" fill="#221c17" />
+      {/* mouth */}
+      <path d="M28 37c2 2 6 2 8 0" stroke="#221c17" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      {beard && (
+        <path d="M20 31c1 8 6 12 12 12s11-4 12-12c1 6-2 15-12 15s-13-9-12-15z" fill={hair} opacity="0.9" />
+      )}
+    </svg>
+  );
+}
+
 function Avatar({
   seed,
   label,
@@ -142,20 +214,18 @@ function Avatar({
   label: string;
   className?: string;
 }) {
-  const tone =
-    AVATAR_TONES[
-      Math.abs([...seed].reduce((a, c) => a + c.charCodeAt(0), 0)) % AVATAR_TONES.length
-    ]!;
+  const tone = AVATAR_TONES[hashOf(seed || label) % AVATAR_TONES.length]!;
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br font-display font-semibold text-background ring-1 ring-border/60",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br text-background ring-1 ring-border/60",
         tone,
         className,
       )}
+      title={label}
       aria-hidden
     >
-      {initials(label)}
+      <CharacterFace seed={seed || label} />
     </div>
   );
 }
