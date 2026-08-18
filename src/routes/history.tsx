@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -38,6 +38,7 @@ function isoDaysAgo(days: number) {
 
 function HistoryPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const { data } = useQuery({
     queryKey: ["history", user?.id],
     queryFn: () => fetchHistory(user!.id),
@@ -97,13 +98,10 @@ function HistoryPage() {
       {/* Session list */}
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
         {filtered.map((s) => (
-          <Link
+          <div
             key={s.id}
-            to="/history/$id"
-            params={{ id: s.id }}
-            style={{ textDecoration: "none" }}
-          >
-            <div style={{
+            onClick={() => router.navigate({ to: "/history/$id", params: { id: s.id } })}
+            style={{
               cursor: "pointer",
               background: "oklch(0.11 0.004 250)",
               border: "1px solid oklch(0.27 0.005 250)",
@@ -128,7 +126,6 @@ function HistoryPage() {
                 </svg>
               </div>
             </div>
-          </Link>
         ))}
         {filtered.length === 0 && (
           <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>No sessions in this range.</p>
