@@ -146,16 +146,17 @@ function AuthPage() {
               </div>
             )}
             <button
-              type="submit"
-              disabled={busy}
-              style={{
-                height: 44, width: "100%", borderRadius: 9, border: "none",
-                background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-                fontSize: 14, fontWeight: 600, cursor: busy ? "wait" : "pointer",
-              }}
-            >
-              {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
-            </button>
+            type="submit"
+            disabled={busy}
+            style={{
+              height: 44, width: "100%", borderRadius: 9, border: "none",
+              background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
+              fontSize: 14, fontWeight: 600, cursor: busy ? "wait" : "pointer",
+              opacity: busy ? 0.7 : 1,
+            }}
+          >
+            {busy ? "Please wait..." : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
+          </button>
           </form>
 
           {/* Divider */}
