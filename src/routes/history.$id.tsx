@@ -153,42 +153,25 @@ function SessionDetail() {
                 )}
               </div>
 
-              <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 60%)", overflow: "hidden" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                  <thead style={{ background: "oklch(0.22 0.005 250 / 50%)" }}>
-                    <tr>
-                      <th style={{ textAlign: "left", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Set</th>
-                      {isCardio ? (
-                        <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Minutes</th>
-                      ) : (
-                        <>
-                          <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Weight</th>
-                          <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>Reps</th>
-                          <th style={{ textAlign: "right", padding: "8px 12px", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)", fontWeight: 500 }}>RIR</th>
-                        </>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {esSets.map((s) => (
-                      <tr key={s.id} style={{ borderTop: "1px solid oklch(0.27 0.005 250 / 60%)" }}>
-                        <td style={{ padding: "8px 12px" }}>{s.is_warmup ? "Warm-up" : s.set_number}</td>
-                        {isCardio ? (
-                          <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{s.reps ?? "—"}</td>
-                        ) : (
-                          <>
-                            <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
-                              {s.weight_kg != null ? `${s.weight_kg} kg` : "—"}
-                            </td>
-                            <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{s.reps ?? "—"}</td>
-                            <td style={{ padding: "8px 12px", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{s.rir ?? "—"}</td>
-                          </>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {isCardio ? (
+                <p style={{ marginTop: 12, fontSize: 13, color: "oklch(0.63 0.006 250)" }}>
+                  Logged: {esSets[0]?.reps} minutes
+                </p>
+              ) : (
+                <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 70%)", overflow: "hidden" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 72px", background: "oklch(0.22 0.005 250 / 40%)", padding: "6px 10px", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)" }}>
+                    <span>Set</span><span>Kg</span><span>Reps</span><span style={{ textAlign: "right" }}>Status</span>
+                  </div>
+                  {esSets.map((s) => (
+                    <div key={s.id} style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 72px", alignItems: "center", padding: "8px 10px", borderTop: "1px solid oklch(0.27 0.005 250 / 50%)", background: "transparent" }}>
+                      <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{s.is_warmup ? "W" : s.set_number}</span>
+                      <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{s.weight_kg ?? "—"}</span>
+                      <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{s.reps ?? "—"}</span>
+                      <span style={{ justifySelf: "end", fontSize: 11, color: "oklch(0.92 0.25 110)", fontWeight: 600 }}>✓ Done</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}

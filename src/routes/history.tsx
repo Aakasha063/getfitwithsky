@@ -54,6 +54,7 @@ function HistoryPage() {
 
   const filtered = useMemo(() => {
     return (data ?? []).filter((s) => {
+      if (s.status !== "completed") return false;
       if (from && s.session_date < from) return false;
       return true;
     });
