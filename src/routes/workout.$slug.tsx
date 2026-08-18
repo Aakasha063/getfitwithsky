@@ -306,18 +306,20 @@ function WorkoutPage() {
                 <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "oklch(0.92 0.25 110)" }}>{Number.isInteger(sessionVolume) ? sessionVolume : sessionVolume.toFixed(1)} kg</p>
               </div>
             </div>
-            <button
-              onClick={requestFinish}
-              disabled={finishing}
-              style={{ 
-                height: 40, padding: "0 20px", borderRadius: 8, border: "none", 
-                background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", 
-                fontSize: 14, fontWeight: 600, cursor: finishing ? "wait" : "pointer", 
-                whiteSpace: "nowrap", opacity: finishing ? 0.7 : 1 
-              }}
-            >
-              {finishing ? "Finishing..." : "Finish Workout"}
-            </button>
+            {completedSets >= totalSets && (
+              <button
+                onClick={requestFinish}
+                disabled={finishing}
+                style={{ 
+                  height: 40, padding: "0 20px", borderRadius: 8, border: "none", 
+                  background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", 
+                  fontSize: 14, fontWeight: 600, cursor: finishing ? "wait" : "pointer", 
+                  whiteSpace: "nowrap", opacity: finishing ? 0.7 : 1 
+                }}
+              >
+                {finishing ? "Finishing..." : "Finish Workout"}
+              </button>
+            )}
           </div>
         </div>
       )}
