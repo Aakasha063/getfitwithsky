@@ -1,7 +1,9 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
+import { fetchProfile } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
@@ -36,23 +38,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const [avatarImg, setAvatarImg] = useState<string | null>(null);
-  const [avatarCol, setAvatarCol] = useState<string>("oklch(0.92 0.25 110)");
-
   useEffect(() => {
     if (!loading && !session) router.navigate({ to: "/auth" });
   }, [loading, session, router]);
 
-  useEffect(() => {
-    if (!session?.user) return;
-    const loadAvatar = () => {
-      setAvatarImg(localStorage.getItem(`avatar_img_${session.user.id}`));
-      setAvatarCol(localStorage.getItem(`avatar_col_${session.user.id}`) || "oklch(0.92 0.25 110)");
-    };
-    loadAvatar();
-    window.addEventListener("avatar_updated", loadAvatar);
-    return () => window.removeEventListener("avatar_updated", loadAvatar);
-  }, [session?.user]);
+  const { data: profile } = useQuery({
+    queryKey: ["profile", session?.user?.id],
+    queryFn: () => fetchProfile(session!.user.id),
+    enabled: !!session?.user?.id,
+  });
+
+  const avatarImg = profile?.avatar_url;
+  const avatarCol = profile?.avatar_color || "oklch(0.92 0.25 110)";
 
   if (loading) {
     return (

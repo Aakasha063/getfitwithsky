@@ -11,6 +11,7 @@ import {
   fetchPRs,
   fetchProfile,
   saveProfile,
+  uploadAvatar,
 } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -103,15 +104,7 @@ function ProfilePage() {
   const [goalField, setGoalField] = useState("Fat loss");
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
-  const avatarKey = `avatar_img_${user?.id}`;
-  const colorKey = `avatar_col_${user?.id}`;
-
-  const [avatarColor, setAvatarColor] = useState(() => {
-    return localStorage.getItem(colorKey) || "oklch(0.92 0.25 110)";
-  });
-  const [avatarImage, setAvatarImage] = useState<string | null>(() => {
-    return localStorage.getItem(avatarKey);
-  });
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -203,17 +196,45 @@ function ProfilePage() {
   const CARD = { background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12 };
   const BTN_OUTLINE = { height: 32, padding: "0 12px", borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit", fontSize: 13, fontWeight: 500, cursor: "pointer" } as const;
 
-  function handleAvatarFile(e: React.ChangeEvent<HTMLInputElement>) {
+  const avatarImage = profile?.avatar_url || null;
+  const avatarColor = profile?.avatar_color || "oklch(0.92 0.25 110)";
+
+  async function handleAvatarFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const res = reader.result as string;
-      setAvatarImage(res);
-      localStorage.setItem(avatarKey, res);
-      window.dispatchEvent(new Event("avatar_updated"));
-    };
-    reader.readAsDataURL(file);
+    if (!file || !user) return;
+    
+    setIsUploading(true);
+    try {
+      const publicUrl = await uploadAvatar(user.id, file);
+      await saveProfile(user.id, { avatar_url: publicUrl, avatar_color: null });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Profile photo updated");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload photo");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  async function updateAvatarColor(color: string) {
+    if (!user) return;
+    try {
+      await saveProfile(user.id, { avatar_color: color, avatar_url: null });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err: any) {
+      toast.error("Failed to update avatar color");
+    }
+  }
+
+  async function removePhoto() {
+    if (!user) return;
+    try {
+      await saveProfile(user.id, { avatar_url: null });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Profile photo removed");
+    } catch (err: any) {
+      toast.error("Failed to remove photo");
+    }
   }
 
   async function handleSignOut() {
@@ -376,19 +397,16 @@ function ProfilePage() {
             <label style={{
               marginTop: 20, display: "flex", height: 38, borderRadius: 8,
               border: "1px solid oklch(0.27 0.005 250)", background: "transparent",
-              color: "inherit", fontSize: 13, fontWeight: 500, cursor: "pointer",
+              color: isUploading ? "oklch(0.45 0.006 250)" : "inherit", 
+              fontSize: 13, fontWeight: 500, cursor: isUploading ? "not-allowed" : "pointer",
               alignItems: "center", justifyContent: "center",
             }}>
-              Upload photo
-              <input type="file" accept="image/*" onChange={handleAvatarFile} style={{ display: "none" }} />
+              {isUploading ? "Uploading..." : "Upload photo"}
+              <input type="file" accept="image/*" onChange={handleAvatarFile} disabled={isUploading} style={{ display: "none" }} />
             </label>
             {avatarImage && (
               <button
-                onClick={() => {
-                  setAvatarImage(null);
-                  localStorage.removeItem(avatarKey);
-                  window.dispatchEvent(new Event("avatar_updated"));
-                }}
+                onClick={removePhoto}
                 style={{ marginTop: 10, width: "100%", height: 36, borderRadius: 8, border: "none", background: "transparent", color: "oklch(0.63 0.006 250)", fontSize: 13, cursor: "pointer" }}
               >
                 Remove photo
@@ -399,13 +417,7 @@ function ProfilePage() {
               {AVATAR_SWATCHES.map((sw) => (
                 <button
                   key={sw.name}
-                  onClick={() => { 
-                    setAvatarColor(sw.color); 
-                    setAvatarImage(null); 
-                    localStorage.setItem(colorKey, sw.color);
-                    localStorage.removeItem(avatarKey);
-                    window.dispatchEvent(new Event("avatar_updated"));
-                  }}
+                  onClick={() => updateAvatarColor(sw.color)}
                   aria-label={sw.name}
                   style={{
                     width: 28, height: 28, borderRadius: 999,

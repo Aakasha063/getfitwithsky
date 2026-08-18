@@ -454,6 +454,23 @@ export async function fetchProfile(userId: string) {
   return data;
 }
 
+export async function uploadAvatar(userId: string, file: File) {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${userId}-${Date.now()}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(fileName, file, { upsert: true });
+
+  if (uploadError) throw uploadError;
+
+  const { data: urlData } = supabase.storage
+    .from('avatars')
+    .getPublicUrl(fileName);
+
+  return urlData.publicUrl;
+}
+
 export async function saveProfile(userId: string, patch: Partial<Tables<"profiles">>) {
   const { error } = await supabase
     .from("profiles")
