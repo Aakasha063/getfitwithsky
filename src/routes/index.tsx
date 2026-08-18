@@ -68,6 +68,23 @@ function Dashboard() {
     ? "Recovery day"
     : (today?.focus ?? new Date().toLocaleDateString(undefined, { weekday: "long" }));
 
+  // --- Week status (Mon-start week) ---
+  const toISO = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday
+  const dateForDow = (d: number) => {
+    const idx = (d + 6) % 7; // Mon=0 ... Sun=6
+    const dt = new Date(weekStart);
+    dt.setDate(weekStart.getDate() + idx);
+    return dt;
+  };
+  const todayISO = toISO(now);
+  const sessionFor = (dayId: string, iso: string) =>
+    (history ?? []).find((s) => s.day_id === dayId && s.session_date === iso);
+
   // Exercise count / duration estimate for hero
   const exerciseCount = (today as { exercise_count?: number })?.exercise_count ?? "—";
   const estDuration = today?.estimated_minutes_min
