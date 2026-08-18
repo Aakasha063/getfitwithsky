@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RestTimer } from "@/components/RestTimer";
 import { ExerciseInstructions } from "@/components/ExerciseInstructions";
+import { HIITInstructions } from "@/components/HIITInstructions";
 import { useAuth } from "@/lib/auth";
 import {
   fetchDayWithExercises,
@@ -237,35 +238,41 @@ function WorkoutPage() {
       )}
 
       {/* Exercises */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {plan.exercises.map((we) => {
-          const es = detail?.exSessions.find((e) => e.workout_exercise_id === we.id);
-          return (
-            <ExerciseCard
-              key={we.id}
-              name={we.exercises.name}
-              sets={we.sets}
-              repRange={we.rep_range}
-              repMin={we.rep_min}
-              repMax={we.rep_max}
-              rir={we.rir_target}
-              restNote={we.rest_note}
-              notes={we.notes}
-              isCompound={we.exercises.is_compound}
-              isCardio={we.exercises.category === "cardio"}
-              exerciseId={we.exercise_id}
-              exerciseSessionId={es?.id ?? null}
-              loggedSets={(detail?.sets ?? []).filter((s) => s.exercise_session_id === es?.id)}
-              userId={user?.id ?? null}
-              onInfo={() => setInfo(we.exercises)}
-              onLogged={() => {
-                qc.invalidateQueries({ queryKey: ["session", sessionId] });
-                setRest({ seconds: we.rest_seconds ?? 90, key: Date.now() });
-              }}
-            />
-          );
-        })}
-      </div>
+      {plan.day.slug === "saturday-hiit" ? (
+        <div style={{ marginTop: 8 }}>
+          <HIITInstructions />
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {plan.exercises.map((we) => {
+            const es = detail?.exSessions.find((e) => e.workout_exercise_id === we.id);
+            return (
+              <ExerciseCard
+                key={we.id}
+                name={we.exercises.name}
+                sets={we.sets}
+                repRange={we.rep_range}
+                repMin={we.rep_min}
+                repMax={we.rep_max}
+                rir={we.rir_target}
+                restNote={we.rest_note}
+                notes={we.notes}
+                isCompound={we.exercises.is_compound}
+                isCardio={we.exercises.category === "cardio"}
+                exerciseId={we.exercise_id}
+                exerciseSessionId={es?.id ?? null}
+                loggedSets={(detail?.sets ?? []).filter((s) => s.exercise_session_id === es?.id)}
+                userId={user?.id ?? null}
+                onInfo={() => setInfo(we.exercises)}
+                onLogged={() => {
+                  qc.invalidateQueries({ queryKey: ["session", sessionId] });
+                  setRest({ seconds: we.rest_seconds ?? 90, key: Date.now() });
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
 
       <ExerciseInstructions exercise={info} open={!!info} onOpenChange={(v) => !v && setInfo(null)} />
       {rest && rest.seconds > 0 && (
