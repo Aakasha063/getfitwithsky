@@ -339,7 +339,8 @@ export async function fetchBodyMetrics(userId: string) {
     .from("body_metrics")
     .select("*")
     .eq("user_id", userId)
-    .order("measured_on", { ascending: true });
+    .order("measured_on", { ascending: true })
+    .order("created_at", { ascending: true });
   if (error) throw error;
   return data ?? [];
 }
