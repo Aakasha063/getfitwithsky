@@ -9,27 +9,26 @@ export function RestTimer({
   onDismiss: () => void;
 }) {
   const [remaining, setRemaining] = useState(seconds);
-  const [running, setRunning] = useState(true);
   const total = useRef(seconds);
 
   useEffect(() => {
     setRemaining(seconds);
     total.current = seconds;
-    setRunning(true);
   }, [seconds]);
 
   useEffect(() => {
-    if (!running) return;
+    if (remaining <= 0) return;
     const id = setInterval(() => setRemaining((r) => (r > 0 ? r - 1 : 0)), 1000);
     return () => clearInterval(id);
-  }, [running]);
+  }, [remaining]);
 
   const done = remaining === 0;
   const pct = total.current > 0 ? 1 - remaining / total.current : 1;
   const dashOffset = 100.5 * (1 - pct);
 
   return (
-    <div style={{ position: "fixed", left: 0, right: 0, bottom: 16, zIndex: 40, padding: "0 16px" }}>
+    // Positioned above the workout bottom bar (bottom: 76px = 66px bar + 10px gap)
+    <div style={{ position: "fixed", left: 0, right: 0, bottom: 76, zIndex: 40, padding: "0 16px" }}>
       <div style={{
         margin: "0 auto",
         maxWidth: 420,
@@ -38,7 +37,7 @@ export function RestTimer({
         gap: 16,
         borderRadius: 12,
         border: "1px solid oklch(0.27 0.005 250)",
-        background: "oklch(0.205 0.009 260 / 95%)",
+        background: "oklch(0.135 0.005 250 / 97%)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
         padding: 12,
@@ -71,25 +70,19 @@ export function RestTimer({
           </p>
         </div>
 
-        {/* Controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {/* Controls — +30s and Skip (matching design) */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <button
             onClick={() => setRemaining((r) => r + 30)}
-            style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "transparent", color: "oklch(0.63 0.006 250)", cursor: "pointer", fontSize: 12, fontWeight: 500 }}
+            style={{ height: 32, padding: "0 10px", borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit", fontSize: 12, cursor: "pointer" }}
           >
-            +30
-          </button>
-          <button
-            onClick={() => setRunning((r) => !r)}
-            style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "transparent", color: "oklch(0.63 0.006 250)", cursor: "pointer", fontSize: 14 }}
-          >
-            {running ? "❚❚" : "▶"}
+            +30s
           </button>
           <button
             onClick={onDismiss}
-            style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "transparent", color: "oklch(0.63 0.006 250)", cursor: "pointer", fontSize: 14 }}
+            style={{ height: 32, padding: "0 10px", borderRadius: 8, border: "none", background: "oklch(0.27 0.005 250)", color: "inherit", fontSize: 12, cursor: "pointer" }}
           >
-            ✕
+            Skip
           </button>
         </div>
       </div>

@@ -166,7 +166,7 @@
   }
 }
 
-/* Workout stats inline grid */
+/* Workout stats inline grid — 4 cols, uses background color for 1px dividers */
 .workout-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

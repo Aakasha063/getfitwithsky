@@ -183,7 +183,7 @@ function WorkoutPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 100 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 120 }}>
       {/* Sticky Header */}
       <div style={{ position: "sticky", top: 0, zIndex: 30, margin: "0 -16px", padding: "12px 16px", background: "oklch(0.045 0.003 250 / 97%)", backdropFilter: "blur(8px)", borderBottom: "1px solid oklch(0.27 0.005 250)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -198,18 +198,13 @@ function WorkoutPage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
             {sessionId ? (
-              <>
-                <div style={{ textAlign: "right" }}>
-                  <p style={{ margin: 0, fontSize: 16, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
-                </div>
-                <button onClick={requestFinish} style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                  Finish
-                </button>
-              </>
+              <div style={{ textAlign: "right" }}>
+                <p style={{ margin: 0, fontSize: 16, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+                <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
+              </div>
             ) : (
-              <button onClick={handleManualStart} style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                Start Workout
+              <button onClick={handleManualStart} style={{ height: 36, padding: "0 18px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                Start workout
               </button>
             )}
           </div>
@@ -219,21 +214,27 @@ function WorkoutPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(70px, 1fr))", gap: 1, background: "oklch(0.27 0.005 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, overflow: "hidden" }}>
-        <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
-          <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Time</p>
-          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+      {/* Stats Grid — only shown when workout is active */}
+      {sessionId && (
+        <div className="workout-stats-grid" style={{ background: "oklch(0.27 0.005 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+            <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Time</p>
+            <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+          </div>
+          <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+            <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Volume</p>
+            <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Number.isInteger(sessionVolume) ? sessionVolume : sessionVolume.toFixed(1)}</p>
+          </div>
+          <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+            <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>PRs</p>
+            <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>—</p>
+          </div>
+          <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+            <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Sets</p>
+            <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets}</p>
+          </div>
         </div>
-        <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
-          <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Volume</p>
-          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Number.isInteger(sessionVolume) ? sessionVolume : sessionVolume.toFixed(1)}</p>
-        </div>
-        <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
-          <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Sets</p>
-          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets}</p>
-        </div>
-      </div>
+      )}
 
       {/* Exercises */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -269,6 +270,34 @@ function WorkoutPage() {
       <ExerciseInstructions exercise={info} open={!!info} onOpenChange={(v) => !v && setInfo(null)} />
       {rest && rest.seconds > 0 && (
         <RestTimer key={rest.key} seconds={rest.seconds} onDismiss={() => setRest(null)} />
+      )}
+
+      {/* Fixed bottom bar — active workout only (design lines 481-491) */}
+      {sessionId && (
+        <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 35, background: "oklch(0.08 0.004 250 / 97%)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderTop: "1px solid oklch(0.27 0.005 250)", padding: "10px 16px" }}>
+          <div style={{ maxWidth: 480, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+            <div style={{ display: "flex", gap: 20 }}>
+              <div>
+                <p style={{ margin: 0, fontSize: 10, color: "oklch(0.63 0.006 250)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Sets</p>
+                <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets}</p>
+              </div>
+              <div>
+                <p style={{ margin: 0, fontSize: 10, color: "oklch(0.63 0.006 250)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Time</p>
+                <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+              </div>
+              <div>
+                <p style={{ margin: 0, fontSize: 10, color: "oklch(0.63 0.006 250)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Volume</p>
+                <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "oklch(0.92 0.25 110)" }}>{Number.isInteger(sessionVolume) ? sessionVolume : sessionVolume.toFixed(1)} kg</p>
+              </div>
+            </div>
+            <button
+              onClick={requestFinish}
+              style={{ height: 40, padding: "0 20px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+            >
+              Finish Workout
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
