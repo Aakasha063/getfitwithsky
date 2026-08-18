@@ -209,8 +209,47 @@
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
+/* Responsive AppShell layout */
+.app-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 8px;
+}
+.app-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 16px 96px;
 }
 
-@utility num {
-  font-variant-numeric: tabular-nums;
+/* Hide desktop nav on mobile */
+.desktop-nav {
+  display: none;
 }
+/* Show mobile tab bar on mobile */
+.mobile-nav {
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .app-header-inner {
+    height: 76px;
+    padding: 0 20px;
+  }
+  .app-main {
+    padding: 48px 48px 96px;
+  }
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .mobile-nav {
+    display: none;
+  }
+}
+

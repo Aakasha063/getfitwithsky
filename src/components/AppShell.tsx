@@ -4,6 +4,13 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
+const NAV = [
+  { to: "/", label: "Today" },
+  { to: "/plan", label: "Plan" },
+  { to: "/body", label: "Body" },
+  { to: "/profile", label: "Profile" },
+] as const;
+
 // Dumbbell icon matching design reference
 function LiftIcon() {
   return (
@@ -49,6 +56,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const initials = getInitials(session.user?.email);
 
+  function isActive(to: string) {
+    if (to === "/") return pathname === "/";
+    if (to === "/profile")
+      return (
+        pathname.startsWith("/profile") ||
+        pathname.startsWith("/history") ||
+        pathname.startsWith("/progress")
+      );
+    return pathname.startsWith(to);
+  }
+
   // Determine if we're on a workout page (no tab bar, different layout)
   const isWorkoutPage = pathname.startsWith("/workout/");
   const isHistoryDetailPage = pathname.startsWith("/history/") && pathname !== "/history";
@@ -81,16 +99,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
       }}>
-        <div style={{
-          maxWidth: 480,
-          margin: "0 auto",
-          height: 56,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 16px",
-          gap: 8,
-        }}>
+        <div className="app-header-inner">
           {/* Logo */}
           <Link
             to="/"
@@ -108,6 +117,31 @@ export function AppShell({ children }: { children: ReactNode }) {
               LIFT
             </span>
           </Link>
+
+          {/* Desktop Nav */}
+          <nav className="desktop-nav">
+            {NAV.map((item) => {
+              const active = isActive(item.to);
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    textDecoration: "none",
+                    color: active ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+                    background: active ? "oklch(0.22 0.005 250)" : "transparent",
+                    transition: "color 0.15s, background 0.15s",
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
           {/* Avatar button → Profile */}
           <Link
@@ -128,19 +162,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       {/* Main content */}
-      <main style={{
-        maxWidth: 480,
-        margin: "0 auto",
-        padding: showTabBar
-          ? (isHistoryDetailPage ? "16px 16px 96px" : "16px 16px 96px")
-          : "16px 16px 0",
+      <main className="app-main" style={{
+        paddingBottom: showTabBar
+          ? (isHistoryDetailPage ? 96 : 96)
+          : 0,
       }}>
         {children}
       </main>
 
       {/* Bottom Tab Bar — mobile navigation */}
       {showTabBar && (
-        <nav style={{
+        <nav className="mobile-nav" style={{
           position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 40,
           background: "oklch(0.045 0.003 250 / 97%)",
           backdropFilter: "blur(10px)",
