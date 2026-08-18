@@ -17,6 +17,7 @@ import {
   type Exercise,
 } from "@/lib/api";
 import { suggestNextSet } from "@/lib/progression";
+import { mmss } from "@/lib/format";
 
 export const Route = createFileRoute("/workout/$slug")({
   head: () => ({
@@ -45,9 +46,22 @@ function WorkoutPage() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const [completedSummary, setCompletedSummary] = useState<{
+    title: string;
+    duration: string;
+    sets: number;
+    volume: number;
+    prs: number;
+  } | null>(null);
   const [rest, setRest] = useState<{ seconds: number; key: number } | null>(null);
   const [info, setInfo] = useState<Exercise | null>(null);
   const [startedAt] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const { data: plan } = useQuery({
     queryKey: ["day", slug],
@@ -78,12 +92,29 @@ function WorkoutPage() {
     setFinishing(true);
     const duration = Math.round((Date.now() - startedAt) / 1000);
     const prs = await finishSession({ userId: user.id, sessionId, durationSeconds: duration });
-    toast.success(
-      prs.length ? `Session complete — ${prs.length} new PR(s)!` : "Session complete. Well done.",
-    );
+    
+    // Calculate final volume
+    const finalVolume = (detail?.sets ?? []).reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
+    
+    setCompletedSummary({
+      title: plan?.day?.name ?? "Workout",
+      duration: mmss(duration),
+      sets: completedSets,
+      volume: finalVolume,
+      prs: prs.length,
+    });
+    
     qc.invalidateQueries();
-    router.navigate({ to: "/history" });
-  }, [user, sessionId, finishing, startedAt, qc, router]);
+  }, [user, sessionId, finishing, startedAt, qc, detail, plan, completedSets]);
+
+  const requestFinish = useCallback(() => {
+    if (completedSets >= totalSets) {
+      finish();
+    } else {
+      const ok = window.confirm(`You still have ${totalSets - completedSets} sets remaining. Finish anyway?`);
+      if (ok) finish();
+    }
+  }, [completedSets, totalSets, finish]);
 
   useEffect(() => {
     if (completedSets > 0 && totalSets > 0 && completedSets >= totalSets) {
@@ -91,36 +122,88 @@ function WorkoutPage() {
     }
   }, [completedSets, totalSets, finish]);
 
+  const elapsedSeconds = Math.round((nowMs - startedAt) / 1000);
+  const workoutElapsedLabel = mmss(elapsedSeconds);
+  const workoutPct = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
+  
+  // Calculate total volume for this session
+  const sessionVolume = (detail?.sets ?? []).reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
+
   if (!plan) return (
     <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>Loading…</p>
   );
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {/* Header */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 12 }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>{plan.day.name}</h1>
-          <p style={{ margin: "4px 0 0", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{plan.day.focus}</p>
+  if (completedSummary) {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "oklch(0.045 0.003 250)", overflowY: "auto", display: "flex", justifyContent: "center", padding: "40px 20px" }}>
+        <div style={{ width: "100%", maxWidth: 480 }}>
+          <p style={{ margin: 0, textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "oklch(0.92 0.25 110)" }}>Workout Complete</p>
+          <h1 style={{ margin: "8px 0 0", textAlign: "center", fontSize: 22, fontWeight: 600 }}>{completedSummary.title}</h1>
+          <p style={{ margin: "16px 0 0", textAlign: "center", fontSize: 48, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{completedSummary.duration}</p>
+
+          <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+            <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 18, textAlign: "center" }}>
+              <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total sets</p>
+              <p style={{ margin: "6px 0 0", fontSize: 24, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{completedSummary.sets}</p>
+            </div>
+            <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 18, textAlign: "center" }}>
+              <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Volume</p>
+              <p style={{ margin: "6px 0 0", fontSize: 24, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{Number.isInteger(completedSummary.volume) ? completedSummary.volume : completedSummary.volume.toFixed(1)} kg</p>
+            </div>
+            <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 18, textAlign: "center" }}>
+              <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", textTransform: "uppercase", letterSpacing: "0.04em" }}>PRs</p>
+              <p style={{ margin: "6px 0 0", fontSize: 24, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: "oklch(0.92 0.25 110)" }}>{completedSummary.prs}</p>
+            </div>
+          </div>
+
+          <button onClick={() => router.navigate({ to: "/history" })} style={{ marginTop: 28, width: "100%", height: 48, borderRadius: 10, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>Done</button>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <p style={{ margin: 0, fontSize: 14, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>
-            {completedSets}/{totalSets} sets
-          </p>
-          <button
-            onClick={finish}
-            style={{
-              marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6,
-              height: 32, padding: "0 12px", borderRadius: 8, border: "none",
-              background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-              fontSize: 13, fontWeight: 500, cursor: "pointer",
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M4 15V4l14 5.5L4 15z" /><line x1="4" y1="20" x2="4" y2="4" />
-            </svg>
-            Finish
-          </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 100 }}>
+      {/* Sticky Header */}
+      <div style={{ position: "sticky", top: 0, zIndex: 30, margin: "0 -20px", padding: "12px 20px", background: "oklch(0.045 0.003 250 / 97%)", backdropFilter: "blur(8px)", borderBottom: "1px solid oklch(0.27 0.005 250)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <button onClick={() => router.history.back()} aria-label="Back" style={{ flexShrink: 0, width: 32, height: 32, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="11,18 5,12 11,6"></polyline></svg>
+            </button>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "oklch(0.63 0.006 250)" }}>{plan.day.name}</p>
+              <h1 style={{ margin: "2px 0 0", fontSize: 18, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{plan.day.focus}</h1>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ margin: 0, fontSize: 16, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+              <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
+            </div>
+            <button onClick={requestFinish} style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+              Finish
+            </button>
+          </div>
+        </div>
+        <div style={{ marginTop: 10, height: 3, borderRadius: 999, background: "oklch(0.22 0.005 250)", overflow: "hidden" }}>
+          <div style={{ height: "100%", background: "oklch(0.92 0.25 110)", width: `${workoutPct}%` }}></div>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(70px, 1fr))", gap: 1, background: "oklch(0.27 0.005 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+          <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Time</p>
+          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+        </div>
+        <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+          <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Volume</p>
+          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Number.isInteger(sessionVolume) ? sessionVolume : sessionVolume.toFixed(1)}</p>
+        </div>
+        <div style={{ background: "oklch(0.11 0.004 250)", padding: 14, textAlign: "center" }}>
+          <p style={{ margin: 0, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "oklch(0.63 0.006 250)" }}>Sets</p>
+          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets}</p>
         </div>
       </div>
 
@@ -238,126 +321,155 @@ function ExerciseCard(props: {
   return (
     <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 12, padding: 16 }}>
       {/* Title row */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 500 }}>{props.name}</h3>
-            {done && (
-              <span style={{
-                display: "inline-flex", alignItems: "center", gap: 4,
-                borderRadius: 999, background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-                padding: "2px 8px", fontSize: 11, fontWeight: 600,
-              }}>✓ Complete</span>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{props.name}</h3>
+              {done && (
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  borderRadius: 999, background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
+                  padding: "2px 8px", fontSize: 11, fontWeight: 600,
+                }}>✓ Done</span>
+              )}
+            </div>
+            <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>
+              {subtitle}
+            </p>
+            {props.notes && (
+              <p style={{ margin: "4px 0 0", fontSize: 12, color: "oklch(0.63 0.006 250)" }}>{props.notes}</p>
             )}
           </div>
-          <p style={{ margin: "3px 0 0", fontSize: 13, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>
-            {subtitle}
-          </p>
-          {props.notes && (
-            <p style={{ margin: "4px 0 0", fontSize: 12, color: "oklch(0.63 0.006 250)" }}>{props.notes}</p>
-          )}
         </div>
-        <button
-          onClick={props.onInfo}
-          aria-label="How to perform"
-          style={{
-            flexShrink: 0, width: 32, height: 32, borderRadius: 8, border: "none",
-            background: "transparent", color: "oklch(0.63 0.006 250)", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <circle cx="12" cy="12" r="9" />
-            <line x1="12" y1="11" x2="12" y2="16" />
-            <circle cx="12" cy="8" r="0.5" fill="currentColor" />
-          </svg>
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+          <button
+            onClick={props.onInfo}
+            aria-label="How to perform"
+            style={{
+              width: 28, height: 28, borderRadius: 7, border: "none",
+              background: "transparent", color: "oklch(0.63 0.006 250)", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="12" r="9" />
+              <line x1="12" y1="11" x2="12" y2="16" />
+              <circle cx="12" cy="8" r="0.5" fill="currentColor" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Suggestion box */}
       {!props.isCardio && (
-        <div style={{ marginTop: 12, borderRadius: 8, background: "oklch(0.22 0.005 250 / 60%)", padding: 12, fontSize: 12 }}>
-          <p style={{ margin: 0, fontWeight: 500 }}>
-            {suggestion.label} · target set {Math.min(nextSetNumber, props.sets)}
+        <div style={{ marginTop: 12, borderRadius: 8, background: "oklch(0.22 0.005 250 / 50%)", padding: "10px 12px", fontSize: 12.5 }}>
+          <p style={{ margin: 0, fontWeight: 600, color: "oklch(0.63 0.006 250)" }}>
+            {previous ? `Last session · ${previous.performedAt.slice(0, 10)}` : "No previous data"}
           </p>
-          <p style={{ margin: "4px 0 0", color: "oklch(0.63 0.006 250)" }}>{suggestion.reason}</p>
           {previous && (
-            <p style={{ margin: "8px 0 0", color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>
-              Last time ({previous.performedAt.slice(0, 10)}):{" "}
-              {previous.sets.map((s) => `${s.weight_kg ?? "—"}×${s.reps ?? "—"}`).join("  ")}
+            <p style={{ margin: "4px 0 0", color: "oklch(0.96 0.002 250)", fontVariantNumeric: "tabular-nums" }}>
+              {previous.sets.map((s, i) => `Set ${i + 1} · ${s.weight_kg ?? "—"}kg × ${s.reps ?? "—"}`).join(", ")}
             </p>
           )}
         </div>
       )}
 
-      {/* Logged chips */}
-      {props.loggedSets.length > 0 && (
-        <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8, fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
-          {props.loggedSets
-            .sort((a, b) => a.set_number - b.set_number)
-            .map((s) => (
-              <button
-                key={s.id}
-                onClick={() => removeSet(s.id)}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)",
-                  padding: "4px 8px", background: "transparent", color: "inherit", cursor: "pointer",
-                }}
-              >
-                {props.isCardio
-                  ? `${s.reps ?? "—"} min`
-                  : `${s.set_number}: ${s.weight_kg ?? "—"} kg × ${s.reps ?? "—"}`}
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            ))}
-        </div>
-      )}
-
-      {/* Done message or input row */}
-      {done ? (
-        <p style={{ marginTop: 12, fontSize: 12, color: "oklch(0.63 0.006 250)" }}>
-          All {props.sets} {props.isCardio ? "entries" : "sets"} logged. Tap a set above to remove it.
-        </p>
-      ) : (
-        <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-          {!props.isCardio && (
+      {/* Cardio / Input area */}
+      {props.isCardio ? (
+        done ? (
+          <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <p style={{ margin: 0, fontSize: 13, color: "oklch(0.63 0.006 250)" }}>
+              Logged: {props.loggedSets[0]?.reps} minutes
+            </p>
+            <button onClick={() => removeSet(props.loggedSets[0]!.id)} style={{ background: "transparent", border: "none", color: "oklch(0.92 0.25 110)", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>Undo</button>
+          </div>
+        ) : (
+          <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
             <input
-              inputMode="decimal"
-              placeholder={suggestion.weight ? `${suggestion.weight} kg` : "kg"}
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
+              inputMode="numeric"
+              placeholder="minutes"
+              value={reps}
+              onChange={(e) => setReps(e.target.value)}
               style={{
                 height: 36, flex: 1, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)",
                 background: "transparent", color: "inherit", padding: "0 10px",
-                fontSize: 13, fontVariantNumeric: "tabular-nums",
+                fontSize: 13, fontVariantNumeric: "tabular-nums"
               }}
             />
-          )}
-          <input
-            inputMode="numeric"
-            placeholder={props.isCardio ? "minutes" : suggestion.reps ? `${suggestion.reps} reps` : "reps"}
-            value={reps}
-            onChange={(e) => setReps(e.target.value)}
-            style={{
-              height: 36, flex: 1, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)",
-              background: "transparent", color: "inherit", padding: "0 10px",
-              fontSize: 13, fontVariantNumeric: "tabular-nums",
-            }}
-          />
-          <button
-            onClick={submit}
-            disabled={!props.exerciseSessionId}
-            style={{
-              height: 36, padding: "0 14px", borderRadius: 8, border: "none",
-              background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-              fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap",
-            }}
-          >
-            Log
-          </button>
+            <button
+              onClick={submit}
+              disabled={!props.exerciseSessionId}
+              style={{
+                height: 36, padding: "0 14px", borderRadius: 8, border: "none",
+                background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
+                fontSize: 13, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Log
+            </button>
+          </div>
+        )
+      ) : (
+        <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 70%)", overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 72px", background: "oklch(0.22 0.005 250 / 40%)", padding: "6px 10px", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)" }}>
+            <span>Set</span><span>Kg</span><span>Reps</span><span style={{ textAlign: "right" }}>Status</span>
+          </div>
+          {Array.from({ length: props.sets }).map((_, i) => {
+            const setNum = i + 1;
+            const logged = props.loggedSets.find(s => s.set_number === setNum);
+            const isCurrent = !logged && setNum === nextSetNumber;
+            const isUpcoming = !logged && setNum > nextSetNumber;
+            const rowBg = isCurrent ? "oklch(0.22 0.005 250 / 20%)" : "transparent";
+
+            return (
+              <div key={setNum} style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 72px", alignItems: "center", padding: "8px 10px", borderTop: "1px solid oklch(0.27 0.005 250 / 50%)", background: rowBg }}>
+                <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{setNum}</span>
+                
+                {logged ? (
+                  <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{logged.weight_kg ?? "—"}</span>
+                ) : isCurrent ? (
+                  <input
+                    inputMode="decimal"
+                    placeholder={suggestion.weight ? String(suggestion.weight) : ""}
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    style={{ height: 30, width: 64, borderRadius: 6, border: "1px solid oklch(0.4 0.006 250)", background: "oklch(0.045 0.003 250)", color: "inherit", padding: "0 8px", fontSize: 13, fontVariantNumeric: "tabular-nums" }}
+                  />
+                ) : (
+                  <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.4 0.006 250)" }}>—</span>
+                )}
+
+                {logged ? (
+                  <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{logged.reps ?? "—"}</span>
+                ) : isCurrent ? (
+                  <input
+                    inputMode="numeric"
+                    placeholder={suggestion.reps ? String(suggestion.reps) : ""}
+                    value={reps}
+                    onChange={(e) => setReps(e.target.value)}
+                    style={{ height: 30, width: 56, borderRadius: 6, border: "1px solid oklch(0.4 0.006 250)", background: "oklch(0.045 0.003 250)", color: "inherit", padding: "0 8px", fontSize: 13, fontVariantNumeric: "tabular-nums" }}
+                  />
+                ) : (
+                  <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.4 0.006 250)" }}>—</span>
+                )}
+
+                {logged ? (
+                  <button onClick={() => removeSet(logged.id)} style={{ justifySelf: "end", background: "transparent", border: "none", padding: 0, fontSize: 11, color: "oklch(0.92 0.25 110)", fontWeight: 600, cursor: "pointer" }} title="Click to undo">✓ Done</button>
+                ) : isCurrent ? (
+                  <button
+                    onClick={submit}
+                    disabled={!props.exerciseSessionId}
+                    style={{ justifySelf: "end", height: 28, padding: "0 12px", borderRadius: 6, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                  >
+                    Log
+                  </button>
+                ) : (
+                  <span style={{ justifySelf: "end", fontSize: 11, color: "oklch(0.4 0.006 250)" }}>—</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

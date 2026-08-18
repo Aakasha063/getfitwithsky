@@ -95,6 +95,31 @@
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+.hero-row {
+  display: flex;
+  gap: 24px;
+  flex-direction: row;
+}
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  border-left: 1px solid oklch(0.27 0.005 250);
+  padding-left: 24px;
+}
+@media (max-width: 640px) {
+  .hero-row {
+    flex-direction: column;
+  }
+  .hero-right {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid oklch(0.27 0.005 250);
+    padding-top: 24px;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

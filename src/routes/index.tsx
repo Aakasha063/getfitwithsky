@@ -87,7 +87,7 @@ function Dashboard() {
 
       {/* Hero card */}
       {today && !today.is_rest ? (
-        <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 24, display: "flex", gap: 24, flexWrap: "wrap" }}>
+        <div className="hero-row" style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 24 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{today.name}</p>
             <h2 style={{ margin: "6px 0 0", fontSize: 22, fontWeight: 600 }}>{today.focus}</h2>
@@ -116,21 +116,21 @@ function Dashboard() {
                   fontSize: 14, fontWeight: 600, cursor: "pointer",
                 }}>
                   Start workout
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ transition: "transform 0.15s" }}>
                     <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" />
                   </svg>
                 </button>
               </Link>
             )}
           </div>
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 16, borderLeft: "1px solid oklch(0.27 0.005 250)", paddingLeft: 24 }}>
+          <div className="hero-right">
             <div style={{ display: "flex", gap: 40 }}>
               <div>
-                <p style={{ margin: 0, fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{exerciseCount}</p>
+                <p style={{ margin: 0, fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{exerciseCount}</p>
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "oklch(0.63 0.006 250)" }}>exercises</p>
               </div>
               <div>
-                <p style={{ margin: 0, fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{estDuration}</p>
+                <p style={{ margin: 0, fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{estDuration}</p>
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "oklch(0.63 0.006 250)" }}>estimated</p>
               </div>
             </div>
