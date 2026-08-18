@@ -274,3 +274,23 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub: st
     </div>
   );
 }
+
+function StatusChip({ label, color }: { label: string; color: string }) {
+  return (
+    <span style={{ marginLeft: 10, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color, background: `color-mix(in oklch, ${color} 14%, transparent)`, border: `1px solid color-mix(in oklch, ${color} 35%, transparent)`, borderRadius: 999, padding: "3px 8px" }}>
+      {label}
+    </span>
+  );
+}
+
+function StatCardUnused({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 24 }}>
+      <p style={{ margin: 0, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "oklch(0.63 0.006 250)" }}>
+        {label}
+      </p>
+      <p style={{ margin: "8px 0 0", fontSize: 32, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{value}</p>
+      <p style={{ margin: "4px 0 0", fontSize: 13, color: "oklch(0.45 0.006 250)" }}>{sub}</p>
+    </div>
+  );
+}
