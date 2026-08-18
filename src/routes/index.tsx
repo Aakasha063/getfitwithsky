@@ -83,8 +83,23 @@ function Dashboard() {
     return dt;
   };
   const todayISO = toISO(now);
-  const sessionFor = (dayId: string, iso: string) =>
-    (history ?? []).find((s) => s.day_id === dayId && s.session_date === iso);
+  const weekStartISO = toISO(weekStart);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const weekEndISO = toISO(weekEnd);
+  // A day counts as done when any session for that day was finished this week,
+  // regardless of which weekday it was actually finished on.
+  const sessionFor = (dayId: string) =>
+    (history ?? []).find(
+      (s) =>
+        s.day_id === dayId &&
+        s.session_date >= weekStartISO &&
+        s.session_date <= weekEndISO &&
+        s.status === "completed",
+    ) ??
+    (history ?? []).find(
+      (s) => s.day_id === dayId && s.session_date >= weekStartISO && s.session_date <= weekEndISO,
+    );
 
   // Exercise count / duration estimate for hero
   const exerciseCount = (today as { exercise_count?: number })?.exercise_count ?? "—";
@@ -193,9 +208,9 @@ function Dashboard() {
             const isToday = d.day_of_week === dow;
             const dayDate = d.day_of_week == null ? null : dateForDow(d.day_of_week);
             const iso = dayDate ? toISO(dayDate) : null;
-            const session = iso ? sessionFor(d.id, iso) : undefined;
+            const session = sessionFor(d.id);
             const isDone = session?.status === "completed";
-            const isPast = !!dayDate && !isToday && dayDate.getTime() < weekStart.getTime() + ((now.getDay() + 6) % 7) * 86400000;
+            const isPast = !!iso && iso < todayISO;
             const isMissed = !d.is_rest && !isDone && isPast;
             const accent = isDone
               ? "oklch(0.78 0.19 145)"
