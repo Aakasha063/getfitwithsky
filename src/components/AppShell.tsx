@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { fetchProfile } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const NAV = [
   { to: "/", label: "Today" },
@@ -65,10 +64,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
   if (!session) return null;
-
-  if (useAuth().recoveryMode) {
-    return <UpdatePasswordModal />;
-  }
 
   const initials = getInitials(session.user?.email);
 
@@ -266,68 +261,4 @@ export function AppShell({ children }: { children: ReactNode }) {
 // Export signOut helper for Profile page
 export async function signOut() {
   await supabase.auth.signOut();
-}
-
-function UpdatePasswordModal() {
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const { setRecoveryMode } = useAuth();
-  const router = useRouter();
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const { error } = await supabase.auth.updateUser({ password });
-      if (error) throw error;
-      toast.success("Password updated successfully.");
-      setRecoveryMode(false);
-      
-      // Clean up the hash
-      window.location.hash = "";
-      router.navigate({ to: "/" });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update password");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const INPUT_STYLE = {
-    height: 40, width: "100%", borderRadius: 9, boxSizing: "border-box" as const,
-    border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit",
-    padding: "0 12px", fontSize: 14, outline: "none",
-  };
-
-  return (
-    <div style={{
-      display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center",
-      padding: "64px 20px", background: "oklch(0.045 0.003 250)", color: "oklch(0.96 0.002 250)",
-    }}>
-      <div style={{ width: "100%", maxWidth: 360, background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 14, padding: 24 }}>
-        <h2 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 600 }}>Update Password</h2>
-        <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label htmlFor="new_password" style={{ fontSize: 13 }}>New Password</label>
-            <input
-              id="new_password" type="password" required minLength={6}
-              value={password} onChange={(e) => setPassword(e.target.value)}
-              style={INPUT_STYLE}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={busy}
-            style={{
-              height: 44, width: "100%", borderRadius: 9, border: "none",
-              background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-              fontSize: 14, fontWeight: 600, cursor: busy ? "wait" : "pointer",
-            }}
-          >
-            Update
-          </button>
-        </form>
-      </div>
-    </div>
-  );
 }
