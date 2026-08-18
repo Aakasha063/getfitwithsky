@@ -53,7 +53,8 @@ function Dashboard() {
   const completed = (history ?? []).filter((s) => s.status === "completed").length;
   const prCount = prs?.length ?? 0;
 
-  const todayISOStr = new Date().toISOString().slice(0, 10);
+  const d0 = new Date();
+  const todayISOStr = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, "0")}-${String(d0.getDate()).padStart(2, "0")}`;
   const isTodayCompleted = today && (history ?? []).some(
     (s) => s.day_id === today.id && s.session_date === todayISOStr && s.status === "completed"
   );
@@ -67,6 +68,38 @@ function Dashboard() {
   const heading = today?.is_rest
     ? "Recovery day"
     : (today?.focus ?? new Date().toLocaleDateString(undefined, { weekday: "long" }));
+
+  // --- Week status (Mon-start week) ---
+  const toISO = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday
+  const dateForDow = (d: number) => {
+    const idx = (d + 6) % 7; // Mon=0 ... Sun=6
+    const dt = new Date(weekStart);
+    dt.setDate(weekStart.getDate() + idx);
+    return dt;
+  };
+  const todayISO = toISO(now);
+  const weekStartISO = toISO(weekStart);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const weekEndISO = toISO(weekEnd);
+  // A day counts as done when any session for that day was finished this week,
+  // regardless of which weekday it was actually finished on.
+  const sessionFor = (dayId: string) =>
+    (history ?? []).find(
+      (s) =>
+        s.day_id === dayId &&
+        s.session_date >= weekStartISO &&
+        s.session_date <= weekEndISO &&
+        s.status === "completed",
+    ) ??
+    (history ?? []).find(
+      (s) => s.day_id === dayId && s.session_date >= weekStartISO && s.session_date <= weekEndISO,
+    );
 
   // Exercise count / duration estimate for hero
   const exerciseCount = (today as { exercise_count?: number })?.exercise_count ?? "—";
@@ -173,16 +206,33 @@ function Dashboard() {
         <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
           {weekDays.map((d) => {
             const isToday = d.day_of_week === dow;
+            const dayDate = d.day_of_week == null ? null : dateForDow(d.day_of_week);
+            const iso = dayDate ? toISO(dayDate) : null;
+            const session = sessionFor(d.id);
+            const isDone = session?.status === "completed";
+            const isPast = !!iso && iso < todayISO;
+            const isMissed = !d.is_rest && !isDone && isPast;
+            const accent = isDone
+              ? "oklch(0.78 0.19 145)"
+              : isMissed
+                ? "oklch(0.62 0.2 25)"
+                : isToday
+                  ? "oklch(0.92 0.25 110)"
+                  : "transparent";
             return (
               <div
                 key={d.id}
                 style={{
-                  background: "oklch(0.11 0.004 250)",
+                  background: isDone
+                    ? "oklch(0.78 0.19 145 / 8%)"
+                    : isMissed
+                      ? "oklch(0.62 0.2 25 / 7%)"
+                      : "oklch(0.11 0.004 250)",
                   border: "1px solid oklch(0.27 0.005 250)",
-                  borderLeft: `3px solid ${isToday ? "oklch(0.92 0.25 110)" : "transparent"}`,
+                  borderLeft: `3px solid ${accent}`,
                   borderRadius: 12,
                   padding: "16px 20px",
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
                   fontSize: 14,
                 }}
               >
@@ -194,15 +244,30 @@ function Dashboard() {
                       Recovery
                     </span>
                   )}
+                  {isDone && <StatusChip label="Completed" color="oklch(0.78 0.19 145)" />}
+                  {isMissed && <StatusChip label="Missed" color="oklch(0.68 0.2 25)" />}
+                  {isToday && !isDone && <StatusChip label="Today" color="oklch(0.92 0.25 110)" />}
                 </span>
                 {!d.is_rest && (
-                  <Link
-                    to="/workout/$slug"
-                    params={{ slug: d.slug }}
-                    style={{ fontSize: 13, fontWeight: 500, color: "oklch(0.92 0.25 110)", textDecoration: "none" }}
-                  >
-                    Open →
-                  </Link>
+                  <span style={{ display: "flex", alignItems: "center", gap: 14, whiteSpace: "nowrap" }}>
+                    {isDone && session ? (
+                      <Link
+                        to="/history/$id"
+                        params={{ id: session.id }}
+                        style={{ fontSize: 13, fontWeight: 500, color: "oklch(0.78 0.19 145)", textDecoration: "none" }}
+                      >
+                        View log →
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/workout/$slug"
+                        params={{ slug: d.slug }}
+                        style={{ fontSize: 13, fontWeight: 500, color: isMissed ? "oklch(0.68 0.2 25)" : "oklch(0.92 0.25 110)", textDecoration: "none" }}
+                      >
+                        {isMissed ? "Complete now →" : "Open →"}
+                      </Link>
+                    )}
+                  </span>
                 )}
               </div>
             );
@@ -222,5 +287,13 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub: st
       <p style={{ margin: "8px 0 0", fontSize: 32, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{value}</p>
       <p style={{ margin: "4px 0 0", fontSize: 13, color: "oklch(0.45 0.006 250)" }}>{sub}</p>
     </div>
+  );
+}
+
+function StatusChip({ label, color }: { label: string; color: string }) {
+  return (
+    <span style={{ marginLeft: 10, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color, background: `color-mix(in oklch, ${color} 14%, transparent)`, border: `1px solid color-mix(in oklch, ${color} 35%, transparent)`, borderRadius: 999, padding: "3px 8px" }}>
+      {label}
+    </span>
   );
 }
