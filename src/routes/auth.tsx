@@ -99,8 +99,8 @@ function AuthPage() {
 
   return (
     <div style={{
-      display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center",
-      padding: "64px 20px",
+      display: "flex", minHeight: "100dvh", alignItems: "center", justifyContent: "center",
+      padding: "64px 20px", boxSizing: "border-box",
       background: "oklch(0.045 0.003 250)",
       color: "oklch(0.96 0.002 250)",
       fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",

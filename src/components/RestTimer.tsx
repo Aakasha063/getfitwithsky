@@ -17,10 +17,13 @@ export function RestTimer({
   }, [seconds]);
 
   useEffect(() => {
-    if (remaining <= 0) return;
+    if (remaining <= 0) {
+      const t = setTimeout(onDismiss, 500); // 500ms delay before auto-dismiss
+      return () => clearTimeout(t);
+    }
     const id = setInterval(() => setRemaining((r) => (r > 0 ? r - 1 : 0)), 1000);
     return () => clearInterval(id);
-  }, [remaining]);
+  }, [remaining, onDismiss]);
 
   const done = remaining === 0;
   const pct = total.current > 0 ? 1 - remaining / total.current : 1;

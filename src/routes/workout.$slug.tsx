@@ -204,8 +204,17 @@ function WorkoutPage() {
                 <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
               </div>
             ) : (
-              <button onClick={handleManualStart} style={{ height: 36, padding: "0 18px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                Start workout
+              <button 
+                onClick={handleManualStart} 
+                disabled={sessionStarted}
+                style={{ 
+                  height: 36, padding: "0 18px", borderRadius: 8, border: "none", 
+                  background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", 
+                  fontSize: 13, fontWeight: 600, cursor: sessionStarted ? "wait" : "pointer", 
+                  whiteSpace: "nowrap", opacity: sessionStarted ? 0.7 : 1 
+                }}
+              >
+                {sessionStarted ? "Starting..." : "Start workout"}
               </button>
             )}
           </div>
@@ -299,9 +308,15 @@ function WorkoutPage() {
             </div>
             <button
               onClick={requestFinish}
-              style={{ height: 40, padding: "0 20px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+              disabled={finishing}
+              style={{ 
+                height: 40, padding: "0 20px", borderRadius: 8, border: "none", 
+                background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", 
+                fontSize: 14, fontWeight: 600, cursor: finishing ? "wait" : "pointer", 
+                whiteSpace: "nowrap", opacity: finishing ? 0.7 : 1 
+              }}
             >
-              Finish Workout
+              {finishing ? "Finishing..." : "Finish Workout"}
             </button>
           </div>
         </div>
@@ -328,6 +343,7 @@ function ExerciseCard(props: {
   onInfo: () => void;
   onLogged: () => void;
 }) {
+  const qc = useQueryClient();
   const { data: previous } = useQuery({
     queryKey: ["prev", props.userId, props.exerciseId, props.exerciseSessionId],
     queryFn: () =>
@@ -350,29 +366,63 @@ function ExerciseCard(props: {
 
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const done = props.loggedSets.length >= props.sets;
 
   async function submit() {
     if (!props.userId || !props.exerciseSessionId) return;
     if (done) return;
-    await logSet({
-      userId: props.userId,
-      exerciseSessionId: props.exerciseSessionId,
-      exerciseId: props.exerciseId,
-      setNumber: nextSetNumber,
-      weight: props.isCardio ? null : weight ? Number(weight) : (suggestion.weight ?? null),
-      reps: reps ? Number(reps) : (suggestion.reps ?? null),
-      rir: null,
-    });
-    setWeight("");
-    setReps("");
-    props.onLogged();
+    
+    const finalWeight = props.isCardio ? null : weight ? Number(weight) : (suggestion.weight ?? null);
+    const finalReps = reps ? Number(reps) : (suggestion.reps ?? null);
+    
+    if (finalReps === null || (!props.isCardio && finalWeight === null)) {
+      toast.error("Please enter weight and reps");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const sessionId = props.exerciseSessionId;
+      qc.setQueryData(["session", sessionId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          sets: [...old.sets, { id: "temp-" + Date.now(), exercise_id: props.exerciseId, set_number: nextSetNumber, weight_kg: finalWeight, reps: finalReps }]
+        };
+      });
+      setWeight("");
+      setReps("");
+
+      await logSet({
+        userId: props.userId,
+        exerciseSessionId: props.exerciseSessionId,
+        exerciseId: props.exerciseId,
+        setNumber: nextSetNumber,
+        weight: finalWeight,
+        reps: finalReps,
+        rir: null,
+      });
+
+      props.onLogged();
+    } catch (e: any) {
+      toast.error("Failed to log set");
+      qc.invalidateQueries({ queryKey: ["session", props.exerciseSessionId] });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function removeSet(id: string) {
     await deleteSet(id);
     props.onLogged();
+  }
+
+  function editSet(set: any) {
+    if (set.weight_kg) setWeight(String(set.weight_kg));
+    if (set.reps) setReps(String(set.reps));
+    removeSet(set.id);
   }
 
   const cardBg = done ? "oklch(0.92 0.25 110 / 10%)" : "oklch(0.11 0.004 250)";
@@ -463,20 +513,21 @@ function ExerciseCard(props: {
             />
             <button
               onClick={submit}
-              disabled={!props.exerciseSessionId}
+              disabled={!props.exerciseSessionId || isSubmitting}
               style={{
                 height: 36, padding: "0 14px", borderRadius: 8, border: "none",
                 background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-                fontSize: 13, fontWeight: 600, cursor: "pointer",
+                fontSize: 13, fontWeight: 600, cursor: isSubmitting ? "wait" : "pointer",
+                opacity: isSubmitting ? 0.7 : 1,
               }}
             >
-              Log
+              {isSubmitting ? "..." : "Log"}
             </button>
           </div>
         )
       ) : (
-        <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 70%)", overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 72px", background: "oklch(0.22 0.005 250 / 40%)", padding: "6px 10px", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)" }}>
+        <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 70%)", overflow: "hidden", userSelect: "none" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 82px", background: "oklch(0.22 0.005 250 / 40%)", padding: "6px 10px", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)" }}>
             <span>Set</span><span>Kg</span><span>Reps</span><span style={{ textAlign: "right" }}>Status</span>
           </div>
           {Array.from({ length: props.sets }).map((_, i) => {
@@ -487,7 +538,7 @@ function ExerciseCard(props: {
             const rowBg = isCurrent ? "oklch(0.22 0.005 250 / 20%)" : "transparent";
 
             return (
-              <div key={setNum} style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 72px", alignItems: "center", padding: "8px 10px", borderTop: "1px solid oklch(0.27 0.005 250 / 50%)", background: rowBg }}>
+              <div key={setNum} style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 82px", alignItems: "center", padding: "8px 10px", borderTop: "1px solid oklch(0.27 0.005 250 / 50%)", background: rowBg }}>
                 <span style={{ fontSize: 13, fontVariantNumeric: "tabular-nums", color: "oklch(0.63 0.006 250)" }}>{setNum}</span>
                 
                 {logged ? (
@@ -519,14 +570,22 @@ function ExerciseCard(props: {
                 )}
 
                 {logged ? (
-                  <button onClick={() => removeSet(logged.id)} style={{ justifySelf: "end", background: "transparent", border: "none", padding: 0, fontSize: 11, color: "oklch(0.92 0.25 110)", fontWeight: 600, cursor: "pointer" }} title="Click to undo">✓ Done</button>
+                  <div style={{ justifySelf: "end", display: "flex", gap: 8, alignItems: "center" }}>
+                    <button onClick={() => editSet(logged)} style={{ background: "transparent", border: "none", padding: 0, fontSize: 12, color: "oklch(0.63 0.006 250)", cursor: "pointer" }} title="Edit">✎</button>
+                    <button onClick={() => removeSet(logged.id)} style={{ background: "transparent", border: "none", padding: 0, fontSize: 11, color: "oklch(0.92 0.25 110)", fontWeight: 600, cursor: "pointer" }} title="Undo">✓ Done</button>
+                  </div>
                 ) : isCurrent ? (
                   <button
                     onClick={submit}
-                    disabled={!props.exerciseSessionId}
-                    style={{ justifySelf: "end", height: 28, padding: "0 12px", borderRadius: 6, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                    disabled={!props.exerciseSessionId || isSubmitting}
+                    style={{
+                      justifySelf: "end", height: 28, padding: "0 12px", borderRadius: 6, border: "none",
+                      background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
+                      fontSize: 12, fontWeight: 600, cursor: isSubmitting ? "wait" : "pointer",
+                      opacity: isSubmitting ? 0.7 : 1,
+                    }}
                   >
-                    Log
+                    {isSubmitting ? "..." : "Log"}
                   </button>
                 ) : (
                   <span style={{ justifySelf: "end", fontSize: 11, color: "oklch(0.4 0.006 250)" }}>—</span>
