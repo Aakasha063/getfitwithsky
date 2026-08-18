@@ -456,16 +456,16 @@ export async function fetchProfile(userId: string) {
 
 export async function uploadAvatar(userId: string, file: File) {
   const fileExt = file.name.split('.').pop();
-  const fileName = `${userId}-${Date.now()}.${fileExt}`;
+  const fileName = `${userId}/profile_picture_${Date.now()}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('avatars')
+    .from('user-profile-picture')
     .upload(fileName, file, { upsert: true });
 
   if (uploadError) throw uploadError;
 
   const { data: urlData } = supabase.storage
-    .from('avatars')
+    .from('user-profile-picture')
     .getPublicUrl(fileName);
 
   return urlData.publicUrl;
