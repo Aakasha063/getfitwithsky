@@ -103,8 +103,15 @@ function ProfilePage() {
   const [goalField, setGoalField] = useState("Fat loss");
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
-  const [avatarColor, setAvatarColor] = useState("oklch(0.92 0.25 110)");
-  const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const avatarKey = `avatar_img_${user?.id}`;
+  const colorKey = `avatar_col_${user?.id}`;
+
+  const [avatarColor, setAvatarColor] = useState(() => {
+    return localStorage.getItem(colorKey) || "oklch(0.92 0.25 110)";
+  });
+  const [avatarImage, setAvatarImage] = useState<string | null>(() => {
+    return localStorage.getItem(avatarKey);
+  });
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -200,7 +207,12 @@ function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setAvatarImage(reader.result as string);
+    reader.onload = () => {
+      const res = reader.result as string;
+      setAvatarImage(res);
+      localStorage.setItem(avatarKey, res);
+      window.dispatchEvent(new Event("avatar_updated"));
+    };
     reader.readAsDataURL(file);
   }
 
@@ -372,7 +384,11 @@ function ProfilePage() {
             </label>
             {avatarImage && (
               <button
-                onClick={() => setAvatarImage(null)}
+                onClick={() => {
+                  setAvatarImage(null);
+                  localStorage.removeItem(avatarKey);
+                  window.dispatchEvent(new Event("avatar_updated"));
+                }}
                 style={{ marginTop: 10, width: "100%", height: 36, borderRadius: 8, border: "none", background: "transparent", color: "oklch(0.63 0.006 250)", fontSize: 13, cursor: "pointer" }}
               >
                 Remove photo
@@ -383,7 +399,13 @@ function ProfilePage() {
               {AVATAR_SWATCHES.map((sw) => (
                 <button
                   key={sw.name}
-                  onClick={() => { setAvatarColor(sw.color); setAvatarImage(null); }}
+                  onClick={() => { 
+                    setAvatarColor(sw.color); 
+                    setAvatarImage(null); 
+                    localStorage.setItem(colorKey, sw.color);
+                    localStorage.removeItem(avatarKey);
+                    window.dispatchEvent(new Event("avatar_updated"));
+                  }}
                   aria-label={sw.name}
                   style={{
                     width: 28, height: 28, borderRadius: 999,

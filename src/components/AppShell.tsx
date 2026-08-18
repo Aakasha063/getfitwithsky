@@ -1,6 +1,6 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -36,9 +36,23 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  const [avatarImg, setAvatarImg] = useState<string | null>(null);
+  const [avatarCol, setAvatarCol] = useState<string>("oklch(0.92 0.25 110)");
+
   useEffect(() => {
     if (!loading && !session) router.navigate({ to: "/auth" });
   }, [loading, session, router]);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    const loadAvatar = () => {
+      setAvatarImg(localStorage.getItem(`avatar_img_${session.user.id}`));
+      setAvatarCol(localStorage.getItem(`avatar_col_${session.user.id}`) || "oklch(0.92 0.25 110)");
+    };
+    loadAvatar();
+    window.addEventListener("avatar_updated", loadAvatar);
+    return () => window.removeEventListener("avatar_updated", loadAvatar);
+  }, [session?.user]);
 
   if (loading) {
     return (
@@ -149,14 +163,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             aria-label="Profile"
             style={{
               width: 34, height: 34, borderRadius: 9,
-              background: "oklch(0.92 0.25 110)",
+              background: avatarImg ? undefined : avatarCol,
+              backgroundImage: avatarImg ? `url(${avatarImg})` : undefined,
+              backgroundSize: "cover", backgroundPosition: "center",
               color: "oklch(0.07 0.01 110)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontFamily: "'Inter'", fontSize: 12, fontWeight: 600,
               textDecoration: "none", flexShrink: 0, overflow: "hidden",
             }}
           >
-            {initials}
+            {!avatarImg && initials}
           </Link>
         </div>
       </header>
