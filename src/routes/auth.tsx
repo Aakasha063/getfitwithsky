@@ -148,10 +148,10 @@ function AuthPage() {
             {(mode === "verify_otp" || mode === "verify_signup_otp") && (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <label htmlFor="otp" style={{ fontSize: 13 }}>
-                  {mode === "verify_signup_otp" ? "6-Digit Verification Code" : "6-Digit Recovery Code"}
+                  {mode === "verify_signup_otp" ? "Verification Code" : "Recovery Code"}
                 </label>
                 <input
-                  id="otp" type="text" required maxLength={6}
+                  id="otp" type="text" required maxLength={8}
                   value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
                   style={INPUT_STYLE}
                   placeholder="123456"
