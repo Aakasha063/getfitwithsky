@@ -67,6 +67,16 @@ export async function startSession(params: {
     .maybeSingle();
   if (existing.data) {
     await ensureExerciseSessions(userId, existing.data.id, exercises);
+    // Resuming a session started on an earlier day: re-date it to today so it
+    // counts toward the current week once finished.
+    const today = todayISO();
+    if (existing.data.session_date !== today) {
+      await supabase
+        .from("workout_sessions")
+        .update({ session_date: today, started_at: new Date().toISOString() })
+        .eq("id", existing.data.id);
+      return { ...existing.data, session_date: today };
+    }
     return existing.data;
   }
 
@@ -312,6 +322,7 @@ export async function finishSession(params: {
     .from("workout_sessions")
     .update({
       status: "completed",
+      session_date: todayISO(),
       finished_at: new Date().toISOString(),
       duration_seconds: params.durationSeconds,
       difficulty: params.difficulty ?? null,
