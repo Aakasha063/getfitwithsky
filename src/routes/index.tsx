@@ -53,7 +53,8 @@ function Dashboard() {
   const completed = (history ?? []).filter((s) => s.status === "completed").length;
   const prCount = prs?.length ?? 0;
 
-  const todayISOStr = new Date().toISOString().slice(0, 10);
+  const d0 = new Date();
+  const todayISOStr = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, "0")}-${String(d0.getDate()).padStart(2, "0")}`;
   const isTodayCompleted = today && (history ?? []).some(
     (s) => s.day_id === today.id && s.session_date === todayISOStr && s.status === "completed"
   );
