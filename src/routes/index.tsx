@@ -191,16 +191,33 @@ function Dashboard() {
         <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
           {weekDays.map((d) => {
             const isToday = d.day_of_week === dow;
+            const dayDate = d.day_of_week == null ? null : dateForDow(d.day_of_week);
+            const iso = dayDate ? toISO(dayDate) : null;
+            const session = iso ? sessionFor(d.id, iso) : undefined;
+            const isDone = session?.status === "completed";
+            const isPast = !!dayDate && !isToday && dayDate.getTime() < weekStart.getTime() + ((now.getDay() + 6) % 7) * 86400000;
+            const isMissed = !d.is_rest && !isDone && isPast;
+            const accent = isDone
+              ? "oklch(0.78 0.19 145)"
+              : isMissed
+                ? "oklch(0.62 0.2 25)"
+                : isToday
+                  ? "oklch(0.92 0.25 110)"
+                  : "transparent";
             return (
               <div
                 key={d.id}
                 style={{
-                  background: "oklch(0.11 0.004 250)",
+                  background: isDone
+                    ? "oklch(0.78 0.19 145 / 8%)"
+                    : isMissed
+                      ? "oklch(0.62 0.2 25 / 7%)"
+                      : "oklch(0.11 0.004 250)",
                   border: "1px solid oklch(0.27 0.005 250)",
-                  borderLeft: `3px solid ${isToday ? "oklch(0.92 0.25 110)" : "transparent"}`,
+                  borderLeft: `3px solid ${accent}`,
                   borderRadius: 12,
                   padding: "16px 20px",
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
                   fontSize: 14,
                 }}
               >
@@ -212,15 +229,30 @@ function Dashboard() {
                       Recovery
                     </span>
                   )}
+                  {isDone && <StatusChip label="Completed" color="oklch(0.78 0.19 145)" />}
+                  {isMissed && <StatusChip label="Missed" color="oklch(0.68 0.2 25)" />}
+                  {isToday && !isDone && <StatusChip label="Today" color="oklch(0.92 0.25 110)" />}
                 </span>
                 {!d.is_rest && (
-                  <Link
-                    to="/workout/$slug"
-                    params={{ slug: d.slug }}
-                    style={{ fontSize: 13, fontWeight: 500, color: "oklch(0.92 0.25 110)", textDecoration: "none" }}
-                  >
-                    Open →
-                  </Link>
+                  <span style={{ display: "flex", alignItems: "center", gap: 14, whiteSpace: "nowrap" }}>
+                    {isDone && session ? (
+                      <Link
+                        to="/history/$id"
+                        params={{ id: session.id }}
+                        style={{ fontSize: 13, fontWeight: 500, color: "oklch(0.78 0.19 145)", textDecoration: "none" }}
+                      >
+                        View log →
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/workout/$slug"
+                        params={{ slug: d.slug }}
+                        style={{ fontSize: 13, fontWeight: 500, color: isMissed ? "oklch(0.68 0.2 25)" : "oklch(0.92 0.25 110)", textDecoration: "none" }}
+                      >
+                        {isMissed ? "Complete now →" : "Open →"}
+                      </Link>
+                    )}
+                  </span>
                 )}
               </div>
             );
