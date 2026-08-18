@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; }
+  a { color: oklch(0.92 0.25 110); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.045 0.003 250);color:oklch(0.96 0.002 250);font-family:'Inter',ui-sans-serif,system-ui,sans-serif">
+
+<sc-if value="{{ dataLoading }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;min-height:100vh;align-items:center;justify-content:center">
+    <div style="width:32px;height:32px;border-radius:999px;border:2px solid oklch(0.92 0.25 110);border-top-color:transparent;animation:spin 0.8s linear infinite"></div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ dataLoaded }}" hint-placeholder-val="{{ false }}">
+  <div>
+  <sc-if value="{{ isAuth }}">
+    <div style="display:flex;min-height:100vh;align-items:center;justify-content:center;padding:64px 20px">
+      <div style="width:100%;max-width:360px">
+        <div style="margin-bottom:40px;display:flex;flex-direction:column;align-items:center;text-align:center">
+          <span style="margin-bottom:16px;width:44px;height:44px;border-radius:12px;background:oklch(0.92 0.25 110);display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="oklch(0.07 0.01 110)" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="3"></circle><circle cx="19" cy="12" r="3"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          </span>
+          <h1 style="font-family:'Inter';font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0">LIFT</h1>
+          <p style="margin-top:8px;font-size:14px;color:oklch(0.63 0.006 250)">Your fat-loss phase, tracked set by set.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{ isSignup }}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <label style="font-size:13px;font-weight:500">Name</label>
+              <input value="{{ authName }}" onChange="{{ setAuthName }}" style="height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 12px;font-size:14px" />
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="font-size:13px;font-weight:500">Email</label>
+            <input type="email" value="{{ authEmail }}" onChange="{{ setAuthEmail }}" style="height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 12px;font-size:14px" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="font-size:13px;font-weight:500">Password</label>
+            <input type="password" value="{{ authPassword }}" onChange="{{ setAuthPassword }}" style="height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 12px;font-size:14px" />
+          </div>
+          <button onClick="{{ submitAuth }}" style="height:36px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:14px;font-weight:500;cursor:pointer" style-hover="background:oklch(0.92 0.25 110 / 90%)">{{ authSubmitLabel }}</button>
+        </div>
+
+        <div style="margin:20px 0;display:flex;align-items:center;gap:12px;font-size:12px;color:oklch(0.63 0.006 250)">
+          <span style="height:1px;flex:1;background:oklch(0.27 0.005 250)"></span>or<span style="height:1px;flex:1;background:oklch(0.27 0.005 250)"></span>
+        </div>
+
+        <button onClick="{{ submitAuth }}" style="width:100%;height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:14px;font-weight:500;cursor:pointer" style-hover="background:oklch(0.16 0.005 250)">Continue with Google</button>
+
+        <p style="margin-top:24px;text-align:center;font-size:14px;color:oklch(0.63 0.006 250)">
+          {{ authSwitchPrompt }} <a href="#" onClick="{{ toggleAuthMode }}" style="color:oklch(0.92 0.25 110)">{{ authSwitchLabel }}</a>
+        </p>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isApp }}">
+    <div>
+      <header style="position:sticky;top:0;z-index:30;border-bottom:1px solid oklch(0.27 0.005 250 / 60%);background:oklch(0.045 0.003 250 / 85%);backdrop-filter:blur(10px)">
+        <div style="max-width:1280px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0" onClick="{{ goToday }}">
+            <span style="width:28px;height:28px;border-radius:6px;background:oklch(0.92 0.25 110);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.07 0.01 110)" stroke-width="2.2" stroke-linecap="round"><circle cx="5" cy="12" r="3"></circle><circle cx="19" cy="12" r="3"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            </span>
+            <sc-if value="{{ showWordmark }}" hint-placeholder-val="{{ true }}"><span style="font-family:'Inter';font-size:18px;font-weight:600;letter-spacing:-0.02em">LIFT</span></sc-if>
+          </div>
+          <nav style="display:flex;align-items:center;gap:{{ navGap }};min-width:0;overflow-x:auto">
+            <a href="#" onClick="{{ goToday }}" style="padding:{{ navLinkPad }};border-radius:8px;font-size:{{ navFontSize }};font-weight:500;white-space:nowrap;color:{{ navColorToday }};background:{{ navBgToday }}" style-hover="color:oklch(0.96 0.002 250)">Today</a>
+            <a href="#" onClick="{{ goPlan }}" style="padding:{{ navLinkPad }};border-radius:8px;font-size:{{ navFontSize }};font-weight:500;white-space:nowrap;color:{{ navColorPlan }};background:{{ navBgPlan }}" style-hover="color:oklch(0.96 0.002 250)">Plan</a>
+            <a href="#" onClick="{{ goBody }}" style="padding:{{ navLinkPad }};border-radius:8px;font-size:{{ navFontSize }};font-weight:500;white-space:nowrap;color:{{ navColorBody }};background:{{ navBgBody }}" style-hover="color:oklch(0.96 0.002 250)">Body</a>
+            <a href="#" onClick="{{ goProfile }}" style="padding:{{ navLinkPad }};border-radius:8px;font-size:{{ navFontSize }};font-weight:500;white-space:nowrap;color:{{ navColorProfile }};background:{{ navBgProfile }}" style-hover="color:oklch(0.96 0.002 250)">Profile</a>
+          </nav>
+          <button onClick="{{ goProfile }}" aria-label="Profile" style="width:32px;height:32px;border-radius:8px;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter';font-size:12px;font-weight:600;color:oklch(0.07 0.01 110);overflow:hidden;background:{{ headerAvatarBg }};flex-shrink:0">
+            <sc-if value="{{ noAvatarImage }}" hint-placeholder-val="{{ true }}">{{ initials }}</sc-if>
+          </button>
+        </div>
+      </header>
+
+      <main style="max-width:1280px;margin:0 auto;padding:{{ mainPadding }}">
+
+        <sc-if value="{{ isToday }}">
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div>
+              <p style="margin:0;font-size:14px;color:oklch(0.63 0.006 250)">{{ todayDateLabel }}</p>
+              <h1 style="margin:14px 0 0;font-family:'Inter';font-size:42px;font-weight:700;letter-spacing:-0.02em;line-height:1.1">{{ todayHeading }}</h1>
+            </div>
+
+            <sc-if value="{{ todayHasWorkout }}">
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px;display:flex;gap:24px;flex-direction:{{ heroDirection }}">
+                <div style="flex:1;min-width:0">
+                  <p style="margin:0;font-size:14px;color:oklch(0.63 0.006 250)">{{ todayDayName }}</p>
+                  <h2 style="margin:6px 0 0;font-size:22px;font-weight:600">{{ todayFocus }}</h2>
+                  <sc-if value="{{ todayHasCardio }}"><p style="margin:8px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">Cardio: {{ todayCardioNote }}</p></sc-if>
+                  <button onClick="{{ startTodayWorkout }}" style="margin-top:20px;display:inline-flex;align-items:center;gap:6px;height:46px;padding:0 20px;border-radius:9px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:14px;font-weight:600;cursor:pointer" style-hover="background:oklch(0.96 0.25 110)">
+                    Start workout
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="transition:transform 0.15s" style-hover="transform:translateX(3px)"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12,5 19,12 12,19"></polyline></svg>
+                  </button>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:16px;{{ heroRightStyle }}">
+                  <div style="display:flex;gap:40px">
+                    <div><p style="margin:0;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap">{{ heroExerciseCount }}</p><p style="margin:4px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">exercises</p></div>
+                    <div><p style="margin:0;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap">{{ heroDuration }}</p><p style="margin:4px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">estimated</p></div>
+                    <sc-if value="{{ hasLastSession }}" hint-placeholder-val="{{ false }}">
+                      <div><p style="margin:0;font-size:22px;font-weight:600;white-space:nowrap">{{ lastSessionLine }}</p><p style="margin:4px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">last session</p></div>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ todayNoWorkout }}">
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px">
+                <h2 style="margin:0;font-size:20px;font-weight:600">Recovery day</h2>
+                <p style="margin:6px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">Easy walking, light mobility, stretching. No hard training, no HIIT.</p>
+                <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{ optionalDays }}" as="d" hint-placeholder-count="4">
+                    <button onClick="{{ d.open }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:13px;cursor:pointer" style-hover="background:oklch(0.16 0.005 250)">{{ d.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="display:grid;grid-template-columns:repeat({{ statsGridCols }},1fr);gap:16px">
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px">
+                <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Sessions</p>
+                <p style="margin:8px 0 0;font-size:32px;font-weight:700;font-variant-numeric:tabular-nums">{{ statSessions }}</p>
+                <p style="margin:4px 0 0;font-size:13px;color:oklch(0.45 0.006 250)">{{ sessionsContext }}</p>
+              </div>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px">
+                <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Bodyweight</p>
+                <p style="margin:8px 0 0;font-size:32px;font-weight:700;font-variant-numeric:tabular-nums">{{ statWeight }}</p>
+                <p style="margin:4px 0 0;font-size:13px;color:oklch(0.45 0.006 250)">{{ weightDeltaLine }}</p>
+              </div>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px">
+                <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">PRs</p>
+                <p style="margin:8px 0 0;font-size:32px;font-weight:700;font-variant-numeric:tabular-nums">{{ statPRs }}</p>
+                <p style="margin:4px 0 0;font-size:13px;color:oklch(0.45 0.006 250)">{{ prsContext }}</p>
+              </div>
+            </div>
+
+            <div>
+              <h2 style="margin:0;font-size:20px;font-weight:600">This week</h2>
+              <div style="margin-top:16px;display:grid;grid-template-columns:repeat({{ weeklyGridCols }},1fr);gap:16px">
+                <sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="6">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-left:3px solid {{ d.accentColor }};border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;font-size:14px" style-hover="border-color:oklch(0.35 0.006 250)">
+                    <span>
+                      <span style="font-weight:600">{{ d.name }}</span><span style="color:oklch(0.63 0.006 250)"> — {{ d.focusLabel }}</span>
+                      <sc-if value="{{ d.isRest }}" hint-placeholder-val="{{ false }}"><span style="margin-left:8px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:oklch(0.45 0.006 250)">Recovery</span></sc-if>
+                    </span>
+                    <sc-if value="{{ d.notRest }}" hint-placeholder-val="{{ false }}">
+                      <span><a href="#" onClick="{{ d.open }}" style="font-size:13px;font-weight:500;color:oklch(0.92 0.25 110)">Open →</a></span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPlan }}">
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div>
+              <h1 style="margin:0;font-family:'Inter';font-size:34px;font-weight:700;letter-spacing:-0.02em">Training plan</h1>
+              <p style="margin:6px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">V-Taper + Fat-Loss phase · 5 mandatory sessions · Saturday optional · Sunday recovery</p>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <p style="margin:0;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">This week</p>
+                <p style="margin:0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums">{{ completedThisWeek }}/5 completed</p>
+              </div>
+              <div style="margin-top:12px;height:6px;border-radius:999px;background:oklch(0.22 0.005 250);overflow:hidden"><div style="height:100%;background:oklch(0.92 0.25 110);width:{{ weekPct }}%"></div></div>
+            </div>
+
+            <div>
+              <h2 style="margin:0 0 16px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Mandatory</h2>
+              <div style="display:grid;grid-template-columns:repeat({{ planMandatoryCols }},1fr);gap:16px">
+                <sc-for list="{{ mandatoryDays }}" as="d" hint-placeholder-count="5">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-left:3px solid {{ d.accentColor }};border-radius:12px;padding:18px 20px;min-height:128px;display:flex;flex-direction:column;justify-content:space-between">
+                    <div>
+                      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                        <div>
+                          <p style="margin:0;font-size:13px;color:oklch(0.63 0.006 250)">{{ d.name }}</p>
+                          <p style="margin:4px 0 0;font-size:16px;font-weight:600">{{ d.focusLabel }}</p>
+                        </div>
+                        <sc-if value="{{ d.isCompleted }}" hint-placeholder-val="{{ false }}">
+                          <svg style="flex-shrink:0;margin-top:2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.78 0.15 145)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"></polyline></svg>
+                        </sc-if>
+                      </div>
+                      <sc-if value="{{ d.hasCardio }}"><p style="margin:8px 0 0;font-size:12px;color:oklch(0.45 0.006 250)">{{ d.cardioNote }}</p></sc-if>
+                    </div>
+                    <div style="display:flex;justify-content:flex-end;margin-top:12px">
+                      <sc-if value="{{ d.isToday }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ d.open }}" style="height:32px;padding:0 14px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:13px;font-weight:600;cursor:pointer">Start</button>
+                      </sc-if>
+                      <sc-if value="{{ d.isCompleted }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:13px;color:oklch(0.78 0.15 145)">Completed</span>
+                      </sc-if>
+                      <sc-if value="{{ d.isUpcoming }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ d.open }}" style="height:32px;padding:0 14px;border-radius:8px;border:none;background:oklch(0.22 0.005 250);color:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:oklch(0.16 0.005 250)">Open</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <h2 style="margin:0 0 16px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Saturday · Optional specialization</h2>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{ satOptions }}" as="o" hint-placeholder-count="4">
+                    <button onClick="{{ o.select }}" style="height:32px;padding:0 14px;border-radius:8px;border:none;background:{{ o.bg }};color:{{ o.color }};font-size:13px;font-weight:500;cursor:pointer">{{ o.label }}</button>
+                  </sc-for>
+                </div>
+                <div style="margin-top:20px;padding-top:20px;border-top:1px solid oklch(0.27 0.005 250);display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <div>
+                    <p style="margin:0;font-size:16px;font-weight:600">{{ satFocusLabel }}</p>
+                    <p style="margin:4px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">{{ satMeta }}</p>
+                  </div>
+                  <button onClick="{{ openSaturday }}" style="flex-shrink:0;height:36px;padding:0 16px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:13px;font-weight:500;cursor:pointer" style-hover="background:oklch(0.16 0.005 250)">Open</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 style="margin:0 0 16px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Sunday</h2>
+              <div style="background:oklch(0.08 0.003 250);border:1px dashed oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                <p style="margin:0;font-size:16px;font-weight:600;color:oklch(0.63 0.006 250)">Complete rest</p>
+                <p style="margin:6px 0 0;font-size:13px;color:oklch(0.45 0.006 250)">{{ sundayNote }}</p>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isWorkout }}">
+          <div style="display:flex;flex-direction:column;gap:20px;padding-bottom:100px">
+            <div style="position:sticky;top:0;z-index:30;margin:0 -20px;padding:12px 20px;background:oklch(0.045 0.003 250 / 97%);backdrop-filter:blur(8px);border-bottom:1px solid oklch(0.27 0.005 250)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                  <button onClick="{{ backFromWorkout }}" aria-label="Back" style="flex-shrink:0;width:32px;height:32px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="11,18 5,12 11,6"></polyline></svg>
+                  </button>
+                  <div style="min-width:0">
+                    <p style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">{{ workoutDayName }}</p>
+                    <h1 style="margin:2px 0 0;font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ workoutName }}</h1>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;flex-shrink:0">
+                  <div style="text-align:right">
+                    <p style="margin:0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ workoutElapsedLabel }}</p>
+                    <p style="margin:0;font-size:11px;color:oklch(0.63 0.006 250);font-variant-numeric:tabular-nums">{{ workoutSetsDone }}/{{ workoutSetsTotal }} · {{ workoutPct }}%</p>
+                  </div>
+                  <button onClick="{{ requestFinish }}" style="height:36px;padding:0 16px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">Finish</button>
+                </div>
+              </div>
+              <div style="margin-top:10px;height:3px;border-radius:999px;background:oklch(0.22 0.005 250);overflow:hidden">
+                <div style="height:100%;background:oklch(0.92 0.25 110);width:{{ workoutPct }}%"></div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat({{ workoutStatsCols }},1fr);gap:1px;background:oklch(0.27 0.005 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;overflow:hidden">
+              <div style="background:oklch(0.11 0.004 250);padding:14px;text-align:center">
+                <p style="margin:0;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:oklch(0.63 0.006 250)">Time</p>
+                <p style="margin:4px 0 0;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums">{{ workoutElapsedLabel }}</p>
+              </div>
+              <div style="background:oklch(0.11 0.004 250);padding:14px;text-align:center">
+                <p style="margin:0;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:oklch(0.63 0.006 250)">Volume</p>
+                <p style="margin:4px 0 0;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums">{{ sessionVolumeLabel }}</p>
+              </div>
+              <div style="background:oklch(0.11 0.004 250);padding:14px;text-align:center">
+                <p style="margin:0;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:oklch(0.63 0.006 250)">PRs</p>
+                <p style="margin:4px 0 0;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ prCountColor }}">{{ prsThisWorkoutCount }}</p>
+              </div>
+              <div style="background:oklch(0.11 0.004 250);padding:14px;text-align:center">
+                <p style="margin:0;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:oklch(0.63 0.006 250)">Sets</p>
+                <p style="margin:4px 0 0;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums">{{ workoutSetsDone }}/{{ workoutSetsTotal }}</p>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ workoutExercises }}" as="ex" hint-placeholder-count="6">
+                <div style="background:{{ ex.cardBg }};border:1px solid {{ ex.cardBorder }};border-radius:12px;padding:16px">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                    <div style="display:flex;gap:10px;min-width:0">
+                      <span style="flex-shrink:0;width:26px;height:26px;border-radius:7px;background:oklch(0.22 0.005 250);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums">{{ ex.number }}</span>
+                      <div style="min-width:0">
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                          <h3 style="margin:0;font-size:15px;font-weight:600">{{ ex.name }}</h3>
+                          <sc-if value="{{ ex.done }}" hint-placeholder-val="{{ false }}">
+                            <span style="display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);padding:2px 8px;font-size:11px;font-weight:600">✓ Done</span>
+                          </sc-if>
+                          <sc-if value="{{ ex.isSkipped }}" hint-placeholder-val="{{ false }}">
+                            <span style="border-radius:999px;border:1px solid oklch(0.27 0.005 250);color:oklch(0.63 0.006 250);padding:2px 8px;font-size:11px;font-weight:600">Skipped</span>
+                          </sc-if>
+                        </div>
+                        <p style="margin:3px 0 0;font-size:12.5px;color:oklch(0.63 0.006 250);font-variant-numeric:tabular-nums">{{ ex.metaLine }}</p>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+                      <span style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:oklch(0.63 0.006 250)">{{ ex.progressLabel }}</span>
+                      <button onClick="{{ ex.openInfo }}" aria-label="How to perform" style="width:28px;height:28px;border-radius:7px;border:none;background:transparent;color:oklch(0.63 0.006 250);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:oklch(0.16 0.005 250)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16"></line><circle cx="12" cy="8" r="0.5" fill="currentColor"></circle></svg>
+                      </button>
+                      <div style="position:relative">
+                        <button onClick="{{ ex.toggleMenu }}" aria-label="More" style="width:28px;height:28px;border-radius:7px;border:none;background:transparent;color:oklch(0.63 0.006 250);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:oklch(0.16 0.005 250)">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                        </button>
+                        <sc-if value="{{ ex.menuOpen }}" hint-placeholder-val="{{ false }}">
+                          <div style="position:absolute;right:0;top:32px;z-index:20;width:190px;background:oklch(0.16 0.005 250);border:1px solid oklch(0.27 0.005 250);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.5)">
+                            <button onClick="{{ ex.menuReplace }}" disabled="{{ ex.menuReplaceDisabled }}" style="width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:{{ ex.menuReplaceColor }};font-size:13px;cursor:pointer" style-hover="background:oklch(0.22 0.005 250)">Replace exercise</button>
+                            <button onClick="{{ ex.menuToggleSkip }}" style="width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:inherit;font-size:13px;cursor:pointer" style-hover="background:oklch(0.22 0.005 250)">{{ ex.skipLabel }}</button>
+                            <button onClick="{{ ex.menuAddSet }}" style="width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:inherit;font-size:13px;cursor:pointer" style-hover="background:oklch(0.22 0.005 250)">Add set</button>
+                            <button onClick="{{ ex.menuToggleNote }}" style="width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:inherit;font-size:13px;cursor:pointer" style-hover="background:oklch(0.22 0.005 250)">Add note</button>
+                            <button onClick="{{ ex.menuToggleHistory }}" style="width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:inherit;font-size:13px;cursor:pointer" style-hover="background:oklch(0.22 0.005 250)">View history</button>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </div>
+
+                  <sc-if value="{{ ex.noteEditing }}" hint-placeholder-val="{{ false }}">
+                    <textarea value="{{ ex.noteValue }}" onChange="{{ ex.setNoteValue }}" placeholder="Note for next time..." style="margin-top:10px;width:100%;min-height:56px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:oklch(0.045 0.003 250);color:inherit;padding:8px 10px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+                  </sc-if>
+                  <sc-if value="{{ ex.hasSavedNote }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:8px 0 0;font-size:12px;color:oklch(0.63 0.006 250);font-style:italic">Note: {{ ex.savedNote }}</p>
+                  </sc-if>
+                  <sc-if value="{{ ex.historyOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top:10px;border-radius:8px;background:oklch(0.22 0.005 250 / 50%);padding:10px 12px;font-size:12.5px">
+                      <p style="margin:0 0 6px;font-weight:600;color:oklch(0.63 0.006 250)">Last session · {{ ex.previousDate }}</p>
+                      <sc-for list="{{ ex.historyRows }}" as="hr" hint-placeholder-count="3">
+                        <p style="margin:2px 0;font-variant-numeric:tabular-nums">Set {{ hr.n }} · {{ hr.w }} kg × {{ hr.r }}</p>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ ex.notSkipped }}" hint-placeholder-val="{{ true }}">
+                    <sc-if value="{{ ex.notCollapsed }}" hint-placeholder-val="{{ true }}">
+                      <sc-if value="{{ ex.isCardio }}" hint-placeholder-val="{{ false }}">
+                        <sc-if value="{{ ex.done }}" hint-placeholder-val="{{ false }}">
+                          <p style="margin-top:12px;font-size:13px;color:oklch(0.63 0.006 250)">Logged: {{ ex.cardioLoggedLabel }}</p>
+                        </sc-if>
+                        <sc-if value="{{ ex.notDone }}" hint-placeholder-val="{{ true }}">
+                          <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+                            <input inputmode="numeric" placeholder="minutes" value="{{ ex.cardioValue }}" onChange="{{ ex.setCardio }}" style="height:36px;flex:1;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:13px;font-variant-numeric:tabular-nums" />
+                            <button onClick="{{ ex.logCardio }}" style="height:36px;padding:0 14px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:13px;font-weight:600;cursor:pointer">Log</button>
+                          </div>
+                        </sc-if>
+                      </sc-if>
+
+                      <sc-if value="{{ ex.notCardio }}" hint-placeholder-val="{{ false }}">
+                        <sc-if value="{{ ex.hasTargetHint }}" hint-placeholder-val="{{ false }}">
+                          <p style="margin-top:10px;font-size:12px;color:oklch(0.63 0.006 250)">{{ ex.targetHint }}</p>
+                        </sc-if>
+
+                        <sc-if value="{{ ex.hasWarmups }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
+                            <sc-for list="{{ ex.warmupChips }}" as="wc" hint-placeholder-count="2">
+                              <button onClick="{{ wc.remove }}" style="display:inline-flex;align-items:center;gap:5px;border-radius:7px;border:1px dashed oklch(0.4 0.006 250);padding:3px 8px;background:transparent;color:oklch(0.63 0.006 250);font-size:11.5px;font-variant-numeric:tabular-nums;cursor:pointer">
+                                WU {{ wc.label }} <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                              </button>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+
+                        <sc-if value="{{ ex.showAddWarmup }}" hint-placeholder-val="{{ false }}">
+                          <sc-if value="{{ ex.warmupOpen }}" hint-placeholder-val="{{ false }}">
+                            <div style="margin-top:10px;display:flex;align-items:center;gap:6px">
+                              <input inputmode="decimal" placeholder="kg" value="{{ ex.warmupWeightValue }}" onChange="{{ ex.setWarmupWeight }}" style="height:32px;width:70px;border-radius:7px;border:1px dashed oklch(0.4 0.006 250);background:transparent;color:inherit;padding:0 8px;font-size:12.5px" />
+                              <input inputmode="numeric" placeholder="reps" value="{{ ex.warmupRepsValue }}" onChange="{{ ex.setWarmupReps }}" style="height:32px;width:70px;border-radius:7px;border:1px dashed oklch(0.4 0.006 250);background:transparent;color:inherit;padding:0 8px;font-size:12.5px" />
+                              <button onClick="{{ ex.logWarmup }}" style="height:32px;padding:0 12px;border-radius:7px;border:none;background:oklch(0.27 0.005 250);color:inherit;font-size:12.5px;cursor:pointer">Log</button>
+                              <button onClick="{{ ex.closeWarmup }}" style="height:32px;padding:0 8px;border-radius:7px;border:none;background:transparent;color:oklch(0.63 0.006 250);font-size:12.5px;cursor:pointer">Cancel</button>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{ ex.warmupClosed }}" hint-placeholder-val="{{ true }}">
+                            <button onClick="{{ ex.openWarmup }}" style="margin-top:10px;font-size:12px;color:oklch(0.63 0.006 250);background:transparent;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px">+ Add warm-up set</button>
+                          </sc-if>
+                        </sc-if>
+
+                        <div style="margin-top:12px;border-radius:8px;border:1px solid oklch(0.27 0.005 250 / 70%);overflow:hidden">
+                          <div style="display:grid;grid-template-columns:36px 1fr 1fr 72px;background:oklch(0.22 0.005 250 / 40%);padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">
+                            <span>Set</span><span>Kg</span><span>Reps</span><span style="text-align:right">Status</span>
+                          </div>
+                          <sc-for list="{{ ex.workingRows }}" as="row" hint-placeholder-count="4">
+                            <div style="display:grid;grid-template-columns:36px 1fr 1fr 72px;align-items:center;padding:8px 10px;border-top:1px solid oklch(0.27 0.005 250 / 50%);background:{{ row.rowBg }}">
+                              <span style="font-size:13px;font-variant-numeric:tabular-nums;color:oklch(0.63 0.006 250)">{{ row.n }}</span>
+                              <sc-if value="{{ row.isCurrent }}" hint-placeholder-val="{{ false }}">
+                                <input inputmode="decimal" value="{{ row.weightValue }}" onChange="{{ row.setWeight }}" style="height:30px;width:64px;border-radius:6px;border:1px solid oklch(0.4 0.006 250);background:oklch(0.045 0.003 250);color:inherit;padding:0 8px;font-size:13px;font-variant-numeric:tabular-nums" />
+                              </sc-if>
+                              <sc-if value="{{ row.notCurrent }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;font-variant-numeric:tabular-nums;color:{{ row.dimColor }}">{{ row.kgDisplay }}</span></sc-if>
+                              <sc-if value="{{ row.isCurrent }}" hint-placeholder-val="{{ false }}">
+                                <input inputmode="numeric" value="{{ row.repsValue }}" onChange="{{ row.setReps }}" style="height:30px;width:56px;border-radius:6px;border:1px solid oklch(0.4 0.006 250);background:oklch(0.045 0.003 250);color:inherit;padding:0 8px;font-size:13px;font-variant-numeric:tabular-nums" />
+                              </sc-if>
+                              <sc-if value="{{ row.notCurrent }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;font-variant-numeric:tabular-nums;color:{{ row.dimColor }}">{{ row.repsDisplay }}</span></sc-if>
+                              <sc-if value="{{ row.isCurrent }}" hint-placeholder-val="{{ false }}"><button onClick="{{ row.logSet }}" style="justify-self:end;height:28px;padding:0 12px;border-radius:6px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:12px;font-weight:600;cursor:pointer">Log</button></sc-if>
+                              <sc-if value="{{ row.isDone }}" hint-placeholder-val="{{ false }}"><span style="justify-self:end;font-size:11px;color:oklch(0.92 0.25 110);font-weight:600">✓ Done</span></sc-if>
+                              <sc-if value="{{ row.isUpcoming }}" hint-placeholder-val="{{ false }}"><span style="justify-self:end;font-size:11px;color:oklch(0.4 0.006 250)">—</span></sc-if>
+                            </div>
+                            <sc-if value="{{ row.hasFeedback }}" hint-placeholder-val="{{ false }}">
+                              <p style="margin:0;padding:2px 10px 8px;font-size:11.5px;color:{{ row.feedbackColor }}">{{ row.feedbackText }}</p>
+                            </sc-if>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                    </sc-if>
+
+                    <sc-if value="{{ ex.done }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px">
+                        <p style="margin:0;font-size:12px;color:oklch(0.63 0.006 250)">{{ ex.summaryLine }}</p>
+                        <button onClick="{{ ex.toggleCollapse }}" style="font-size:12px;color:oklch(0.63 0.006 250);background:transparent;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0">{{ ex.collapseLabel }}</button>
+                      </div>
+                    </sc-if>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ showFinishWarning }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;inset:0;z-index:55;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px" onClick="{{ cancelFinishWarning }}">
+              <div style="width:100%;max-width:340px;background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:22px" onClick="{{ stopClick }}">
+                <h2 style="margin:0;font-size:16px;font-weight:600">Sets remaining</h2>
+                <p style="margin:8px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">{{ remainingSetsLabel }}. Finish anyway?</p>
+                <div style="margin-top:18px;display:flex;gap:8px">
+                  <button onClick="{{ cancelFinishWarning }}" style="flex:1;height:38px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:13px;cursor:pointer">Keep going</button>
+                  <button onClick="{{ confirmFinishAnyway }}" style="flex:1;height:38px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:13px;font-weight:600;cursor:pointer">Finish anyway</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showCompletion }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;inset:0;z-index:60;background:oklch(0.045 0.003 250);overflow-y:auto;display:flex;justify-content:center;padding:40px 20px">
+              <div style="width:100%;max-width:480px">
+                <p style="margin:0;text-align:center;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:oklch(0.92 0.25 110)">Workout Complete</p>
+                <h1 style="margin:8px 0 0;text-align:center;font-size:22px;font-weight:600">{{ completionTitle }}</h1>
+                <p style="margin:16px 0 0;text-align:center;font-size:48px;font-weight:700;font-variant-numeric:tabular-nums">{{ completionDuration }}</p>
+
+                <div style="margin-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:18px;text-align:center"><p style="margin:0;font-size:11px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">Total sets</p><p style="margin:6px 0 0;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums">{{ completionSets }}</p></div>
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:18px;text-align:center"><p style="margin:0;font-size:11px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">Volume</p><p style="margin:6px 0 0;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums">{{ completionVolume }} kg</p></div>
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:18px;text-align:center"><p style="margin:0;font-size:11px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">PRs</p><p style="margin:6px 0 0;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:oklch(0.92 0.25 110)">{{ completionPRs }}</p></div>
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:18px;text-align:center"><p style="margin:0;font-size:11px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">Iron earned</p><p style="margin:6px 0 0;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:oklch(0.92 0.25 110)">+{{ completionIron }}</p></div>
+                </div>
+
+                <div style="margin-top:24px;background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:18px">
+                  <p style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Progress</p>
+                  <p style="margin:8px 0 0;font-size:14px">{{ completionImproved }} exercise{{ completionImprovedPlural }} improved</p>
+                  <p style="margin:4px 0 0;font-size:14px">{{ completionMaintained }} maintained</p>
+                </div>
+
+                <p style="margin:16px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">Next: {{ completionNext }}</p>
+
+                <button onClick="{{ doneCompletion }}" style="margin-top:28px;width:100%;height:48px;border-radius:10px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:15px;font-weight:600;cursor:pointer">Done</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="position:fixed;left:0;right:0;bottom:0;z-index:35;background:oklch(0.08 0.004 250 / 97%);backdrop-filter:blur(8px);border-top:1px solid oklch(0.27 0.005 250);padding:10px 20px">
+            <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px">
+              <div style="display:flex;gap:20px">
+                <div><p style="margin:0;font-size:10px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">Sets</p><p style="margin:2px 0 0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums">{{ workoutSetsDone }}/{{ workoutSetsTotal }}</p></div>
+                <div><p style="margin:0;font-size:10px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">Time</p><p style="margin:2px 0 0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums">{{ workoutElapsedLabel }}</p></div>
+                <div><p style="margin:0;font-size:10px;color:oklch(0.63 0.006 250);text-transform:uppercase;letter-spacing:0.04em">Iron</p><p style="margin:2px 0 0;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:oklch(0.92 0.25 110)">+{{ ironEarnedLabel }}</p></div>
+              </div>
+              <button onClick="{{ requestFinish }}" style="height:40px;padding:0 20px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:14px;font-weight:600;cursor:pointer">Finish Workout</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasInfo }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.5)" onClick="{{ closeInfo }}">
+              <div style="position:absolute;top:0;right:0;bottom:0;width:min(420px,100%);background:oklch(0.11 0.004 250);border-left:1px solid oklch(0.27 0.005 250);overflow-y:auto;padding:24px" onClick="{{ stopClick }}">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between">
+                  <h2 style="margin:0;font-size:19px;font-weight:600">{{ infoName }}</h2>
+                  <button onClick="{{ closeInfo }}" style="background:transparent;border:none;color:oklch(0.63 0.006 250);cursor:pointer;padding:4px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <p style="margin:16px 0 24px;font-size:14px;color:oklch(0.63 0.006 250)">{{ infoMeta }}</p>
+                <div style="display:flex;flex-direction:column;gap:24px">
+                  <div>
+                    <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Setup</h4>
+                    <ul style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px">
+                      <sc-for list="{{ infoSetup }}" as="i" hint-placeholder-count="2"><li style="display:flex;gap:8px"><span style="margin-top:8px;width:4px;height:4px;flex-shrink:0;border-radius:999px;background:oklch(0.92 0.25 110)"></span><span>{{ i.text }}</span></li></sc-for>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Execution</h4>
+                    <ul style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px">
+                      <sc-for list="{{ infoExec }}" as="i" hint-placeholder-count="2"><li style="display:flex;gap:8px"><span style="margin-top:8px;width:4px;height:4px;flex-shrink:0;border-radius:999px;background:oklch(0.92 0.25 110)"></span><span>{{ i.text }}</span></li></sc-for>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Cues</h4>
+                    <ul style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px">
+                      <sc-for list="{{ infoCues }}" as="i" hint-placeholder-count="2"><li style="display:flex;gap:8px"><span style="margin-top:8px;width:4px;height:4px;flex-shrink:0;border-radius:999px;background:oklch(0.92 0.25 110)"></span><span>{{ i.text }}</span></li></sc-for>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Common mistakes</h4>
+                    <ul style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px">
+                      <sc-for list="{{ infoMistakes }}" as="i" hint-placeholder-count="2"><li style="display:flex;gap:8px"><span style="margin-top:8px;width:4px;height:4px;flex-shrink:0;border-radius:999px;background:oklch(0.92 0.25 110)"></span><span>{{ i.text }}</span></li></sc-for>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">What it should feel like</h4>
+                    <p style="margin:8px 0 0;font-size:14px">{{ infoFeel }}</p>
+                  </div>
+                  <div>
+                    <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Breathing</h4>
+                    <p style="margin:8px 0 0;font-size:14px">{{ infoBreathe }}</p>
+                  </div>
+                  <sc-if value="{{ infoHasBack }}" hint-placeholder-val="{{ false }}">
+                    <div style="border-radius:8px;border:1px solid oklch(0.62 0.18 25 / 40%);background:oklch(0.62 0.18 25 / 10%);padding:12px">
+                      <h4 style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.62 0.18 25)">Lower-back safety</h4>
+                      <p style="margin:6px 0 0;font-size:14px">{{ infoBack }}</p>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasRest }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;left:0;right:0;bottom:76px;z-index:40;padding:0 16px">
+              <div style="margin:0 auto;max-width:420px;display:flex;align-items:center;gap:16px;border-radius:12px;border:1px solid oklch(0.27 0.005 250);background:oklch(0.135 0.005 250 / 97%);backdrop-filter:blur(8px);padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+                <div style="position:relative;width:48px;height:48px;flex-shrink:0">
+                  <svg width="48" height="48" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
+                    <circle cx="18" cy="18" r="16" fill="none" stroke="oklch(0.27 0.005 250)" stroke-width="3"></circle>
+                    <circle cx="18" cy="18" r="16" fill="none" stroke="oklch(0.92 0.25 110)" stroke-width="3" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="{{ restDashOffset }}"></circle>
+                  </svg>
+                </div>
+                <div style="min-width:0;flex:1">
+                  <p style="margin:0;font-size:20px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums">{{ restLabel }}</p>
+                  <p style="margin:4px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">{{ restStatus }}</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <button onClick="{{ restAdd }}" style="height:32px;padding:0 10px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:12px;cursor:pointer">+30s</button>
+                  <button onClick="{{ restSkip }}" style="height:32px;padding:0 10px;border-radius:8px;border:none;background:oklch(0.27 0.005 250);color:inherit;font-size:12px;cursor:pointer">Skip</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isProgress }}">
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <h1 style="margin:0;font-family:'Inter';font-size:34px;font-weight:700;letter-spacing:-0.02em">Progress</h1>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+                <h2 style="margin:0;font-size:15px;font-weight:500">Strength trend (est. 1RM)</h2>
+                <select value="{{ progressExercise }}" onChange="{{ setProgressExercise }}" style="height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:oklch(0.045 0.003 250);color:inherit;padding:0 10px;font-size:13px">
+                  <sc-for list="{{ exerciseOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                </select>
+              </div>
+              <div style="margin-top:16px">
+                <svg viewBox="0 0 560 156" width="100%" height="156">
+                  <polyline points="{{ strengthPoints }}" fill="none" stroke="oklch(0.92 0.25 110)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                </svg>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:oklch(0.63 0.006 250);margin-top:4px">
+                  <span>{{ strengthFirstLabel }}</span><span>{{ strengthLastLabel }}</span>
+                </div>
+              </div>
+              <div style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px">
+                <div><p style="margin:0;color:oklch(0.63 0.006 250)">Best e1RM</p><p style="margin:2px 0 0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ strengthBest }}</p></div>
+                <div><p style="margin:0;color:oklch(0.63 0.006 250)">Sessions</p><p style="margin:2px 0 0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ strengthSessions }}</p></div>
+                <div><p style="margin:0;color:oklch(0.63 0.006 250)">Last performed</p><p style="margin:2px 0 0;font-size:16px;font-weight:600">{{ strengthLast }}</p></div>
+              </div>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px">
+              <h2 style="margin:0;font-size:15px;font-weight:500">Bodyweight</h2>
+              <div style="margin-top:16px">
+                <svg viewBox="0 0 560 156" width="100%" height="156">
+                  <polyline points="{{ weightPoints }}" fill="none" stroke="oklch(0.75 0.1 220)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                </svg>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:oklch(0.63 0.006 250);margin-top:4px">
+                  <span>{{ weightFirstLabel }}</span><span>{{ weightLastLabel }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 style="margin:0;font-size:15px;font-weight:500">Personal records</h2>
+              <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ prList }}" as="pr" hint-placeholder-count="4">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:space-between;font-size:14px">
+                    <div>
+                      <p style="margin:0;font-weight:500">{{ pr.exercise }}</p>
+                      <p style="margin:2px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">{{ pr.date }} · {{ pr.typeLabel }}</p>
+                    </div>
+                    <span style="font-variant-numeric:tabular-nums">{{ pr.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHistory }}">
+          <div>
+            <h1 style="margin:0;font-family:'Inter';font-size:34px;font-weight:700;letter-spacing:-0.02em">History</h1>
+            <p style="margin:6px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">{{ historyCount }} session{{ historyPlural }} · {{ historyMinutes }} min trained</p>
+
+            <div style="margin-top:20px;background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ historyFilters }}" as="f" hint-placeholder-count="4">
+                <button onClick="{{ f.select }}" style="height:32px;padding:0 14px;border-radius:8px;border:1px solid {{ f.borderColor }};background:{{ f.bg }};color:inherit;font-size:13px;cursor:pointer">{{ f.label }}</button>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ historyList }}" as="s" hint-placeholder-count="5">
+                <div onClick="{{ s.open }}" style="cursor:pointer;background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:space-between" style-hover="border-color:oklch(0.92 0.25 110 / 50%)">
+                  <div>
+                    <p style="margin:0;font-weight:500;font-size:14px">{{ s.title }}</p>
+                    <p style="margin:2px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">{{ s.date }}</p>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <div style="text-align:right;font-size:14px;color:oklch(0.63 0.006 250)">
+                      <p style="margin:0;font-variant-numeric:tabular-nums">{{ s.duration }}</p>
+                      <p style="margin:0;font-size:12px;text-transform:capitalize">{{ s.status }}</p>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.63 0.006 250)" stroke-width="2" stroke-linecap="round"><polyline points="9,6 15,12 9,18"></polyline></svg>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHistoryDetail }}">
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <a href="#" onClick="{{ goHistory }}" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:oklch(0.63 0.006 250);width:fit-content">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="11,18 5,12 11,6"></polyline></svg>
+              History
+            </a>
+            <div>
+              <p style="margin:0;font-size:14px;color:oklch(0.63 0.006 250)">{{ detailDateFull }}</p>
+              <h1 style="margin:4px 0 0;font-size:24px;font-weight:600">{{ detailTitle }}</h1>
+              <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px">
+                <span style="border-radius:6px;background:oklch(0.22 0.005 250);padding:2px 10px;font-size:12px;font-weight:600;text-transform:capitalize">{{ detailStatus }}</span>
+                <span style="border-radius:6px;border:1px solid oklch(0.27 0.005 250);padding:2px 10px;font-size:12px;font-weight:600">Mood: {{ detailMood }}</span>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat({{ profileStatsCols }},1fr);gap:12px">
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Duration</p><p style="margin:4px 0 0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums">{{ detailDuration }}</p></div>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Volume</p><p style="margin:4px 0 0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums">{{ detailVolume }}</p></div>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Working sets</p><p style="margin:4px 0 0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums">{{ detailSets }}</p></div>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Total reps</p><p style="margin:4px 0 0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums">{{ detailReps }}</p></div>
+            </div>
+
+            <div style="background:oklch(0.92 0.25 110 / 10%);border:1px solid oklch(0.92 0.25 110 / 40%);border-radius:12px;padding:16px">
+              <p style="margin:0;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.92 0.25 110)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"></path><path d="M7 5H4a1 1 0 0 0-1 1c0 2.5 1.5 4 4 4M17 5h3a1 1 0 0 1 1 1c0 2.5-1.5 4-4 4"></path></svg> Personal records this session</p>
+              <ul style="margin:8px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:14px;color:oklch(0.63 0.006 250)">
+                <sc-for list="{{ detailPRs }}" as="p" hint-placeholder-count="2"><li>{{ p.text }}</li></sc-for>
+              </ul>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ detailExercises }}" as="dex" hint-placeholder-count="3">
+                <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                    <div><p style="margin:0;font-weight:500;font-size:14px">{{ dex.name }}</p><p style="margin:2px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">{{ dex.meta }}</p></div>
+                  </div>
+                  <div style="margin-top:12px;border-radius:8px;border:1px solid oklch(0.27 0.005 250 / 60%);overflow-x:auto">
+                    <table style="width:100%;min-width:360px;border-collapse:collapse;font-size:13px">
+                      <thead style="background:oklch(0.22 0.005 250 / 50%)"><tr>
+                        <th style="text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">Set</th>
+                        <th style="text-align:right;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">Weight</th>
+                        <th style="text-align:right;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">Reps</th>
+                        <th style="text-align:right;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">RIR</th>
+                      </tr></thead>
+                      <tbody>
+                        <sc-for list="{{ dex.sets }}" as="st" hint-placeholder-count="3">
+                          <tr style="border-top:1px solid oklch(0.27 0.005 250 / 60%)">
+                            <td style="padding:8px 12px">{{ st.n }}</td>
+                            <td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums">{{ st.w }}</td>
+                            <td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums">{{ st.r }}</td>
+                            <td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums">{{ st.rir }}</td>
+                          </tr>
+                        </sc-for>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px">
+              <p style="margin:0;font-weight:500;font-size:14px">Cardio</p>
+              <ul style="margin:8px 0 0;padding-left:0;list-style:none;font-size:14px;color:oklch(0.63 0.006 250)">
+                <sc-for list="{{ detailCardio }}" as="c" hint-placeholder-count="1"><li>{{ c.text }}</li></sc-for>
+              </ul>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px">
+              <p style="margin:0;font-weight:500;font-size:14px">Session notes</p>
+              <p style="margin:6px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">{{ detailNotes }}</p>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isBody }}">
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <h1 style="margin:0;font-family:'Inter';font-size:34px;font-weight:700;letter-spacing:-0.02em">Body</h1>
+              <button onClick="{{ openAddMeasurement }}" style="display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:9px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:14px;font-weight:600;cursor:pointer" style-hover="background:oklch(0.96 0.25 110)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add measurement
+              </button>
+            </div>
+
+            <div>
+              <h2 style="margin:0 0 16px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Current snapshot</h2>
+              <div style="display:grid;grid-template-columns:repeat({{ bodySnapshotCols }},1fr);gap:16px">
+                <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                  <p style="margin:0;font-size:12px;color:oklch(0.63 0.006 250)">Weight</p>
+                  <p style="margin:8px 0 0;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ snapWeight }}</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:{{ snapWeightColor }}">{{ snapWeightChange }}</p>
+                </div>
+                <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                  <p style="margin:0;font-size:12px;color:oklch(0.63 0.006 250)">Waist</p>
+                  <p style="margin:8px 0 0;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ snapWaist }}</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:{{ snapWaistColor }}">{{ snapWaistChange }}</p>
+                </div>
+                <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                  <p style="margin:0;font-size:12px;color:oklch(0.63 0.006 250)">Body fat</p>
+                  <p style="margin:8px 0 0;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ snapBodyFat }}</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:oklch(0.45 0.006 250)">{{ snapBodyFatNote }}</p>
+                </div>
+                <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                  <p style="margin:0;font-size:12px;color:oklch(0.63 0.006 250)">Daily calories</p>
+                  <p style="margin:8px 0 0;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ snapCalories }}</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:oklch(0.45 0.006 250)">{{ snapCaloriesNote }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+                <div style="display:flex;border-radius:8px;border:1px solid oklch(0.27 0.005 250);padding:2px">
+                  <button onClick="{{ setChartWeight }}" style="border-radius:6px;padding:5px 14px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:{{ chartWeightBg }};color:{{ chartWeightColor }}">Weight</button>
+                  <button onClick="{{ setChartWaist }}" style="border-radius:6px;padding:5px 14px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:{{ chartWaistBg }};color:{{ chartWaistColor }}">Waist</button>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <sc-for list="{{ chartPeriods }}" as="p" hint-placeholder-count="4">
+                    <button onClick="{{ p.select }}" style="height:28px;padding:0 12px;border-radius:7px;border:1px solid {{ p.borderColor }};background:{{ p.bg }};color:{{ p.color }};font-size:12px;font-weight:500;cursor:pointer">{{ p.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <sc-if value="{{ chartHasData }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:20px">
+                  <svg viewBox="0 0 560 140" width="100%" height="140">
+                    <polyline points="{{ chartPoints }}" fill="none" stroke="oklch(0.92 0.25 110)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                  </svg>
+                  <div style="display:flex;justify-content:space-between;font-size:11px;color:oklch(0.45 0.006 250);margin-top:6px">
+                    <span>{{ chartFirstLabel }}</span><span>{{ chartLastLabel }}</span>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ chartNoData }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:32px 0;text-align:center;font-size:13px;color:oklch(0.45 0.006 250)">Not enough logged data for this range yet.</p>
+              </sc-if>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <h2 style="margin:0;font-size:15px;font-weight:600">Body fat estimate</h2>
+                <div style="display:flex;border-radius:8px;border:1px solid oklch(0.27 0.005 250);padding:2px">
+                  <button onClick="{{ setSexMale }}" style="border-radius:6px;padding:4px 12px;font-size:12px;text-transform:capitalize;border:none;cursor:pointer;background:{{ sexMaleBg }};color:{{ sexMaleColor }}">Male</button>
+                  <button onClick="{{ setSexFemale }}" style="border-radius:6px;padding:4px 12px;font-size:12px;text-transform:capitalize;border:none;cursor:pointer;background:{{ sexFemaleBg }};color:{{ sexFemaleColor }}">Female</button>
+                </div>
+              </div>
+              <div style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:24px">
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                  <div style="display:flex;flex-direction:column;gap:6px;width:88px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Height</label><input inputmode="decimal" value="{{ heightInput }}" onChange="{{ setHeightInput }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:13px" /></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;width:88px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Neck</label><input inputmode="decimal" value="{{ neckInput }}" onChange="{{ setNeckInput }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:13px" /></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;width:88px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Waist</label><input inputmode="decimal" value="{{ bfWaistInput }}" onChange="{{ setBfWaistInput }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:13px" /></div>
+                  <sc-if value="{{ isFemale }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:6px;width:88px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Hip</label><input inputmode="decimal" value="{{ hipInput }}" onChange="{{ setHipInput }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:13px" /></div>
+                  </sc-if>
+                </div>
+                <div style="flex:1;min-width:160px;display:flex;align-items:center;justify-content:flex-end;gap:16px">
+                  <div style="text-align:right">
+                    <p style="margin:0;font-size:11px;color:oklch(0.45 0.006 250)">US Navy estimate</p>
+                    <p style="margin:2px 0 0;font-size:30px;font-weight:700;font-variant-numeric:tabular-nums">{{ bodyFatLabel }}</p>
+                  </div>
+                  <button onClick="{{ saveBodyFat }}" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap">Save</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+              <h2 style="margin:0;font-size:15px;font-weight:600">Daily calorie target</h2>
+              <p style="margin:4px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">{{ calorieMethodLabel }}</p>
+              <div style="margin-top:16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:6px;width:88px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Age</label><input inputmode="numeric" value="{{ ageInput }}" onChange="{{ setAgeInput }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:13px" /></div>
+                <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Activity</label>
+                  <select value="{{ activity }}" onChange="{{ setActivity }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:oklch(0.045 0.003 250);color:inherit;padding:0 10px;font-size:13px">
+                    <option value="1.2">Sedentary</option><option value="1.375">Light (1-3 days)</option><option value="1.55">Moderate (3-5 days)</option><option value="1.725">High (6-7 days)</option><option value="1.9">Very high</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;color:oklch(0.63 0.006 250)">Goal</label>
+                  <select value="{{ goal }}" onChange="{{ setGoal }}" style="height:34px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:oklch(0.045 0.003 250);color:inherit;padding:0 10px;font-size:13px">
+                    <option value="cut">Fat loss</option><option value="recomp">Slow cut / recomp</option><option value="maintain">Maintain</option><option value="bulk">Lean gain</option>
+                  </select>
+                </div>
+                <button onClick="{{ calculateCalories }}" style="height:34px;padding:0 16px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:13px;font-weight:600;cursor:pointer">Calculate</button>
+              </div>
+
+              <sc-if value="{{ hasCalculated }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:20px;padding-top:20px;border-top:1px solid oklch(0.27 0.005 250);display:flex;flex-wrap:wrap;align-items:center;gap:24px">
+                  <div><p style="margin:0;font-size:11px;color:oklch(0.45 0.006 250)">{{ goalLabel }} target</p><p style="margin:2px 0 0;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums">{{ calTargetCals }} kcal</p></div>
+                  <div><p style="margin:0;font-size:11px;color:oklch(0.45 0.006 250)">Protein</p><p style="margin:2px 0 0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ calProtein }} g</p></div>
+                  <div><p style="margin:0;font-size:11px;color:oklch(0.45 0.006 250)">Fat</p><p style="margin:2px 0 0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ calFat }} g</p></div>
+                  <div><p style="margin:0;font-size:11px;color:oklch(0.45 0.006 250)">Carbs</p><p style="margin:2px 0 0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">{{ calCarbs }} g</p></div>
+                  <div style="flex:1;min-width:120px;text-align:right">
+                    <p style="margin:0 0 8px;font-size:12px;color:oklch(0.45 0.006 250)">Maintenance ≈ {{ calMaintenance }} kcal</p>
+                    <button onClick="{{ saveCalories }}" style="height:32px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:12px;font-weight:500;cursor:pointer">Save target</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div>
+              <h2 style="margin:0 0 12px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Measurement history</h2>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ metricRows }}" as="m" hint-placeholder-count="5">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;font-size:14px">
+                    <span style="color:oklch(0.63 0.006 250)">{{ m.date }}</span>
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="font-variant-numeric:tabular-nums">{{ m.summary }}</span>
+                      <sc-if value="{{ m.isLatest }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ editLatestMetric }}" style="font-size:12px;font-weight:500;color:oklch(0.92 0.25 110);background:transparent;border:none;cursor:pointer;padding:2px">Edit</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ addMeasurementOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px" onClick="{{ closeAddMeasurement }}">
+              <div style="width:100%;max-width:380px;background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px" onClick="{{ stopClick }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <h2 style="margin:0;font-size:17px;font-weight:600">{{ addMeasurementTitle }}</h2>
+                  <button onClick="{{ closeAddMeasurement }}" style="background:transparent;border:none;color:oklch(0.63 0.006 250);cursor:pointer;padding:4px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <div style="margin-top:20px;display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;flex-direction:column;gap:8px"><label style="font-size:13px">Bodyweight (kg)</label><input inputmode="decimal" value="{{ weightInput }}" onChange="{{ setWeightInput }}" style="height:38px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 12px;font-size:14px" /></div>
+                  <div style="display:flex;flex-direction:column;gap:8px"><label style="font-size:13px">Waist (cm)</label><input inputmode="decimal" value="{{ waistInput }}" onChange="{{ setWaistInput }}" style="height:38px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 12px;font-size:14px" /></div>
+                </div>
+                <button onClick="{{ saveMetric }}" style="margin-top:20px;width:100%;height:40px;border-radius:9px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:14px;font-weight:600;cursor:pointer">{{ addMeasurementSaveLabel }}</button>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isProfile }}">
+          <div style="display:flex;flex-direction:column;gap:32px">
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;overflow:hidden">
+              <div style="height:96px;background:oklch(0.92 0.25 110 / 8%)"></div>
+              <div style="margin-top:-40px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;padding:0 20px 20px">
+                <div style="position:relative;flex-shrink:0">
+                  <div style="{{ avatarBoxStyle }}">
+                    <sc-if value="{{ noAvatarImage }}" hint-placeholder-val="{{ true }}">{{ initials }}</sc-if>
+                  </div>
+                  <button onClick="{{ openAvatarEditor }}" aria-label="Edit avatar" style="position:absolute;bottom:-4px;right:-4px;width:26px;height:26px;border-radius:999px;border:2px solid oklch(0.11 0.004 250);background:oklch(0.22 0.005 250);color:oklch(0.96 0.002 250);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                  </button>
+                </div>
+                <div style="min-width:0;flex:1">
+                  <h1 style="margin:0;font-family:'Inter';font-size:24px;font-weight:600">{{ displayName }}</h1>
+                  <p style="margin:2px 0 0;font-size:14px;color:oklch(0.63 0.006 250)">{{ profileEmail }}</p>
+                  <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">
+                    <span style="border-radius:6px;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);padding:2px 10px;font-size:12px;font-weight:600">{{ levelName }}</span>
+                    <span style="border-radius:6px;border:1px solid oklch(0.27 0.005 250);padding:2px 10px;font-size:12px;font-weight:600">{{ profileGoal }}</span>
+                  </div>
+                </div>
+                <button onClick="{{ toggleEditProfile }}" style="height:32px;padding:0 12px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:13px;font-weight:500;cursor:pointer">✎ Edit profile</button>
+              </div>
+
+              <sc-if value="{{ editingProfile }}" hint-placeholder-val="{{ false }}">
+                <div style="border-top:1px solid oklch(0.27 0.005 250);padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px">Display name</label><input value="{{ nameField }}" onChange="{{ setNameField }}" style="height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;padding:0 10px;font-size:14px" /></div>
+                  <div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px">Primary goal</label>
+                    <select value="{{ goalField }}" onChange="{{ setGoalField }}" style="height:36px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:oklch(0.045 0.003 250);color:inherit;padding:0 10px;font-size:14px">
+                      <option value="Fat loss">Fat loss</option><option value="Recomp">Recomp</option><option value="Muscle gain">Muscle gain</option><option value="Strength">Strength</option>
+                    </select>
+                  </div>
+                  <div style="display:flex;gap:8px;justify-content:flex-end">
+                    <button onClick="{{ toggleEditProfile }}" style="height:32px;padding:0 14px;border-radius:8px;border:none;background:transparent;color:oklch(0.63 0.006 250);font-size:13px;cursor:pointer">Cancel</button>
+                    <button onClick="{{ saveProfile }}" style="height:32px;padding:0 14px;border-radius:8px;border:none;background:oklch(0.92 0.25 110);color:oklch(0.07 0.01 110);font-size:13px;font-weight:500;cursor:pointer">Save changes</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <div style="border-top:1px solid oklch(0.27 0.005 250);padding:16px 20px">
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+                  <div><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250)">Level {{ levelIndex }} · {{ levelName }}</p><p style="margin:2px 0 0;font-family:'Inter';font-size:32px;font-weight:600;color:oklch(0.92 0.25 110);font-variant-numeric:tabular-nums">{{ xpValue }} XP</p></div>
+                  <p style="margin:0;font-size:12px;color:oklch(0.63 0.006 250)">{{ xpToNextLabel }}</p>
+                </div>
+                <div style="margin-top:12px;height:8px;border-radius:999px;background:oklch(0.92 0.25 110 / 20%);overflow:hidden"><div style="height:100%;background:oklch(0.92 0.25 110);width:{{ levelPct }}%"></div></div>
+              </div>
+            </div>
+
+            <sc-if value="{{ avatarEditorOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px" onClick="{{ closeAvatarEditor }}">
+                <div style="width:100%;max-width:360px;background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:24px" onClick="{{ stopClick }}">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <h2 style="margin:0;font-size:17px;font-weight:600">Profile picture</h2>
+                    <button onClick="{{ closeAvatarEditor }}" style="background:transparent;border:none;color:oklch(0.63 0.006 250);cursor:pointer;padding:4px">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </div>
+                  <div style="margin-top:20px;display:flex;justify-content:center">
+                    <div style="{{ avatarModalBoxStyle }}">
+                      <sc-if value="{{ noAvatarImage }}" hint-placeholder-val="{{ true }}">{{ initials }}</sc-if>
+                    </div>
+                  </div>
+                  <label style="margin-top:20px;display:block;height:38px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:oklch(0.16 0.005 250)">
+                    Upload photo
+                    <input type="file" accept="image/*" onChange="{{ onAvatarFile }}" style="display:none" />
+                  </label>
+                  <sc-if value="{{ hasAvatarImage }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ removeAvatarImage }}" style="margin-top:10px;width:100%;height:36px;border-radius:8px;border:none;background:transparent;color:oklch(0.63 0.006 250);font-size:13px;cursor:pointer">Remove photo</button>
+                  </sc-if>
+                  <p style="margin:20px 0 10px;font-size:12px;color:oklch(0.45 0.006 250);text-align:center">or choose a color</p>
+                  <div style="display:flex;justify-content:center;gap:10px">
+                    <sc-for list="{{ avatarSwatches }}" as="sw" hint-placeholder-count="5">
+                      <button onClick="{{ sw.select }}" aria-label="{{ sw.name }}" style="width:28px;height:28px;border-radius:999px;background:{{ sw.color }};border:2px solid {{ sw.borderColor }};cursor:pointer;padding:0"></button>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Next milestone</p>
+                <span style="font-size:13px;font-weight:600;color:oklch(0.92 0.25 110)">+{{ milestoneReward }} XP</span>
+              </div>
+              <p style="margin:8px 0 0;font-size:17px;font-weight:600">{{ milestoneLabel }}</p>
+              <p style="margin:4px 0 0;font-size:13px;color:oklch(0.63 0.006 250)">{{ milestoneHint }}</p>
+              <div style="margin-top:12px;height:6px;border-radius:999px;background:oklch(0.22 0.005 250);overflow:hidden"><div style="height:100%;background:oklch(0.92 0.25 110);width:{{ milestonePct }}%"></div></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">This week</p>
+                <p style="margin:8px 0 0;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums">{{ weeklyConsistencyLabel }}</p>
+                <div style="margin-top:12px;height:6px;border-radius:999px;background:oklch(0.22 0.005 250);overflow:hidden"><div style="height:100%;background:oklch(0.92 0.25 110);width:{{ weeklyConsistencyPct }}%"></div></div>
+              </div>
+              <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:20px">
+                <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:oklch(0.63 0.006 250)">Personal records</p>
+                <p style="margin:8px 0 0;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums">{{ statPRs }}</p>
+                <p style="margin:6px 0 0;font-size:12px;color:oklch(0.45 0.006 250)">{{ latestPrLine }}</p>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+              <a href="#" onClick="{{ goProgress }}" style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;color:inherit" style-hover="border-color:oklch(0.92 0.25 110 / 50%)">
+                <span style="width:40px;height:40px;border-radius:10px;background:oklch(0.92 0.25 110 / 15%);color:oklch(0.92 0.25 110);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,17 9,11 13,15 21,7"></polyline></svg>
+                </span>
+                <div><p style="margin:0;font-size:14px;font-weight:500">Progress</p><p style="margin:2px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">Charts for volume, strength and bodyweight</p></div>
+              </a>
+              <a href="#" onClick="{{ goHistory }}" style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;color:inherit" style-hover="border-color:oklch(0.92 0.25 110 / 50%)">
+                <span style="width:40px;height:40px;border-radius:10px;background:oklch(0.92 0.25 110 / 15%);color:oklch(0.92 0.25 110);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12,7 12,12 16,14"></polyline></svg>
+                </span>
+                <div><p style="margin:0;font-size:14px;font-weight:500">History</p><p style="margin:2px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">Every session, filterable by date</p></div>
+              </a>
+            </div>
+
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <h2 style="margin:0;font-family:'Inter';font-size:15px;font-weight:600">Achievements</h2>
+                <span style="font-size:12px;color:oklch(0.63 0.006 250)">{{ badgeCount }}</span>
+              </div>
+              <div style="margin-top:16px;display:grid;grid-template-columns:repeat({{ badgesCols }},1fr);gap:12px">
+                <sc-for list="{{ badges }}" as="b" hint-placeholder-count="6">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid {{ b.cardBorder }};border-radius:12px;padding:16px">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                      <div>
+                        <p style="margin:0;font-size:14px;font-weight:600">{{ b.label }}</p>
+                        <p style="margin:2px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">{{ b.hint }}</p>
+                      </div>
+                      <sc-if value="{{ b.earned }}" hint-placeholder-val="{{ false }}">
+                        <svg style="flex-shrink:0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.92 0.25 110)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"></polyline></svg>
+                      </sc-if>
+                    </div>
+                    <div style="margin-top:12px;height:5px;border-radius:999px;background:oklch(0.22 0.005 250);overflow:hidden"><div style="height:100%;background:{{ b.barColor }};width:{{ b.pct }}%"></div></div>
+                    <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+                      <span style="font-size:11px;color:oklch(0.45 0.006 250)">{{ b.progressLabel }}</span>
+                      <span style="font-size:11px;font-weight:600;color:oklch(0.45 0.006 250)">+{{ b.rewardXp }} XP</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <h2 style="margin:0;font-family:'Inter';font-size:15px;font-weight:600">Challenges</h2>
+              <p style="margin:4px 0 0;font-size:12px;color:oklch(0.45 0.006 250)">Reward consistency and progression — not extra volume.</p>
+              <div style="margin-top:16px;display:grid;grid-template-columns:repeat({{ challengesCols }},1fr);gap:12px">
+                <sc-for list="{{ challenges }}" as="c" hint-placeholder-count="3">
+                  <div style="background:oklch(0.11 0.004 250);border:1px solid oklch(0.27 0.005 250);border-radius:12px;padding:16px">
+                    <p style="margin:0;font-size:14px;font-weight:600">{{ c.label }}</p>
+                    <p style="margin:2px 0 0;font-size:12px;color:oklch(0.63 0.006 250)">{{ c.hint }}</p>
+                    <div style="margin-top:12px;height:5px;border-radius:999px;background:oklch(0.22 0.005 250);overflow:hidden"><div style="height:100%;background:oklch(0.92 0.25 110);width:{{ c.pct }}%"></div></div>
+                    <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+                      <span style="font-size:11px;color:oklch(0.45 0.006 250)">{{ c.progressLabel }}</span>
+                      <span style="font-size:11px;font-weight:600;color:oklch(0.92 0.25 110)">+{{ c.rewardXp }} XP</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+                <div>
+                  <h2 style="margin:0;font-family:'Inter';font-size:14px;font-weight:600;color:oklch(0.63 0.006 250)">Training score leaderboard</h2>
+                  <p style="margin:2px 0 0;font-size:11px;color:oklch(0.45 0.006 250)">Optional · ranks consistency and progression, not raw volume</p>
+                </div>
+                <button onClick="{{ toggleLeaderboard }}" style="height:30px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.27 0.005 250);background:transparent;color:inherit;font-size:12px;font-weight:500;cursor:pointer">{{ leaderboardToggleLabel }}</button>
+              </div>
+
+              <sc-if value="{{ showLeaderboard }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:16px">
+                  <p style="margin:0 0 12px;font-size:13px;color:oklch(0.63 0.006 250)">{{ rankDistanceLabel }}</p>
+                  <div style="border-radius:12px;border:1px solid oklch(0.27 0.005 250);overflow-x:auto">
+                    <table style="width:100%;min-width:360px;border-collapse:collapse;font-size:13px">
+                      <thead style="background:oklch(0.22 0.005 250 / 50%)"><tr>
+                        <th style="text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">#</th>
+                        <th style="text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">Athlete</th>
+                        <th style="text-align:right;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">Training score</th>
+                        <th style="text-align:right;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:oklch(0.63 0.006 250);font-weight:500">Sessions</th>
+                      </tr></thead>
+                      <tbody>
+                        <sc-for list="{{ leaderboardRows }}" as="lr" hint-placeholder-count="5">
+                          <tr style="border-top:1px solid oklch(0.27 0.005 250);background:{{ lr.rowBg }}">
+                            <td style="padding:8px 12px">{{ lr.rank }}</td>
+                            <td style="padding:8px 12px">{{ lr.name }}<sc-if value="{{ lr.isMe }}" hint-placeholder-val="{{ false }}"><span style="margin-left:6px;font-size:12px;color:oklch(0.92 0.25 110)">you</span></sc-if></td>
+                            <td style="padding:8px 12px;text-align:right;font-weight:500;font-variant-numeric:tabular-nums">{{ lr.score }}</td>
+                            <td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums">{{ lr.sessions }}</td>
+                          </tr>
+                        </sc-for>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <button onClick="{{ signOut }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;background:transparent;border:1px solid oklch(0.27 0.005 250);border-radius:8px;color:oklch(0.63 0.006 250);font-size:13px;cursor:pointer;padding:10px 14px" style-hover="color:oklch(0.96 0.002 250);border-color:oklch(0.4 0.006 250)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="8" height="16" rx="1"></rect><line x1="21" y1="12" x2="9" y2="12"></line><polyline points="17,7 21,12 17,17"></polyline></svg>
+              Sign out
+            </button>
+          </div>
+        </sc-if>
+
+      </main>
+    </div>
+  </sc-if>
+  </div>
+</sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+function fmtKg(n) { return n == null ? "—" : `${n} kg`; }
+
+class Component extends DCLogic {
+  state = {
+    data: null, screen: "today", workoutSlug: null, historyId: null, historyFilter: "all",
+    progressExercise: "incline-smith-press", infoSlug: null, loggedSets: {}, workoutInputs: {}, rest: null,
+    metricsRows: null, weightInput: "", waistInput: "",
+    sex: "male", heightInput: "", neckInput: "", bfWaistInput: "", hipInput: "",
+    ageInput: "", activity: "1.55", goal: "cut", calculated: null,
+    editingProfile: false, nameField: "", goalField: "",
+    leaderboardPeriod: 30, authMode: "signin", authEmail: "", authPassword: "", authName: "",
+    vw: typeof window !== "undefined" ? window.innerWidth : 1280,
+    addMeasurementOpen: false, chartMetric: "weight", chartPeriod: "3m", editingLatestMetric: false, planSatSpec: "saturday-shoulders", showLeaderboard: false,
+    avatarEditorOpen: false, avatarImage: null, avatarColor: "oklch(0.92 0.25 110)",
+    workoutStartTime: null, elapsedSeconds: 0, extraSets: {}, skippedExercises: {}, exerciseNotes: {}, noteEditing: {},
+    warmupOpen: {}, warmupDraft: {}, replacedSlugs: {}, historyOpenIdx: {}, ironEarned: 0, prsThisWorkout: [],
+    exerciseMenuOpen: null, expandedExercise: null, showFinishWarning: false, showCompletion: false, completionData: null,
+  };
+
+  componentDidMount() {
+    import("./workout-data.js").then((m) => this.setState({ data: m, metricsRows: [...m.BODY_METRICS] }));
+    this._onResize = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener("resize", this._onResize);
+  }
+  componentWillUnmount() { if (this._restInterval) clearInterval(this._restInterval); if (this._workoutInterval) clearInterval(this._workoutInterval); if (this._onResize) window.removeEventListener("resize", this._onResize); }
+
+  enterWorkout(slug) {
+    if (this._workoutInterval) clearInterval(this._workoutInterval);
+    if (this._restInterval) clearInterval(this._restInterval);
+    this.setState({
+      screen: "workout", workoutSlug: slug, loggedSets: {}, workoutInputs: {}, rest: null,
+      workoutStartTime: Date.now(), elapsedSeconds: 0, extraSets: {}, skippedExercises: {},
+      exerciseNotes: {}, noteEditing: {}, warmupOpen: {}, warmupDraft: {}, replacedSlugs: {}, historyOpenIdx: {},
+      ironEarned: 0, prsThisWorkout: [], exerciseMenuOpen: null, expandedExercise: null,
+      showFinishWarning: false, showCompletion: false, completionData: null,
+    });
+    this._workoutInterval = setInterval(() => this.setState((s) => ({ elapsedSeconds: Math.round((Date.now() - s.workoutStartTime) / 1000) })), 1000);
+  }
+
+  exitWorkout(nextScreen) {
+    if (this._workoutInterval) clearInterval(this._workoutInterval);
+    if (this._restInterval) clearInterval(this._restInterval);
+    this.setState({ screen: nextScreen, rest: null });
+  }
+
+  logWorkingSet(idx) {
+    const { data, workoutInputs, loggedSets, replacedSlugs } = this.state;
+    const day = this.getDay();
+    const we0 = day.exercises[idx];
+    const slug = (replacedSlugs || {})[idx] || we0.slug;
+    const we = { ...we0, slug };
+    const info = data.EXERCISES[slug];
+    const logged = loggedSets[idx] || [];
+    const working = logged.filter((s) => !s.isWarmup);
+    const prev = data.PREVIOUS[slug];
+    const prevArr = prev ? prev.sets.map((s) => ({ w: s.w, r: s.r })) : [];
+    const suggestion = data.suggestNextSet({ prevSets: prevArr, setNumber: working.length + 1, repMin: we.repMin, repMax: we.repMax, isCompound: info.compound });
+    const input = workoutInputs[idx] || {};
+    const lastLoggedWeight = working.length ? working[working.length - 1].weight : null;
+    const weight = Number(input.weight !== undefined && input.weight !== "" ? input.weight : (lastLoggedWeight ?? suggestion.weight ?? 0));
+    const reps = Number(input.reps !== undefined && input.reps !== "" ? input.reps : (suggestion.reps ?? 0));
+    const prevMatch = prevArr[working.length];
+    const bestHistE1rm = Math.max(0, ...(data.STRENGTH_HISTORY[slug] || []).map((p) => p.e1rm), ...prevArr.map((s) => (s.w ? data.epley1RM(s.w, s.r) : 0)));
+    const currentE1rm = weight ? data.epley1RM(weight, reps) : 0;
+    let feedbackText = "First set logged", isPR = false, improved = false;
+    if (currentE1rm > bestHistE1rm + 0.05 && bestHistE1rm > 0) {
+      feedbackText = `NEW PR \u2014 est. 1RM ${Math.round(currentE1rm * 10) / 10} kg`; isPR = true; improved = true;
+    } else if (prevMatch) {
+      if (weight === prevMatch.w && reps > prevMatch.r) { feedbackText = `+${reps - prevMatch.r} rep vs last session`; improved = true; }
+      else if (weight > prevMatch.w) { feedbackText = `+${Math.round((weight - prevMatch.w) * 10) / 10} kg vs last session`; improved = true; }
+      else if (we.repMax != null && reps >= we.repMax) { feedbackText = "Top of rep range reached"; improved = true; }
+      else if (reps < prevMatch.r) { feedbackText = "Below last session"; }
+      else { feedbackText = "Matched last session"; }
+    }
+    const ironEarned = 8 + (isPR ? 25 : 0) + (improved && !isPR ? 3 : 0);
+    const newSet = { setNumber: working.length + 1, weight, reps, isWarmup: false, feedbackText, isPR, improved };
+    this.setState((s) => ({
+      loggedSets: { ...s.loggedSets, [idx]: [...(s.loggedSets[idx] || []), newSet] },
+      workoutInputs: { ...s.workoutInputs, [idx]: { weight: "", reps: "" } },
+      ironEarned: s.ironEarned + ironEarned,
+      prsThisWorkout: isPR ? [...s.prsThisWorkout, { exercise: info.name, detail: feedbackText }] : s.prsThisWorkout,
+    }));
+    this.startRest(we.restSeconds || 90);
+  }
+
+  logWarmupSet(idx) {
+    const draft = (this.state.warmupDraft || {})[idx] || {};
+    const weight = Number(draft.weight) || 0, reps = Number(draft.reps) || 0;
+    if (!reps) return;
+    this.setState((s) => ({
+      loggedSets: { ...s.loggedSets, [idx]: [...(s.loggedSets[idx] || []), { isWarmup: true, weight, reps, id: `${Date.now()}_${Math.random()}` }] },
+      warmupDraft: { ...s.warmupDraft, [idx]: { weight: "", reps: "" } },
+      warmupOpen: { ...s.warmupOpen, [idx]: false },
+    }));
+  }
+
+  logCardioSet(idx) {
+    const mins = Number((this.state.workoutInputs[idx] || {}).cardioMin) || 0;
+    if (!mins) return;
+    this.setState((s) => ({
+      loggedSets: { ...s.loggedSets, [idx]: [...(s.loggedSets[idx] || []), { isWarmup: false, reps: mins, weight: null }] },
+      workoutInputs: { ...s.workoutInputs, [idx]: { ...s.workoutInputs[idx], cardioMin: "" } },
+      ironEarned: s.ironEarned + 4,
+    }));
+  }
+
+  completeWorkout() {
+    if (this._workoutInterval) clearInterval(this._workoutInterval);
+    if (this._restInterval) clearInterval(this._restInterval);
+    const { data, elapsedSeconds, ironEarned, prsThisWorkout } = this.state;
+    const day = this.getDay();
+    const totals = this._lastWorkoutTotals || { doneSets: 0, totalSets: 0 };
+    const improved = this._lastImproved || 0, maintained = this._lastMaintained || 0, volume = this._lastVolume || 0;
+    const order = [1, 2, 3, 4, 5, 6, 0];
+    const curDow = day ? day.dow : new Date().getDay();
+    const i = order.indexOf(curDow);
+    let nextLabel = "Rest day";
+    for (let k = 1; k <= 7; k++) {
+      const nd = order[(i + k) % 7];
+      if (nd === 6) { nextLabel = "Saturday \u00b7 Optional specialization"; break; }
+      if (nd === 0) { nextLabel = "Sunday \u00b7 Recovery"; break; }
+      const found = data.DAYS.find((d) => d.dow === nd);
+      if (found) { nextLabel = `${found.name} \u00b7 ${found.focus}`; break; }
+    }
+    this.setState({
+      showCompletion: true, showFinishWarning: false,
+      completionData: {
+        title: day ? day.name + " \u2014 " + day.focus : "Workout",
+        duration: data.mmss(elapsedSeconds), sets: totals.doneSets, volume: Math.round(volume),
+        prs: prsThisWorkout.length, iron: ironEarned, improved, maintained, next: nextLabel,
+      },
+    });
+  }
+
+  handleAvatarFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => this.setState({ avatarImage: reader.result });
+    reader.readAsDataURL(file);
+  }
+
+  startRest(seconds) {
+    if (this._restInterval) clearInterval(this._restInterval);
+    this.setState({ rest: { seconds, remaining: seconds, running: true, key: Date.now() } });
+    this._restInterval = setInterval(() => {
+      this.setState((s) => {
+        if (!s.rest || !s.rest.running) return null;
+        return { rest: { ...s.rest, remaining: Math.max(0, s.rest.remaining - 1) } };
+      });
+    }, 1000);
+  }
+
+  getDay() {
+    const { data, workoutSlug } = this.state;
+    if (!data || !workoutSlug) return null;
+    return data.DAYS.find((d) => d.slug === workoutSlug) || data.SATURDAYS.find((d) => d.slug === workoutSlug) || null;
+  }
+
+  renderVals() {
+    const { state, props } = this;
+    const data = state.data;
+    if (!data) return { dataLoaded: false, dataLoading: true };
+
+    const nav = (screen, extra) => () => this.setState({ screen, infoSlug: null, ...extra });
+    const stop = (e) => e && e.stopPropagation && e.stopPropagation();
+
+    // ---- today ----
+    const dow = new Date().getDay();
+    const today = data.DAYS.find((d) => d.dow === dow && !d.isRest);
+    const optionalDays = data.SATURDAYS.map((s) => ({ label: s.label, open: (e) => { e.preventDefault(); this.enterWorkout(s.slug); } }));
+    const completedCount = data.HISTORY.filter((s) => s.status === "completed").length;
+    const latestWeight = [...data.BODY_METRICS].reverse().find((m) => m.weightKg)?.weightKg;
+
+    const weekDays = data.DAYS.map((d) => ({
+      name: d.name, isRest: d.isRest, notRest: !d.isRest, focusLabel: d.isRest ? "Rest" : d.focus,
+      accentColor: d.dow === dow ? "oklch(0.92 0.25 110)" : "transparent",
+      open: (e) => { e.preventDefault(); this.enterWorkout(d.slug); },
+    }));
+
+    // ---- responsive ----
+    const isMobileVW = state.vw < 768, isDesktopVW = state.vw >= 1280;
+    const heroDirection = isMobileVW ? "column" : "row";
+    const heroRightStyle = isMobileVW ? "border-top:1px solid oklch(0.27 0.005 250);padding-top:16px" : "border-left:1px solid oklch(0.27 0.005 250);padding-left:24px";
+    const statsGridCols = isMobileVW ? 1 : 3;
+    const weeklyGridCols = isDesktopVW ? 2 : 1;
+    const mainPadding = isMobileVW ? "24px 16px 96px" : "48px 48px 96px";
+    const navGap = isMobileVW ? "2px" : "4px";
+    const navLinkPad = isMobileVW ? "8px 8px" : "8px 14px";
+    const navFontSize = isMobileVW ? "13px" : "14px";
+    const showWordmark = state.vw >= 420;
+    const planMandatoryCols = isMobileVW ? 1 : 2;
+    const workoutStatsCols = isMobileVW ? 2 : 4;
+    const profileStatsCols = isMobileVW ? 2 : 4;
+    const bodySnapshotCols = isMobileVW ? 2 : 4;
+    const badgesCols = isMobileVW ? 2 : 3;
+    const challengesCols = isMobileVW ? 1 : 3;
+
+    // ---- today hero context ----
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const sessionsThisMonth = data.HISTORY.filter((s) => s.status === "completed" && s.date.startsWith(thisMonth)).length;
+    const prsThisMonth = data.PRS.filter((pr) => pr.date.startsWith(thisMonth)).length;
+    const metricsSorted = data.BODY_METRICS;
+    const priorMetric = metricsSorted.length >= 5 ? metricsSorted[metricsSorted.length - 5] : null;
+    const latestMetric = metricsSorted[metricsSorted.length - 1];
+    const weightDelta = priorMetric && latestMetric ? Math.round((latestMetric.weightKg - priorMetric.weightKg) * 10) / 10 : null;
+    const lastCompleted = data.HISTORY.find((s) => s.status === "completed");
+
+    // ---- plan ----
+    const planDays = [
+      ...data.DAYS.slice(0, 5),
+      ...data.SATURDAYS.map((s) => ({ name: "Saturday - " + s.label, focus: "Optional Specialization: " + s.label, isRest: false, slug: s.slug, cardioNote: null })),
+      data.DAYS[5],
+    ].map((d) => ({
+      name: d.name, focusLabel: d.isRest ? "Rest day" : d.focus, isRest: d.isRest, notRest: !d.isRest,
+      hasCardio: !!d.cardioNote, cardioNote: d.cardioNote,
+      open: (e) => { e.preventDefault(); this.enterWorkout(d.slug); },
+    }));
+
+    const todayDateForPlan = new Date();
+    const mandatoryDays = data.DAYS.slice(0, 5).map((d) => {
+      const target = new Date(todayDateForPlan);
+      target.setDate(todayDateForPlan.getDate() + (d.dow - dow));
+      const targetStr = target.toISOString().slice(0, 10);
+      const isToday = d.dow === dow;
+      const isCompleted = !isToday && data.HISTORY.some((s) => s.status === "completed" && s.date === targetStr);
+      return {
+        name: d.name, focusLabel: d.focus, hasCardio: !!d.cardioNote, cardioNote: d.cardioNote,
+        isToday, isCompleted, isUpcoming: !isToday && !isCompleted,
+        accentColor: isToday ? "oklch(0.92 0.25 110)" : "transparent",
+        open: (e) => { e.preventDefault(); this.enterWorkout(d.slug); },
+      };
+    });
+    const completedThisWeek = mandatoryDays.filter((d) => d.isCompleted).length;
+    const weekPct = Math.round((completedThisWeek / 5) * 100);
+    const satOptions = data.SATURDAYS.map((s) => ({
+      label: s.label, select: () => this.setState({ planSatSpec: s.slug }),
+      bg: s.slug === state.planSatSpec ? "oklch(0.22 0.005 250)" : "transparent",
+      color: s.slug === state.planSatSpec ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+    }));
+    const selectedSat = data.SATURDAYS.find((s) => s.slug === state.planSatSpec) || data.SATURDAYS[0];
+    const satFocusLabel = `Optional Specialization: ${selectedSat.label}`;
+    const satMeta = `${selectedSat.estMin}\u2013${selectedSat.estMax} min \u00b7 ${selectedSat.exercises.length} exercises`;
+    const openSaturday = (e) => { e.preventDefault(); this.enterWorkout(selectedSat.slug); };
+    const sundayDay = data.DAYS.find((d) => d.dow === 0);
+    const sundayNote = sundayDay?.notes || sundayDay?.cardioNote || "Easy walking, light mobility, stretching if desired.";
+
+    // ---- workout ----
+    const day = this.getDay();
+    let workoutExercises = [];
+    let totalSets = 0, doneSets = 0, sessionVolume = 0, improvedCount = 0, maintainedCount = 0;
+    if (day && day.exercises) {
+      workoutExercises = day.exercises.map((we0, idx) => {
+        const replacedSlug = (state.replacedSlugs || {})[idx];
+        const slug = replacedSlug || we0.slug;
+        const we = { ...we0, slug };
+        const info = data.EXERCISES[slug];
+        const isCardio = !!info.cardio;
+        const isSkipped = !!(state.skippedExercises || {})[idx];
+        const extra = (state.extraSets || {})[idx] || 0;
+        const targetSets = we.sets + extra;
+        const logged = state.loggedSets[idx] || [];
+        const working = logged.filter((s) => !s.isWarmup);
+        const warmups = logged.filter((s) => s.isWarmup);
+        const done = working.length >= targetSets;
+        if (!isSkipped) {
+          totalSets += targetSets; doneSets += Math.min(working.length, targetSets);
+          sessionVolume += working.reduce((sum, s) => sum + (!isCardio ? (s.weight || 0) * (s.reps || 0) : 0), 0);
+          if (done) { if (working.some((s) => s.improved)) improvedCount++; else maintainedCount++; }
+        }
+        const prev = data.PREVIOUS[slug];
+        const prevArr = prev ? prev.sets.map((s) => ({ w: s.w, r: s.r })) : [];
+        const suggestion = data.suggestNextSet({ prevSets: prevArr, setNumber: working.length + 1, repMin: we.repMin, repMax: we.repMax, isCompound: info.compound });
+        const lastLoggedWeight = working.length ? working[working.length - 1].weight : null;
+        const input = state.workoutInputs[idx] || {};
+
+        const workingRows = [];
+        if (!isCardio) {
+          for (let n = 1; n <= targetSets; n++) {
+            if (n <= working.length) {
+              const s = working[n - 1];
+              workingRows.push({ n, isDone: true, isCurrent: false, notCurrent: true, isUpcoming: false,
+                kgDisplay: s.weight != null ? s.weight : "—", repsDisplay: s.reps != null ? s.reps : "—",
+                dimColor: "oklch(0.85 0.006 250)", rowBg: "transparent", hasFeedback: !!s.feedbackText, feedbackText: s.feedbackText, feedbackColor: s.isPR ? "oklch(0.92 0.25 110)" : "oklch(0.63 0.006 250)" });
+            } else if (n === working.length + 1 && !isSkipped) {
+              const wVal = input.weight !== undefined && input.weight !== "" ? input.weight : (lastLoggedWeight ?? suggestion.weight ?? "");
+              const rVal = input.reps !== undefined && input.reps !== "" ? input.reps : (suggestion.reps ?? "");
+              workingRows.push({ n, isDone: false, isCurrent: true, notCurrent: false, isUpcoming: false, rowBg: "oklch(0.92 0.25 110 / 6%)",
+                weightValue: String(wVal), repsValue: String(rVal),
+                setWeight: (e) => this.setState((s2) => ({ workoutInputs: { ...s2.workoutInputs, [idx]: { ...s2.workoutInputs[idx], weight: e.target.value } } })),
+                setReps: (e) => this.setState((s2) => ({ workoutInputs: { ...s2.workoutInputs, [idx]: { ...s2.workoutInputs[idx], reps: e.target.value } } })),
+                logSet: () => this.logWorkingSet(idx),
+              });
+            } else {
+              workingRows.push({ n, isDone: false, isCurrent: false, notCurrent: true, isUpcoming: true, kgDisplay: "—", repsDisplay: we.repRange, dimColor: "oklch(0.4 0.006 250)", rowBg: "transparent", hasFeedback: false });
+            }
+          }
+        }
+
+        const nextSessionSuggestion = done && !isCardio ? data.suggestNextSet({ prevSets: working.map((s) => ({ w: s.weight, r: s.reps })), setNumber: 1, repMin: we.repMin, repMax: we.repMax, isCompound: info.compound }) : null;
+        const totalVolumeThisEx = working.reduce((sum, s) => sum + (!isCardio ? (s.weight || 0) * (s.reps || 0) : 0), 0);
+        const bestSet = working.reduce((best, s) => (!best || (s.weight || 0) > (best.weight || 0)) ? s : best, null);
+        const alternates = Object.keys(data.EXERCISES).filter((k) => k !== slug && data.EXERCISES[k].muscle === info.muscle);
+        const isCollapsed = done && !(state.expandedExercise === idx);
+
+        return {
+          idx, number: idx + 1, name: info.name, isCardio, notCardio: !isCardio,
+          isSkipped, notSkipped: !isSkipped,
+          metaLine: isCardio ? we.repRange : `${targetSets} × ${we.repRange}${we.restNote ? " · rest " + we.restNote : ""}`,
+          progressLabel: isCardio ? "" : `${Math.min(working.length, targetSets)}/${targetSets}`,
+          done, notDone: !done,
+          collapsed: isCollapsed, notCollapsed: !isCollapsed,
+          toggleCollapse: () => this.setState((s) => ({ expandedExercise: s.expandedExercise === idx ? null : idx })),
+          collapseLabel: state.expandedExercise === idx ? "Collapse" : "Show sets",
+          cardBg: isSkipped ? "oklch(0.11 0.004 250 / 40%)" : done ? "oklch(0.92 0.25 110 / 8%)" : "oklch(0.11 0.004 250)",
+          cardBorder: isSkipped ? "oklch(0.27 0.005 250 / 60%)" : done ? "oklch(0.92 0.25 110 / 45%)" : "oklch(0.27 0.005 250)",
+          openInfo: () => this.setState({ infoSlug: slug }),
+          hasPrevious: !!prev, previousDate: prev ? prev.date : "",
+          hasTargetHint: !isCardio && !done && !isSkipped, targetHint: suggestion.reason,
+          workingRows,
+          hasWarmups: warmups.length > 0,
+          warmupChips: warmups.map((w) => ({ label: `${w.weight}kg×${w.reps}`, remove: () => this.setState((s) => ({ loggedSets: { ...s.loggedSets, [idx]: (s.loggedSets[idx] || []).filter((x) => x.id !== w.id) } })) })),
+          showAddWarmup: !isCardio && !done && !isSkipped,
+          warmupOpen: !!(state.warmupOpen || {})[idx], warmupClosed: !(state.warmupOpen || {})[idx],
+          openWarmup: () => this.setState((s) => ({ warmupOpen: { ...s.warmupOpen, [idx]: true } })),
+          closeWarmup: () => this.setState((s) => ({ warmupOpen: { ...s.warmupOpen, [idx]: false } })),
+          warmupWeightValue: ((state.warmupDraft || {})[idx] || {}).weight || "",
+          warmupRepsValue: ((state.warmupDraft || {})[idx] || {}).reps || "",
+          setWarmupWeight: (e) => this.setState((s) => ({ warmupDraft: { ...s.warmupDraft, [idx]: { ...(s.warmupDraft || {})[idx], weight: e.target.value } } })),
+          setWarmupReps: (e) => this.setState((s) => ({ warmupDraft: { ...s.warmupDraft, [idx]: { ...(s.warmupDraft || {})[idx], reps: e.target.value } } })),
+          logWarmup: () => this.logWarmupSet(idx),
+          cardioValue: input.cardioMin || "",
+          setCardio: (e) => this.setState((s) => ({ workoutInputs: { ...s.workoutInputs, [idx]: { ...s.workoutInputs[idx], cardioMin: e.target.value } } })),
+          logCardio: () => this.logCardioSet(idx),
+          cardioLoggedLabel: working.length ? `${working[0].reps} min` : "",
+          menuOpen: state.exerciseMenuOpen === idx,
+          toggleMenu: () => this.setState((s) => ({ exerciseMenuOpen: s.exerciseMenuOpen === idx ? null : idx })),
+          menuReplaceDisabled: alternates.length === 0,
+          menuReplaceColor: alternates.length === 0 ? "oklch(0.4 0.006 250)" : "inherit",
+          menuReplace: () => { if (alternates.length === 0) return; this.setState((s) => ({ replacedSlugs: { ...s.replacedSlugs, [idx]: alternates[0] }, loggedSets: { ...s.loggedSets, [idx]: [] }, exerciseMenuOpen: null })); },
+          skipLabel: isSkipped ? "Unskip exercise" : "Skip exercise",
+          menuToggleSkip: () => this.setState((s) => ({ skippedExercises: { ...s.skippedExercises, [idx]: !((s.skippedExercises || {})[idx]) }, exerciseMenuOpen: null })),
+          menuAddSet: () => this.setState((s) => ({ extraSets: { ...s.extraSets, [idx]: ((s.extraSets || {})[idx] || 0) + 1 }, exerciseMenuOpen: null })),
+          menuToggleNote: () => this.setState((s) => ({ noteEditing: { ...s.noteEditing, [idx]: !((s.noteEditing || {})[idx]) }, exerciseMenuOpen: null })),
+          menuToggleHistory: () => this.setState((s) => ({ historyOpenIdx: { ...s.historyOpenIdx, [idx]: !((s.historyOpenIdx || {})[idx]) }, exerciseMenuOpen: null })),
+          noteEditing: !!(state.noteEditing || {})[idx],
+          noteValue: (state.exerciseNotes || {})[idx] || "",
+          setNoteValue: (e) => this.setState((s) => ({ exerciseNotes: { ...s.exerciseNotes, [idx]: e.target.value } })),
+          hasSavedNote: !(state.noteEditing || {})[idx] && !!(state.exerciseNotes || {})[idx], savedNote: (state.exerciseNotes || {})[idx] || "",
+          historyOpen: !!(state.historyOpenIdx || {})[idx],
+          historyRows: prev ? prev.sets.map((s, i) => ({ n: i + 1, w: s.w, r: s.r })) : [],
+          summaryLine: isCardio ? "" : `Best set ${bestSet ? bestSet.weight + " kg × " + bestSet.reps : "—"} · ${Math.round(totalVolumeThisEx)} kg volume${nextSessionSuggestion ? " · Next: " + nextSessionSuggestion.label.toLowerCase() : ""}`,
+        };
+      });
+      var workoutSetsDone = doneSets, workoutSetsTotal = totalSets;
+      this._lastWorkoutTotals = { doneSets, totalSets };
+      this._lastImproved = improvedCount; this._lastMaintained = maintainedCount; this._lastVolume = sessionVolume;
+    }
+
+    const infoEx = state.infoSlug ? data.EXERCISES[state.infoSlug] : null;
+
+    let restVals = {};
+    if (state.rest) {
+      const total = state.rest.seconds, remaining = state.rest.remaining;
+      const pct = total > 0 ? 1 - remaining / total : 1;
+      restVals = {
+        hasRest: true, restLabel: data.mmss(remaining), restStatus: remaining === 0 ? "Rest complete — next set" : "Resting",
+        restDashOffset: 100.5 * (1 - pct),
+        restAdd: () => this.setState((s) => ({ rest: { ...s.rest, remaining: s.rest.remaining + 30 } })),
+        restSkip: () => { if (this._restInterval) clearInterval(this._restInterval); this.setState({ rest: null }); },
+      };
+    } else restVals = { hasRest: false };
+
+    // ---- progress ----
+    const exerciseOptions = Object.keys(data.STRENGTH_HISTORY).map((slug) => ({ value: slug, label: data.EXERCISES[slug].name }));
+    const buildChart = (series, key, w, h) => {
+      const vals = series.map((d) => d[key]);
+      const min = Math.min(...vals), max = Math.max(...vals);
+      const range = max - min || 1;
+      const padX = 8, padY = 14;
+      return series.map((d, i) => {
+        const x = padX + (i * (w - padX * 2)) / Math.max(1, series.length - 1);
+        const y = padY + (1 - (d[key] - min) / range) * (h - padY * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(" ");
+    };
+    const strengthSeries = data.STRENGTH_HISTORY[state.progressExercise] || [];
+    const strengthBestVal = strengthSeries.length ? Math.max(...strengthSeries.map((s) => s.e1rm)) : 0;
+
+    // ---- history ----
+    const now = new Date();
+    const daysAgo = (n) => { const d = new Date(now); d.setDate(d.getDate() - n); return d.toISOString().slice(0, 10); };
+    const thresholds = { "7": daysAgo(7), "30": daysAgo(30), "90": daysAgo(90), all: null };
+    const filteredHistory = data.HISTORY.filter((s) => !thresholds[state.historyFilter] || s.date >= thresholds[state.historyFilter]);
+    const totalMinutes = Math.round(filteredHistory.reduce((sum, s) => sum + s.durationSeconds, 0) / 60);
+    const historyFilters = [
+      { key: "7", label: "7d" }, { key: "30", label: "30d" }, { key: "90", label: "90d" }, { key: "all", label: "All" },
+    ].map((f) => ({ label: f.label, select: () => this.setState({ historyFilter: f.key }), borderColor: state.historyFilter === f.key ? "oklch(0.96 0.002 250)" : "oklch(0.27 0.005 250)", bg: state.historyFilter === f.key ? "oklch(0.22 0.005 250)" : "transparent" }));
+    const historyList = filteredHistory.map((s) => ({ title: s.title, date: s.date, duration: data.fmtDuration(s.durationSeconds), status: s.status.replace("_", " "), open: () => this.setState({ screen: "historyDetail", historyId: s.id }) }));
+
+    // ---- history detail ----
+    const detailSummary = data.HISTORY.find((s) => s.id === state.historyId) || data.SESSION_DETAIL;
+    const sd = data.SESSION_DETAIL;
+    const totalVol = sd.exercises.reduce((sum, e) => sum + e.sets.reduce((s2, st) => s2 + st.weightKg * st.reps, 0), 0);
+    const totalReps = sd.exercises.reduce((sum, e) => sum + e.sets.reduce((s2, st) => s2 + st.reps, 0), 0);
+
+    // ---- body ----
+    const metricsForBody = state.metricsRows || [];
+    const weightEntries = metricsForBody.filter((m) => m.weightKg != null);
+    const waistEntries = metricsForBody.filter((m) => m.waistCm != null);
+    const bfEntries = metricsForBody.filter((m) => m.bodyFatPercent != null);
+    const calEntries = metricsForBody.filter((m) => m.targetCalories != null);
+    function changeOver(entries, key, days) {
+      if (entries.length < 2) return null;
+      const latest = entries[entries.length - 1];
+      const cutoff = new Date(latest.date).getTime() - days * 86400000;
+      let ref = null;
+      for (let i = entries.length - 2; i >= 0; i--) { if (new Date(entries[i].date).getTime() <= cutoff) { ref = entries[i]; break; } }
+      if (!ref) ref = entries[0];
+      if (ref === latest) return null;
+      return { delta: Math.round((latest[key] - ref[key]) * 10) / 10, refDate: ref.date };
+    }
+    const weightChange = changeOver(weightEntries, "weightKg", 28);
+    const waistChange = changeOver(waistEntries, "waistCm", 28);
+    const latestWeightEntry = weightEntries[weightEntries.length - 1];
+    const latestWaistEntry = waistEntries[waistEntries.length - 1];
+    const latestBf = bfEntries[bfEntries.length - 1];
+    const latestCal = calEntries[calEntries.length - 1];
+    const chartSourceEntries = state.chartMetric === "weight" ? weightEntries : waistEntries;
+    const chartKey = state.chartMetric === "weight" ? "weightKg" : "waistCm";
+    const periodDays = { "4w": 28, "3m": 90, "6m": 180, "1y": 365 }[state.chartPeriod];
+    const latestChartTime = chartSourceEntries.length ? new Date(chartSourceEntries[chartSourceEntries.length - 1].date).getTime() : 0;
+    const chartFiltered = chartSourceEntries.filter((e) => latestChartTime - new Date(e.date).getTime() <= periodDays * 86400000);
+
+    const bodyFat = data.navyBodyFat({ sex: state.sex, height: Number(state.heightInput), neck: Number(state.neckInput), waist: Number(state.bfWaistInput), hip: Number(state.hipInput) });
+    const GOALS = { cut: { label: "Fat loss", factor: 0.8 }, recomp: { label: "Slow cut / recomp", factor: 0.9 }, maintain: { label: "Maintain", factor: 1 }, bulk: { label: "Lean gain", factor: 1.1 } };
+    const calcWeight = Number(state.weightInput) || Number([...(state.metricsRows || [])].reverse().find((m) => m.weightKg)?.weightKg) || 0;
+
+    // ---- profile / leaderboard ----
+    const displayName = state.nameField || data.PROFILE.name;
+    const initials = displayName.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+    const AVATAR_SWATCHES = [
+      { name: "lime", color: "oklch(0.92 0.25 110)" },
+      { name: "blue", color: "oklch(0.75 0.15 230)" },
+      { name: "coral", color: "oklch(0.75 0.15 30)" },
+      { name: "violet", color: "oklch(0.75 0.15 300)" },
+      { name: "teal", color: "oklch(0.75 0.15 180)" },
+    ];
+    const avatarSwatches = AVATAR_SWATCHES.map((s) => ({
+      name: s.name, color: s.color,
+      borderColor: state.avatarColor === s.color && !state.avatarImage ? "oklch(0.96 0.002 250)" : "transparent",
+      select: () => this.setState({ avatarColor: s.color, avatarImage: null }),
+    }));
+    const ranked = data.LEADERBOARD.map((r) => ({ ...r, score: data.ironScore(r) })).sort((a, b) => b.score - a.score);
+    const me = ranked.find((r) => r.userId === "me");
+    const myRank = me ? ranked.indexOf(me) + 1 : 1;
+    const level = data.levelFor(me ? me.score : 0);
+    const levelIndex = data.LEVELS.findIndex((l) => l.name === level.current.name) + 1;
+    const xpValue = me ? me.score : 0;
+    const streak = 4;
+    const totalWorkingSets = data.HISTORY.reduce((s, h) => s + h.workingSets, 0);
+
+    const badgesRaw = [
+      { label: "First rep", hint: "Complete 1 session", value: completedCount, target: 1, rewardXp: 50 },
+      { label: "Ten sessions", hint: "Complete 10 sessions", value: completedCount, target: 10, rewardXp: 150 },
+      { label: "Consistency", hint: "3-day training streak", value: streak, target: 3, rewardXp: 75 },
+      { label: "Record breaker", hint: "Set a personal record", value: data.PRS.length, target: 1, rewardXp: 100 },
+      { label: "Volume built", hint: "Log 1,000 working sets", value: totalWorkingSets, target: 1000, rewardXp: 200 },
+      { label: "Iron addict", hint: "Log 500 working sets", value: totalWorkingSets, target: 500, rewardXp: 250 },
+    ];
+    const badges = badgesRaw.map((b) => {
+      const earned = b.value >= b.target;
+      const pct = Math.min(100, Math.round((b.value / b.target) * 100));
+      return {
+        ...b, earned, notEarned: !earned, pct,
+        cardBorder: earned ? "oklch(0.92 0.25 110 / 50%)" : "oklch(0.27 0.005 250)",
+        barColor: earned ? "oklch(0.92 0.25 110)" : "oklch(0.45 0.006 250)",
+        progressLabel: earned ? "Unlocked" : `${b.value} / ${b.target}`,
+      };
+    });
+
+    const unearnedBadges = badges.filter((b) => !b.earned).sort((a, b) => b.pct - a.pct);
+    const milestone = unearnedBadges[0];
+    const milestoneLabel = milestone ? milestone.label : "All milestones unlocked";
+    const milestoneHint = milestone ? milestone.hint : "Check Progress for your next strength goal.";
+    const milestonePct = milestone ? milestone.pct : 100;
+    const milestoneReward = milestone ? milestone.rewardXp : 0;
+
+    const weeklyConsistencyLabel = `${completedThisWeek}/5 sessions`;
+    const weeklyConsistencyPct = Math.round((completedThisWeek / 5) * 100);
+    const latestPr = data.PRS[data.PRS.length - 1];
+    const latestPrLine = latestPr ? `Latest: ${latestPr.exercise} · ${latestPr.date}` : "No records yet";
+
+    const challengesRaw = [
+      { label: "Weekly adherence", hint: "Complete 4 of 5 mandatory sessions", value: completedThisWeek, target: 4, rewardXp: 100 },
+      { label: "New PR", hint: "Set 1 personal record this month", value: prsThisMonth, target: 1, rewardXp: 75 },
+      { label: "Steady sets", hint: "Log 15\u201330 working sets this week (consistency, not more)", value: Math.min(completedThisWeek * 5, 30), target: 20, rewardXp: 50 },
+    ];
+    const challenges = challengesRaw.map((c) => ({ ...c, pct: Math.min(100, Math.round((c.value / c.target) * 100)), progressLabel: `${Math.min(c.value, c.target)} / ${c.target}` }));
+
+    const trainingRanked = data.LEADERBOARD.map((r) => ({ ...r, score: Math.round(r.sessions * 15 + r.activeWeeks * 25 + r.setsCount / 10) })).sort((a, b) => b.score - a.score);
+    const meTraining = trainingRanked.find((r) => r.userId === "me");
+    const myTrainingRank = meTraining ? trainingRanked.indexOf(meTraining) + 1 : 1;
+    const aboveMe = myTrainingRank > 1 ? trainingRanked[myTrainingRank - 2] : null;
+    const rankDistanceLabel = aboveMe ? `${aboveMe.score - meTraining.score} pts behind #${myTrainingRank - 1} (${aboveMe.name})` : "You're #1 on training score.";
+    const leaderboardRows = trainingRanked.map((r, i) => ({ rank: i + 1, name: r.name, isMe: r.userId === "me", score: r.score, sessions: r.sessions, rowBg: r.userId === "me" ? "oklch(0.92 0.25 110 / 10%)" : "transparent" }));
+
+    return {
+      dataLoaded: true, dataLoading: false,
+      isAuth: state.screen === "auth", isApp: state.screen !== "auth",
+      isSignup: state.authMode === "signup", authSubmitLabel: state.authMode === "signin" ? "Sign in" : "Create account",
+      authSwitchPrompt: state.authMode === "signin" ? "No account yet?" : "Already have an account?",
+      authSwitchLabel: state.authMode === "signin" ? "Sign up" : "Sign in",
+      authName: state.authName, authEmail: state.authEmail, authPassword: state.authPassword,
+      setAuthName: (e) => this.setState({ authName: e.target.value }), setAuthEmail: (e) => this.setState({ authEmail: e.target.value }), setAuthPassword: (e) => this.setState({ authPassword: e.target.value }),
+      toggleAuthMode: (e) => { e.preventDefault(); this.setState((s) => ({ authMode: s.authMode === "signin" ? "signup" : "signin" })); },
+      submitAuth: () => this.setState({ screen: "today" }), signOut: () => this.setState({ screen: "auth" }),
+
+      goToday: nav("today"), goPlan: nav("plan"), goBody: nav("body"), goProfile: nav("profile"), goProgress: nav("progress"), goHistory: nav("history"),
+      navColorToday: state.screen === "today" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)", navBgToday: state.screen === "today" ? "oklch(0.13 0.004 250)" : "transparent",
+      navColorPlan: state.screen === "plan" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)", navBgPlan: state.screen === "plan" ? "oklch(0.13 0.004 250)" : "transparent",
+      navColorBody: state.screen === "body" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)", navBgBody: state.screen === "body" ? "oklch(0.13 0.004 250)" : "transparent",
+      navColorProfile: ["profile", "history", "progress", "historyDetail"].includes(state.screen) ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+      navBgProfile: ["profile", "history", "progress", "historyDetail"].includes(state.screen) ? "oklch(0.13 0.004 250)" : "transparent",
+
+      isToday: state.screen === "today", isPlan: state.screen === "plan", isWorkout: state.screen === "workout",
+      isProgress: state.screen === "progress", isHistory: state.screen === "history", isHistoryDetail: state.screen === "historyDetail",
+      isBody: state.screen === "body", isProfile: state.screen === "profile",
+
+      todayDateLabel: now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" }),
+      todayHeading: today ? today.focus : "Today",
+      todayHasWorkout: !!today, todayNoWorkout: !today, todayDayName: today ? today.name : "", todayFocus: today ? today.focus : "",
+      todayHasCardio: !!(today && today.cardioNote), todayCardioNote: today ? today.cardioNote : "",
+      startTodayWorkout: () => this.enterWorkout(today ? today.slug : ""),
+      optionalDays, weekDays,
+      statSessions: completedCount, statWeight: latestWeight ? `${latestWeight} kg` : "—", statPRs: data.PRS.length,
+      heroDirection, heroRightStyle, statsGridCols, weeklyGridCols,
+      mainPadding, navGap, navLinkPad, navFontSize, showWordmark, hideWordmark: !showWordmark,
+      planMandatoryCols, workoutStatsCols, profileStatsCols, bodySnapshotCols, badgesCols, challengesCols,
+      heroExerciseCount: today ? today.exercises.length : 0,
+      heroDuration: today ? `${today.estMin}\u2013${today.estMax}m` : "",
+      hasLastSession: !!lastCompleted, lastSessionLine: lastCompleted ? `${lastCompleted.prs} PR${lastCompleted.prs === 1 ? "" : "s"}` : "",
+      sessionsContext: `${sessionsThisMonth} session${sessionsThisMonth === 1 ? "" : "s"} this month`,
+      weightDeltaLine: weightDelta != null ? `${weightDelta > 0 ? "+" : ""}${weightDelta} kg \u00b7 4 weeks` : "current",
+      prsContext: `${prsThisMonth} this month`,
+
+      planDays,
+      mandatoryDays, completedThisWeek, weekPct, satOptions, satFocusLabel, satMeta, openSaturday, sundayNote,
+
+      workoutDayName: day ? day.name : "", workoutName: day ? day.focus : "", workoutFocus: day ? day.focus : "",
+      workoutSetsDone: workoutSetsDone || 0, workoutSetsTotal: workoutSetsTotal || 0,
+      workoutPct: workoutSetsTotal ? Math.round((workoutSetsDone / workoutSetsTotal) * 100) : 0,
+      workoutElapsedLabel: data.mmss(state.elapsedSeconds || 0),
+      sessionVolumeLabel: `${Math.round(sessionVolume || 0)} kg`,
+      prsThisWorkoutCount: (state.prsThisWorkout || []).length,
+      prCountColor: (state.prsThisWorkout || []).length > 0 ? "oklch(0.92 0.25 110)" : "inherit",
+      ironEarnedLabel: state.ironEarned || 0,
+      backFromWorkout: () => this.exitWorkout("plan"),
+      requestFinish: () => {
+        const t = this._lastWorkoutTotals || { doneSets: 0, totalSets: 0 };
+        if (t.totalSets > 0 && t.doneSets < t.totalSets) this.setState({ showFinishWarning: true });
+        else this.completeWorkout();
+      },
+      remainingSetsLabel: (() => { const t = this._lastWorkoutTotals || { doneSets: 0, totalSets: 0 }; return `${t.totalSets - t.doneSets} set${t.totalSets - t.doneSets === 1 ? "" : "s"} remaining`; })(),
+      cancelFinishWarning: () => this.setState({ showFinishWarning: false }),
+      confirmFinishAnyway: () => this.completeWorkout(),
+      showFinishWarning: state.showFinishWarning,
+      showCompletion: state.showCompletion,
+      completionTitle: state.completionData ? state.completionData.title : "",
+      completionDuration: state.completionData ? state.completionData.duration : "0:00",
+      completionSets: state.completionData ? state.completionData.sets : 0,
+      completionVolume: state.completionData ? state.completionData.volume : 0,
+      completionPRs: state.completionData ? state.completionData.prs : 0,
+      completionIron: state.completionData ? state.completionData.iron : 0,
+      completionImproved: state.completionData ? state.completionData.improved : 0,
+      completionImprovedPlural: state.completionData && state.completionData.improved === 1 ? "" : "s",
+      completionMaintained: state.completionData ? state.completionData.maintained : 0,
+      completionNext: state.completionData ? state.completionData.next : "",
+      doneCompletion: () => { this.setState({ showCompletion: false }); this.exitWorkout("today"); },
+      workoutExercises,
+      hasInfo: !!infoEx, infoName: infoEx ? infoEx.name : "",
+      infoMeta: infoEx ? `${infoEx.muscle} · ${infoEx.equip} · ${infoEx.compound ? "Compound" : "Isolation"}` : "",
+      infoSetup: infoEx ? infoEx.setup.map((t) => ({ text: t })) : [], infoExec: infoEx ? infoEx.exec.map((t) => ({ text: t })) : [],
+      infoCues: infoEx ? infoEx.cues.map((t) => ({ text: t })) : [], infoMistakes: infoEx ? infoEx.mistakes.map((t) => ({ text: t })) : [],
+      infoFeel: infoEx ? infoEx.feel : "", infoBreathe: infoEx ? infoEx.breathe : "",
+      infoHasBack: !!(infoEx && infoEx.back), infoBack: infoEx ? infoEx.back : "",
+      closeInfo: () => this.setState({ infoSlug: null }), stopClick: stop,
+      ...restVals,
+
+      exerciseOptions, progressExercise: state.progressExercise, setProgressExercise: (e) => this.setState({ progressExercise: e.target.value }),
+      strengthPoints: buildChart(strengthSeries, "e1rm", 560, 156),
+      strengthFirstLabel: strengthSeries[0]?.date || "", strengthLastLabel: strengthSeries[strengthSeries.length - 1]?.date || "",
+      strengthBest: strengthBestVal ? `${strengthBestVal} kg` : "—", strengthSessions: strengthSeries.length,
+      strengthLast: strengthSeries.length ? strengthSeries[strengthSeries.length - 1].date : "—",
+      weightPoints: buildChart(data.BODY_METRICS, "weightKg", 560, 156),
+      weightFirstLabel: data.BODY_METRICS[0].date, weightLastLabel: data.BODY_METRICS[data.BODY_METRICS.length - 1].date,
+      prList: data.PRS.map((pr) => ({ exercise: pr.exercise, date: pr.date, typeLabel: pr.type === "volume" ? "Volume PR" : "Strength PR", value: pr.type === "volume" ? `${pr.volumeKg} kg` : `${pr.weightKg} kg × ${pr.reps}` })),
+
+      historyCount: filteredHistory.length, historyPlural: filteredHistory.length === 1 ? "" : "s", historyMinutes: totalMinutes,
+      historyFilters, historyList,
+
+      detailDateFull: new Date(detailSummary.date).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+      detailTitle: detailSummary.title, detailStatus: detailSummary.status.replace("_", " "), detailMood: sd.mood,
+      detailDuration: data.fmtDuration(detailSummary.durationSeconds), detailVolume: `${Math.round(totalVol).toLocaleString()} kg`,
+      detailSets: sd.exercises.reduce((n, e) => n + e.sets.length, 0), detailReps: totalReps,
+      detailPRs: sd.prs.map((p) => ({ text: `${p.exercise} — ${p.detail}` })),
+      detailExercises: sd.exercises.map((e) => ({
+        name: e.name, meta: `${e.muscle} · target ${e.targetRepRange}`,
+        sets: e.sets.map((s) => ({ n: s.setNumber, w: fmtKg(s.weightKg), r: s.reps, rir: s.rir })),
+      })),
+      detailCardio: sd.cardio.map((c) => ({ text: `${c.type} — ${c.minutes} min` })),
+      detailNotes: sd.notes,
+
+      weightInput: state.weightInput, waistInput: state.waistInput,
+      setWeightInput: (e) => this.setState({ weightInput: e.target.value }), setWaistInput: (e) => this.setState({ waistInput: e.target.value }),
+      saveMetric: () => { if (!state.weightInput && !state.waistInput) return; this.setState((s) => { const rows = [...s.metricsRows]; const entry = { date: new Date().toISOString().slice(0, 10), weightKg: state.weightInput ? Number(state.weightInput) : null, waistCm: state.waistInput ? Number(state.waistInput) : null }; if (s.editingLatestMetric && rows.length) { rows[rows.length - 1] = { ...rows[rows.length - 1], ...entry }; } else { rows.push(entry); } return { metricsRows: rows, weightInput: "", waistInput: "", addMeasurementOpen: false, editingLatestMetric: false }; }); },
+      sexMaleBg: state.sex === "male" ? "oklch(0.22 0.005 250)" : "transparent", sexMaleColor: state.sex === "male" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+      sexFemaleBg: state.sex === "female" ? "oklch(0.22 0.005 250)" : "transparent", sexFemaleColor: state.sex === "female" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)",
+      setSexMale: () => this.setState({ sex: "male" }), setSexFemale: () => this.setState({ sex: "female" }),
+      isFemale: state.sex === "female",
+      heightInput: state.heightInput, neckInput: state.neckInput, bfWaistInput: state.bfWaistInput, hipInput: state.hipInput,
+      setHeightInput: (e) => this.setState({ heightInput: e.target.value }), setNeckInput: (e) => this.setState({ neckInput: e.target.value }),
+      setBfWaistInput: (e) => this.setState({ bfWaistInput: e.target.value }), setHipInput: (e) => this.setState({ hipInput: e.target.value }),
+      bodyFatLabel: bodyFat != null ? `${bodyFat}%` : "—",
+      saveBodyFat: () => { if (bodyFat == null) return; this.setState((s) => ({ metricsRows: [...s.metricsRows, { date: new Date().toISOString().slice(0, 10), bodyFatPercent: bodyFat }] })); },
+      calorieMethodLabel: bodyFat != null ? "Katch-McArdle (using your body fat estimate above)." : "Mifflin-St Jeor — fill height above and your age below.",
+      snapWeight: latestWeightEntry ? `${latestWeightEntry.weightKg} kg` : "—",
+      snapWeightChange: weightChange ? `${weightChange.delta > 0 ? "+" : ""}${weightChange.delta} kg since ${weightChange.refDate}` : latestWeightEntry ? "No prior data" : "Not logged",
+      snapWeightColor: weightChange && weightChange.delta < 0 ? "oklch(0.78 0.15 145)" : "oklch(0.45 0.006 250)",
+      snapWaist: latestWaistEntry ? `${latestWaistEntry.waistCm} cm` : "—",
+      snapWaistChange: waistChange ? `${waistChange.delta > 0 ? "+" : ""}${waistChange.delta} cm since ${waistChange.refDate}` : latestWaistEntry ? "No prior data" : "Not logged",
+      snapWaistColor: waistChange && waistChange.delta < 0 ? "oklch(0.78 0.15 145)" : "oklch(0.45 0.006 250)",
+      snapBodyFat: latestBf ? `${latestBf.bodyFatPercent}%` : "—",
+      snapBodyFatNote: latestBf ? `Estimated · ${latestBf.date}` : "Not calculated",
+      snapCalories: latestCal ? `${latestCal.targetCalories}` : "—",
+      snapCaloriesNote: latestCal ? `Target · ${latestCal.date}` : "Not calculated",
+      chartWeightBg: state.chartMetric === "weight" ? "oklch(0.22 0.005 250)" : "transparent", chartWeightColor: state.chartMetric === "weight" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)", setChartWeight: () => this.setState({ chartMetric: "weight" }),
+      chartWaistBg: state.chartMetric === "waist" ? "oklch(0.22 0.005 250)" : "transparent", chartWaistColor: state.chartMetric === "waist" ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)", setChartWaist: () => this.setState({ chartMetric: "waist" }),
+      chartPeriods: [{ key: "4w", label: "4W" }, { key: "3m", label: "3M" }, { key: "6m", label: "6M" }, { key: "1y", label: "1Y" }].map((p) => ({ label: p.label, select: () => this.setState({ chartPeriod: p.key }), bg: state.chartPeriod === p.key ? "oklch(0.22 0.005 250)" : "transparent", color: state.chartPeriod === p.key ? "oklch(0.96 0.002 250)" : "oklch(0.63 0.006 250)", borderColor: "oklch(0.27 0.005 250)" })),
+      chartHasData: chartFiltered.length > 1, chartNoData: chartFiltered.length <= 1,
+      chartPoints: chartFiltered.length > 1 ? buildChart(chartFiltered, chartKey, 560, 140) : "",
+      chartFirstLabel: chartFiltered[0]?.date || "", chartLastLabel: chartFiltered.length ? chartFiltered[chartFiltered.length - 1].date : "",
+      addMeasurementOpen: state.addMeasurementOpen, addMeasurementTitle: state.editingLatestMetric ? "Edit measurement" : "Add measurement", addMeasurementSaveLabel: state.editingLatestMetric ? "Save changes" : "Save measurement",
+      openAddMeasurement: () => this.setState({ addMeasurementOpen: true, editingLatestMetric: false, weightInput: "", waistInput: "" }),
+      closeAddMeasurement: () => this.setState({ addMeasurementOpen: false, editingLatestMetric: false }),
+      editLatestMetric: () => { const rows = state.metricsRows || []; const latest = rows[rows.length - 1]; if (!latest) return; this.setState({ addMeasurementOpen: true, editingLatestMetric: true, weightInput: latest.weightKg != null ? String(latest.weightKg) : "", waistInput: latest.waistCm != null ? String(latest.waistCm) : "" }); },
+      ageInput: state.ageInput, setAgeInput: (e) => this.setState({ ageInput: e.target.value }),
+      activity: state.activity, setActivity: (e) => this.setState({ activity: e.target.value }),
+      goal: state.goal, setGoal: (e) => this.setState({ goal: e.target.value }), goalLabel: GOALS[state.goal].label,
+      calculateCalories: () => {
+        if (calcWeight <= 0) return;
+        const h = Number(state.heightInput), a = Number(state.ageInput);
+        if (bodyFat == null && (h <= 0 || a <= 0)) return;
+        const bmr = bodyFat != null ? 370 + 21.6 * (calcWeight * (1 - bodyFat / 100)) : 10 * calcWeight + 6.25 * h - 5 * a + (state.sex === "male" ? 5 : -161);
+        const tdee = bmr * Number(state.activity);
+        const targetCals = Math.round((tdee * GOALS[state.goal].factor) / 10) * 10;
+        const protein = Math.round(calcWeight * 2), fat = Math.round(calcWeight * 0.9);
+        const carbs = Math.max(0, Math.round((targetCals - protein * 4 - fat * 9) / 4));
+        this.setState({ calculated: { bmr, tdee, targetCals, protein, fat, carbs } });
+      },
+      hasCalculated: !!state.calculated,
+      calTargetCals: state.calculated?.targetCals, calProtein: state.calculated?.protein, calFat: state.calculated?.fat, calCarbs: state.calculated?.carbs,
+      calMaintenance: state.calculated ? Math.round(state.calculated.tdee / 10) * 10 : 0,
+      saveCalories: () => { if (!state.calculated) return; this.setState((s) => ({ metricsRows: [...s.metricsRows, { date: new Date().toISOString().slice(0, 10), targetCalories: state.calculated.targetCals }] })); },
+      metricRows: [...(state.metricsRows || [])].reverse().map((m, i) => ({
+        date: m.date, isLatest: i === 0,
+        summary: [m.weightKg ? `${m.weightKg} kg` : null, m.waistCm ? `waist ${m.waistCm} cm` : null, m.bodyFatPercent ? `${m.bodyFatPercent}% bf` : null, m.targetCalories ? `${m.targetCalories} kcal` : null].filter(Boolean).join(" · ") || "—",
+      })),
+
+      initials, displayName, profileEmail: data.PROFILE.email, levelName: level.current.name, myRank, profileGoal: state.goalField || data.PROFILE.goal,
+      avatarBg: state.avatarImage ? "oklch(0.22 0.005 250)" : state.avatarColor, hasAvatarImage: !!state.avatarImage, noAvatarImage: !state.avatarImage, avatarImage: state.avatarImage,
+      headerAvatarBg: state.avatarImage ? `center/cover no-repeat url(${state.avatarImage})` : state.avatarColor,
+      avatarBoxStyle: `width:80px;height:80px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Inter';font-size:24px;font-weight:600;color:oklch(0.07 0.01 110);box-shadow:0 4px 16px rgba(0,0,0,0.4);overflow:hidden;background:${state.avatarImage ? `center/cover no-repeat url(${state.avatarImage})` : state.avatarColor}`,
+      avatarModalBoxStyle: `width:72px;height:72px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Inter';font-size:22px;font-weight:600;color:oklch(0.07 0.01 110);overflow:hidden;background:${state.avatarImage ? `center/cover no-repeat url(${state.avatarImage})` : state.avatarColor}`,
+      avatarSwatches, avatarEditorOpen: state.avatarEditorOpen,
+      openAvatarEditor: () => this.setState({ avatarEditorOpen: true }), closeAvatarEditor: () => this.setState({ avatarEditorOpen: false }),
+      onAvatarFile: (e) => this.handleAvatarFile(e), removeAvatarImage: () => this.setState({ avatarImage: null }),
+      editingProfile: state.editingProfile, toggleEditProfile: () => this.setState((s) => ({ editingProfile: !s.editingProfile, nameField: s.nameField || data.PROFILE.name, goalField: s.goalField || data.PROFILE.goal })),
+      nameField: state.nameField || data.PROFILE.name, setNameField: (e) => this.setState({ nameField: e.target.value }),
+      goalField: state.goalField || data.PROFILE.goal, setGoalField: (e) => this.setState({ goalField: e.target.value }),
+      saveProfile: () => this.setState({ editingProfile: false }),
+      levelIndex, xpValue, xpToNextLabel: level.next ? `${level.next.min - xpValue} XP to ${level.next.name}` : "Max level \u2014 Iron Legend.", levelPct: level.pct,
+      streakValue: `${streak} d`,
+      milestoneLabel, milestoneHint, milestonePct, milestoneReward,
+      weeklyConsistencyLabel, weeklyConsistencyPct, latestPrLine,
+      badgeCount: `${badges.filter((b) => b.earned).length}/${badges.length} unlocked`, badges, challenges,
+      showLeaderboard: state.showLeaderboard, toggleLeaderboard: () => this.setState((s) => ({ showLeaderboard: !s.showLeaderboard })),
+      leaderboardToggleLabel: state.showLeaderboard ? "Hide" : "Show leaderboard",
+      rankDistanceLabel, leaderboardRows,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -185,7 +185,7 @@ function WorkoutPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 100 }}>
       {/* Sticky Header */}
-      <div style={{ position: "sticky", top: 0, zIndex: 30, margin: "0 -20px", padding: "12px 20px", background: "oklch(0.045 0.003 250 / 97%)", backdropFilter: "blur(8px)", borderBottom: "1px solid oklch(0.27 0.005 250)" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 30, margin: "0 -16px", padding: "12px 16px", background: "oklch(0.045 0.003 250 / 97%)", backdropFilter: "blur(8px)", borderBottom: "1px solid oklch(0.27 0.005 250)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
             <button onClick={() => router.history.back()} aria-label="Back" style={{ flexShrink: 0, width: 32, height: 32, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>

@@ -91,7 +91,7 @@ function PlanPage() {
         <h2 style={{ margin: "0 0 16px", fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "oklch(0.63 0.006 250)" }}>
           Mandatory
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        <div className="plan-grid">
           {mandatory.map((d) => {
             const isToday = d.day_of_week === dow;
             const accentColor = isToday ? "oklch(0.92 0.25 110)" : "transparent";

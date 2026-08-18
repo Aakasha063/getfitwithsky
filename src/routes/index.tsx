@@ -113,7 +113,7 @@ function Dashboard() {
       {/* Heading */}
       <div>
         <p style={{ margin: 0, fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{todayLabel}</p>
-        <h1 style={{ margin: "14px 0 0", fontFamily: "'Inter'", fontSize: 42, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+        <h1 style={{ margin: "14px 0 0", fontFamily: "'Inter'", fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15 }}>
           {heading}
         </h1>
       </div>
@@ -195,7 +195,7 @@ function Dashboard() {
       )}
 
       {/* Stats grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+      <div className="stats-grid">
         <StatCard label="Sessions" value={String(completed)} sub="total completed" />
         <StatCard label="Bodyweight" value={latestWeight ? `${latestWeight} kg` : "—"} sub="latest logged" />
         <StatCard label="PRs" value={String(prCount)} sub="personal records" />

@@ -277,7 +277,7 @@ function BodyPage() {
         <h2 style={{ margin: "0 0 16px", fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "oklch(0.63 0.006 250)" }}>
           Current snapshot
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+        <div className="body-snapshot-grid">
           {[
             { label: "Weight", value: latestWeight?.weight_kg != null ? `${latestWeight.weight_kg} kg` : "—", change: wDelta != null ? `${wDelta > 0 ? "+" : ""}${wDelta} kg` : "no data", changeColor: wDelta != null && wDelta < 0 ? "oklch(0.78 0.15 145)" : "oklch(0.45 0.006 250)" },
             { label: "Waist", value: latestWaist?.waist_cm != null ? `${latestWaist.waist_cm} cm` : "—", change: waDelta != null ? `${waDelta > 0 ? "+" : ""}${waDelta} cm` : "no data", changeColor: waDelta != null && waDelta < 0 ? "oklch(0.78 0.15 145)" : "oklch(0.45 0.006 250)" },

@@ -474,7 +474,7 @@ function ProfilePage() {
             {badges.filter((b) => b.earned).length}/{badges.length} unlocked
           </span>
         </div>
-        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+        <div className="badges-grid" style={{ marginTop: 16 }}>
           {badges.map((b) => (
             <div
               key={b.label}
@@ -513,7 +513,7 @@ function ProfilePage() {
         <p style={{ margin: "4px 0 0", fontSize: 12, color: "oklch(0.45 0.006 250)" }}>
           Reward consistency and progression — not extra volume.
         </p>
-        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+        <div className="badges-grid" style={{ marginTop: 16 }}>
           {challenges.map((c) => (
             <div key={c.label} style={{ ...CARD, padding: 16 }}>
               <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{c.label}</p>

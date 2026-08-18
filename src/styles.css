@@ -95,28 +95,93 @@
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Mobile-first hero layout */
 .hero-row {
   display: flex;
   gap: 24px;
-  flex-direction: row;
+  flex-direction: column;
 }
 .hero-right {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 16px;
-  border-left: 1px solid oklch(0.27 0.005 250);
-  padding-left: 24px;
+  border-left: none;
+  padding-left: 0;
+  border-top: 1px solid oklch(0.27 0.005 250);
+  padding-top: 24px;
 }
-@media (max-width: 640px) {
+@media (min-width: 640px) {
   .hero-row {
-    flex-direction: column;
+    flex-direction: row;
   }
   .hero-right {
-    border-left: none;
-    padding-left: 0;
-    border-top: 1px solid oklch(0.27 0.005 250);
-    padding-top: 24px;
+    border-top: none;
+    padding-top: 0;
+    border-left: 1px solid oklch(0.27 0.005 250);
+    padding-left: 24px;
+  }
+}
+
+/* Responsive stats grid — 1 col mobile, 3 col tablet+ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 440px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive plan cards — 1 col mobile, 2 col tablet */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (max-width: 440px) {
+  .plan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Week row — full width single column */
+.week-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Body snapshot grid — 2 cols mobile, 4 cols wide */
+.body-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (min-width: 480px) {
+  .body-snapshot-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Workout stats inline grid */
+.workout-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+}
+
+/* Profile badges and challenges grid — 2 col mobile, 3 col wide */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 480px) {
+  .badges-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
