@@ -138,6 +138,7 @@ function Dashboard() {
               <Link
                 to="/workout/$slug"
                 params={{ slug: today.slug }}
+                search={{ start: true }}
                 style={{ textDecoration: "none" }}
               >
                 <button style={{

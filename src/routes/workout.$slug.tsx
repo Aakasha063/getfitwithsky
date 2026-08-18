@@ -20,6 +20,11 @@ import { suggestNextSet } from "@/lib/progression";
 import { mmss } from "@/lib/format";
 
 export const Route = createFileRoute("/workout/$slug")({
+  validateSearch: (search: Record<string, unknown>): { start?: boolean } => {
+    return {
+      start: search['start'] === true || search['start'] === "true",
+    };
+  },
   head: () => ({
     meta: [
       { title: "Live Session — LIFT" },
@@ -57,6 +62,9 @@ function WorkoutPage() {
   const [info, setInfo] = useState<Exercise | null>(null);
   const [startedAt] = useState(() => Date.now());
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const search = Route.useSearch();
+  const autoStart = search.start;
+  const [sessionStarted, setSessionStarted] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => setNowMs(Date.now()), 1000);
@@ -69,11 +77,23 @@ function WorkoutPage() {
   });
 
   useEffect(() => {
-    if (!user || !plan?.day || sessionId) return;
+    if (!user || !plan?.day || sessionId || sessionStarted) return;
+    if (!autoStart) return;
+    
+    setSessionStarted(true);
     startSession({ userId: user.id, day: plan.day, exercises: plan.exercises })
       .then((s) => setSessionId(s.id))
       .catch((e) => toast.error(e.message));
-  }, [user, plan, sessionId]);
+  }, [user, plan, sessionId, autoStart, sessionStarted]);
+
+  function handleManualStart() {
+    if (!user || !plan?.day || sessionId || sessionStarted) return;
+    setSessionStarted(true);
+    setNowMs(Date.now());
+    startSession({ userId: user.id, day: plan.day, exercises: plan.exercises })
+      .then((s) => setSessionId(s.id))
+      .catch((e) => toast.error(e.message));
+  }
 
   const { data: detail } = useQuery({
     queryKey: ["session", sessionId],
@@ -177,13 +197,21 @@ function WorkoutPage() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-            <div style={{ textAlign: "right" }}>
-              <p style={{ margin: 0, fontSize: 16, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
-              <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
-            </div>
-            <button onClick={requestFinish} style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-              Finish
-            </button>
+            {sessionId ? (
+              <>
+                <div style={{ textAlign: "right" }}>
+                  <p style={{ margin: 0, fontSize: 16, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
+                </div>
+                <button onClick={requestFinish} style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  Finish
+                </button>
+              </>
+            ) : (
+              <button onClick={handleManualStart} style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                Start Workout
+              </button>
+            )}
           </div>
         </div>
         <div style={{ marginTop: 10, height: 3, borderRadius: 999, background: "oklch(0.22 0.005 250)", overflow: "hidden" }}>
