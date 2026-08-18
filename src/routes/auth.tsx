@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const router = useRouter();
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot_password" | "verify_otp" | "update_password">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot_password" | "verify_otp" | "verify_signup_otp" | "update_password">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -45,12 +45,17 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
             data: { name },
           },
         });
         if (error) throw error;
-        toast.success("Account created. You're all set.");
+        toast.success("Verification code sent to your email.");
+        setMode("verify_signup_otp");
+      } else if (mode === "verify_signup_otp") {
+        const { error } = await supabase.auth.verifyOtp({ email, token: otpCode, type: "signup" });
+        if (error) throw error;
+        toast.success("Account verified. Welcome!");
+        // session will populate and auto-redirect
       } else if (mode === "forgot_password") {
         const { error } = await supabase.auth.resetPasswordForEmail(email);
         if (error) throw error;
@@ -133,16 +138,18 @@ function AuthPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <label htmlFor="email" style={{ fontSize: 13 }}>Email</label>
                 <input
-                  id="email" type="email" required disabled={mode === "verify_otp"}
+                  id="email" type="email" required disabled={mode === "verify_otp" || mode === "verify_signup_otp"}
                   value={email} onChange={(e) => setEmail(e.target.value)}
-                  style={{ ...INPUT_STYLE, opacity: mode === "verify_otp" ? 0.6 : 1 }}
+                  style={{ ...INPUT_STYLE, opacity: (mode === "verify_otp" || mode === "verify_signup_otp") ? 0.6 : 1 }}
                 />
               </div>
             )}
 
-            {mode === "verify_otp" && (
+            {(mode === "verify_otp" || mode === "verify_signup_otp") && (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label htmlFor="otp" style={{ fontSize: 13 }}>6-Digit Recovery Code</label>
+                <label htmlFor="otp" style={{ fontSize: 13 }}>
+                  {mode === "verify_signup_otp" ? "6-Digit Verification Code" : "6-Digit Recovery Code"}
+                </label>
                 <input
                   id="otp" type="text" required maxLength={6}
                   value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
@@ -188,7 +195,7 @@ function AuthPage() {
             {busy ? "Please wait..." : 
               mode === "signin" ? "Sign in" : 
               mode === "signup" ? "Create account" : 
-              mode === "verify_otp" ? "Verify code" : 
+              (mode === "verify_otp" || mode === "verify_signup_otp") ? "Verify code" : 
               mode === "update_password" ? "Update password" :
               "Send reset code"
             }
@@ -224,7 +231,7 @@ function AuthPage() {
 
         {/* Toggle */}
         <p style={{ marginTop: 20, textAlign: "center", fontSize: 14, color: "oklch(0.63 0.006 250)" }}>
-          {(mode === "forgot_password" || mode === "verify_otp" || mode === "update_password") ? (
+          {(mode === "forgot_password" || mode === "verify_otp" || mode === "verify_signup_otp" || mode === "update_password") ? (
             <button
               onClick={() => {
                 setMode("signin");
