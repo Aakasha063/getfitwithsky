@@ -111,7 +111,7 @@
   border-top: 1px solid oklch(0.27 0.005 250);
   padding-top: 24px;
 }
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .hero-row {
     flex-direction: row;
   }
@@ -209,6 +209,8 @@
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
+}
+
 /* Responsive AppShell layout */
 .app-header-inner {
   max-width: 1280px;
@@ -235,7 +237,7 @@
   display: block;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .app-header-inner {
     height: 76px;
     padding: 0 20px;
@@ -253,3 +255,6 @@
   }
 }
 
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
