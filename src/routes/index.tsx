@@ -282,15 +282,3 @@ function StatusChip({ label, color }: { label: string; color: string }) {
     </span>
   );
 }
-
-function StatCardUnused({ label, value, sub }: { label: string; value: string; sub: string }) {
-  return (
-    <div style={{ background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)", borderRadius: 12, padding: 24 }}>
-      <p style={{ margin: 0, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "oklch(0.63 0.006 250)" }}>
-        {label}
-      </p>
-      <p style={{ margin: "8px 0 0", fontSize: 32, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{value}</p>
-      <p style={{ margin: "4px 0 0", fontSize: 13, color: "oklch(0.45 0.006 250)" }}>{sub}</p>
-    </div>
-  );
-}
