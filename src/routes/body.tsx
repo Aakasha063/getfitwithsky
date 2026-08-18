@@ -87,6 +87,7 @@ function BodyPage() {
 
   // Measurement modal
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [weightInput, setWeightInput] = useState("");
   const [waistInput, setWaistInput] = useState("");
 
@@ -179,17 +180,29 @@ function BodyPage() {
 
   async function saveMetric() {
     if (!user) return;
-    const { error } = await supabase.from("body_metrics").insert({
-      user_id: user.id,
-      measured_on: todayISO(),
-      weight_kg: weightInput ? Number(weightInput) : null,
-      waist_cm: waistInput ? Number(waistInput) : null,
-    });
+    const { error } = editingId
+      ? await supabase.from("body_metrics").update({
+          weight_kg: weightInput ? Number(weightInput) : null,
+          waist_cm: waistInput ? Number(waistInput) : null,
+        }).eq("id", editingId)
+      : await supabase.from("body_metrics").insert({
+          user_id: user.id,
+          measured_on: todayISO(),
+          weight_kg: weightInput ? Number(weightInput) : null,
+          waist_cm: waistInput ? Number(waistInput) : null,
+        });
     if (error) { toast.error(error.message); return; }
     setWeightInput(""); setWaistInput("");
-    toast.success("Measurement saved");
+    toast.success(editingId ? "Measurement updated" : "Measurement saved");
     qc.invalidateQueries({ queryKey: ["metrics", user.id] });
     setModalOpen(false);
+  }
+
+  function openAddMeasurement() {
+    setEditingId(null);
+    setWeightInput("");
+    setWaistInput("");
+    setModalOpen(true);
   }
 
   async function saveBodyFat() {
@@ -244,7 +257,7 @@ function BodyPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <h1 style={{ margin: 0, fontFamily: "'Inter'", fontSize: 34, fontWeight: 700, letterSpacing: "-0.02em" }}>Body</h1>
         <button
-          onClick={() => setModalOpen(true)}
+          onClick={openAddMeasurement}
           style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             height: 40, padding: "0 16px", borderRadius: 9, border: "none",
@@ -509,21 +522,41 @@ function BodyPage() {
           Measurement history
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {rows.map((m) => (
-            <div key={m.id} style={{
-              background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)",
-              borderRadius: 10, padding: "14px 16px",
-              display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 14,
-            }}>
-              <span style={{ color: "oklch(0.63 0.006 250)" }}>{m.measured_on}</span>
-              <span style={{ fontVariantNumeric: "tabular-nums" }}>
-                {m.weight_kg ? `${m.weight_kg} kg` : "—"}
-                {m.waist_cm ? ` · waist ${m.waist_cm} cm` : ""}
-                {m.body_fat_percent ? ` · ${m.body_fat_percent}% bf` : ""}
-                {m.target_calories ? ` · ${m.target_calories} kcal` : ""}
-              </span>
-            </div>
-          ))}
+          {rows.map((m, index) => {
+            const isLatest = index === 0; // Assuming rows are sorted descending by date
+            const parts = [];
+            if (m.weight_kg) parts.push(`${m.weight_kg} kg`);
+            if (m.waist_cm) parts.push(`waist ${m.waist_cm} cm`);
+            if (m.body_fat_percent) parts.push(`${m.body_fat_percent}% bf`);
+            if (m.target_calories) parts.push(`${m.target_calories} kcal`);
+            const summary = parts.length > 0 ? parts.join(" · ") : "—";
+            
+            return (
+              <div key={m.id} style={{
+                background: "oklch(0.11 0.004 250)", border: "1px solid oklch(0.27 0.005 250)",
+                borderRadius: 10, padding: "14px 16px",
+                display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 14,
+              }}>
+                <span style={{ color: "oklch(0.63 0.006 250)" }}>{m.measured_on}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontVariantNumeric: "tabular-nums" }}>{summary}</span>
+                  {isLatest && (
+                    <button
+                      onClick={() => {
+                        setEditingId(m.id);
+                        setWeightInput(m.weight_kg ? String(m.weight_kg) : "");
+                        setWaistInput(m.waist_cm ? String(m.waist_cm) : "");
+                        setModalOpen(true);
+                      }}
+                      style={{ fontSize: 12, fontWeight: 500, color: "oklch(0.92 0.25 110)", background: "transparent", border: "none", cursor: "pointer", padding: 2 }}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
           {rows.length === 0 && (
             <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>No measurements yet. Add one above.</p>
           )}
@@ -541,7 +574,7 @@ function BodyPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>Add measurement</h2>
+              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>{editingId ? "Edit measurement" : "Add measurement"}</h2>
               <button onClick={() => setModalOpen(false)} style={{ background: "transparent", border: "none", color: "oklch(0.63 0.006 250)", cursor: "pointer", padding: 4 }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -572,7 +605,7 @@ function BodyPage() {
                 fontSize: 14, fontWeight: 600, cursor: "pointer",
               }}
             >
-              Save measurement
+              {editingId ? "Save changes" : "Save measurement"}
             </button>
           </div>
         </div>
