@@ -98,6 +98,10 @@ function BodyPage() {
   const [neck, setNeck] = useState("");
   const [bfWaist, setBfWaist] = useState("");
   const [hip, setHip] = useState("");
+  
+  const [isSavingMetric, setIsSavingMetric] = useState(false);
+  const [isSavingBf, setIsSavingBf] = useState(false);
+  const [isSavingCals, setIsSavingCals] = useState(false);
 
   // Calorie calculator
   const [age, setAge] = useState("");
@@ -180,22 +184,27 @@ function BodyPage() {
 
   async function saveMetric() {
     if (!user) return;
-    const { error } = editingId
-      ? await supabase.from("body_metrics").update({
-          weight_kg: weightInput ? Number(weightInput) : null,
-          waist_cm: waistInput ? Number(waistInput) : null,
-        }).eq("id", editingId)
-      : await supabase.from("body_metrics").insert({
-          user_id: user.id,
-          measured_on: todayISO(),
-          weight_kg: weightInput ? Number(weightInput) : null,
-          waist_cm: waistInput ? Number(waistInput) : null,
-        });
-    if (error) { toast.error(error.message); return; }
-    setWeightInput(""); setWaistInput("");
-    toast.success(editingId ? "Measurement updated" : "Measurement saved");
-    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
-    setModalOpen(false);
+    setIsSavingMetric(true);
+    try {
+      const { error } = editingId
+        ? await supabase.from("body_metrics").update({
+            weight_kg: weightInput ? Number(weightInput) : null,
+            waist_cm: waistInput ? Number(waistInput) : null,
+          }).eq("id", editingId)
+        : await supabase.from("body_metrics").insert({
+            user_id: user.id,
+            measured_on: todayISO(),
+            weight_kg: weightInput ? Number(weightInput) : null,
+            waist_cm: waistInput ? Number(waistInput) : null,
+          });
+      if (error) { toast.error(error.message); return; }
+      setWeightInput(""); setWaistInput("");
+      toast.success(editingId ? "Measurement updated" : "Measurement saved");
+      qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+      setModalOpen(false);
+    } finally {
+      setIsSavingMetric(false);
+    }
   }
 
   function openAddMeasurement() {
@@ -207,13 +216,18 @@ function BodyPage() {
 
   async function saveBodyFat() {
     if (!user || bodyFat == null) return;
-    const { error } = await supabase.from("body_metrics").insert({
-      user_id: user.id, measured_on: todayISO(), body_fat_percent: bodyFat,
-      height_cm: hVal, waist_cm: wVal,
-    });
-    if (error) { toast.error(error.message); return; }
-    toast.success(`Body fat ${bodyFat}% saved`);
-    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+    setIsSavingBf(true);
+    try {
+      const { error } = await supabase.from("body_metrics").insert({
+        user_id: user.id, measured_on: todayISO(), body_fat_percent: bodyFat,
+        height_cm: hVal, waist_cm: wVal,
+      });
+      if (error) { toast.error(error.message); return; }
+      toast.success(`Body fat ${bodyFat}% saved`);
+      qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+    } finally {
+      setIsSavingBf(false);
+    }
   }
 
   function calculateCalories() {
@@ -235,14 +249,19 @@ function BodyPage() {
 
   async function saveCalories() {
     if (!user || calculated == null) return;
-    const { error } = await supabase.from("body_metrics").insert({
-      user_id: user.id, measured_on: todayISO(),
-      weight_kg: calcWeight > 0 ? calcWeight : null,
-      target_calories: calculated.targetCals,
-    });
-    if (error) { toast.error(error.message); return; }
-    toast.success(`Target ${calculated.targetCals} kcal saved`);
-    qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+    setIsSavingCals(true);
+    try {
+      const { error } = await supabase.from("body_metrics").insert({
+        user_id: user.id, measured_on: todayISO(),
+        weight_kg: calcWeight > 0 ? calcWeight : null,
+        target_calories: calculated.targetCals,
+      });
+      if (error) { toast.error(error.message); return; }
+      toast.success(`Target ${calculated.targetCals} kcal saved`);
+      qc.invalidateQueries({ queryKey: ["metrics", user.id] });
+    } finally {
+      setIsSavingCals(false);
+    }
   }
 
   const INPUT_STYLE = {
@@ -419,15 +438,14 @@ function BodyPage() {
             </div>
             <button
               onClick={saveBodyFat}
-              disabled={bodyFat == null}
+              disabled={isSavingBf || bodyFat == null}
               style={{
-                height: 36, padding: "0 14px", borderRadius: 8,
-                border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit",
-                fontSize: 13, fontWeight: 500, cursor: bodyFat != null ? "pointer" : "not-allowed",
-                opacity: bodyFat != null ? 1 : 0.5,
+                height: 40, borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)",
+                color: "oklch(0.07 0.01 110)", fontSize: 14, fontWeight: 600, cursor: isSavingBf || bodyFat == null ? "not-allowed" : "pointer",
+                opacity: isSavingBf || bodyFat == null ? 0.7 : 1
               }}
             >
-              Save
+              {isSavingBf ? "Saving..." : bodyFat != null ? `Save ${bodyFat}% body fat to log` : "Save"}
             </button>
           </div>
         </div>
@@ -599,13 +617,15 @@ function BodyPage() {
             </div>
             <button
               onClick={saveMetric}
+              disabled={isSavingMetric}
               style={{
                 marginTop: 20, width: "100%", height: 40, borderRadius: 9, border: "none",
                 background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)",
-                fontSize: 14, fontWeight: 600, cursor: "pointer",
+                fontSize: 14, fontWeight: 600, cursor: isSavingMetric ? "wait" : "pointer",
+                opacity: isSavingMetric ? 0.7 : 1
               }}
             >
-              {editingId ? "Save changes" : "Save measurement"}
+              {isSavingMetric ? "Saving..." : editingId ? "Save changes" : "Save measurement"}
             </button>
           </div>
         </div>

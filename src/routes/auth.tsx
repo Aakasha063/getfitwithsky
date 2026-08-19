@@ -209,14 +209,15 @@ function AuthPage() {
             <span style={{ flex: 1, height: 1, background: "oklch(0.27 0.005 250)" }} />
           </div>
 
-          {/* Google */}
           <button
             onClick={google}
+            disabled={busy}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
               height: 44, width: "100%", borderRadius: 9,
               border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit",
-              fontSize: 14, fontWeight: 500, cursor: "pointer",
+              fontSize: 14, fontWeight: 500, cursor: busy ? "wait" : "pointer",
+              opacity: busy ? 0.5 : 1
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">

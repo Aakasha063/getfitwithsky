@@ -105,6 +105,8 @@ function ProfilePage() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [avatarEditorOpen, setAvatarEditorOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -228,18 +230,26 @@ function ProfilePage() {
 
   async function removePhoto() {
     if (!user) return;
+    setIsRemoving(true);
     try {
       await saveProfile(user.id, { avatar_url: null });
       qc.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Profile photo removed");
     } catch (err: any) {
       toast.error("Failed to remove photo");
+    } finally {
+      setIsRemoving(false);
     }
   }
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.navigate({ to: "/auth" });
+    setIsSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      router.navigate({ to: "/auth" });
+    } finally {
+      setIsSigningOut(false);
+    }
   }
 
   return (
@@ -337,9 +347,14 @@ function ProfilePage() {
               <button
                 onClick={() => saveMutation.mutate()}
                 disabled={saveMutation.isPending}
-                style={{ height: 32, padding: "0 14px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 13, fontWeight: 500, cursor: "pointer" }}
+                style={{ 
+                  height: 32, padding: "0 14px", borderRadius: 8, border: "none", 
+                  background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", 
+                  fontSize: 13, fontWeight: 500, cursor: saveMutation.isPending ? "wait" : "pointer",
+                  opacity: saveMutation.isPending ? 0.7 : 1
+                }}
               >
-                Save changes
+                {saveMutation.isPending ? "Saving..." : "Save changes"}
               </button>
             </div>
           </div>
@@ -407,9 +422,14 @@ function ProfilePage() {
             {avatarImage && (
               <button
                 onClick={removePhoto}
-                style={{ marginTop: 10, width: "100%", height: 36, borderRadius: 8, border: "none", background: "transparent", color: "oklch(0.63 0.006 250)", fontSize: 13, cursor: "pointer" }}
+                disabled={isRemoving}
+                style={{ 
+                  marginTop: 10, width: "100%", height: 36, borderRadius: 8, border: "none", 
+                  background: "transparent", color: "oklch(0.63 0.006 250)", fontSize: 13, 
+                  cursor: isRemoving ? "wait" : "pointer", opacity: isRemoving ? 0.7 : 1 
+                }}
               >
-                Remove photo
+                {isRemoving ? "Removing..." : "Remove photo"}
               </button>
             )}
             <p style={{ margin: "20px 0 10px", fontSize: 12, color: "oklch(0.45 0.006 250)", textAlign: "center" }}>or choose a color</p>
@@ -633,10 +653,12 @@ function ProfilePage() {
       {/* Sign out */}
       <button
         onClick={handleSignOut}
+        disabled={isSigningOut}
         style={{
           alignSelf: "flex-start", display: "flex", alignItems: "center", gap: 6,
           background: "transparent", border: "1px solid oklch(0.27 0.005 250)",
-          borderRadius: 8, color: "oklch(0.63 0.006 250)", fontSize: 13, cursor: "pointer",
+          borderRadius: 8, color: "oklch(0.63 0.006 250)", 
+          fontSize: 13, cursor: isSigningOut ? "wait" : "pointer", opacity: isSigningOut ? 0.7 : 1,
           padding: "10px 14px",
         }}
       >
@@ -644,7 +666,7 @@ function ProfilePage() {
           <rect x="3" y="4" width="8" height="16" rx="1" /><line x1="21" y1="12" x2="9" y2="12" />
           <polyline points="17,7 21,12 17,17" />
         </svg>
-        Sign out
+        {isSigningOut ? "Signing out..." : "Sign out"}
       </button>
     </div>
   );
