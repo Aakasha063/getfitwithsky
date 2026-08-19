@@ -60,7 +60,7 @@ function PlanPage() {
     optional.find((d) => d.slug === selectedOptSlug) ?? optional[0];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+    <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       {/* Header */}
       <div>
         <h1 style={{ margin: 0, fontFamily: "'Inter'", fontSize: 34, fontWeight: 700, letterSpacing: "-0.02em" }}>

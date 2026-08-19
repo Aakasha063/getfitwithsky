@@ -272,7 +272,7 @@ function BodyPage() {
   const LABEL_STYLE = { fontSize: 12, color: "oklch(0.63 0.006 250)" };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+    <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <h1 style={{ margin: 0, fontFamily: "'Inter'", fontSize: 34, fontWeight: 700, letterSpacing: "-0.02em" }}>Body</h1>

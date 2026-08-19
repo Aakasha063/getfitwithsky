@@ -253,7 +253,7 @@ function ProfilePage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+    <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
 
       {/* Profile card */}
       <div style={{ ...CARD, overflow: "hidden" }}>

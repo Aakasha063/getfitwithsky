@@ -57,8 +57,8 @@ function SessionDetail() {
   });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {/* Back link */}
+    <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+      {/* Header (Back button + Edit/Delete) */}
       <Link
         to="/history"
         style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, color: "oklch(0.63 0.006 250)", textDecoration: "none", width: "fit-content" }}

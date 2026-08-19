@@ -183,7 +183,7 @@ function WorkoutPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 120 }}>
+    <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 120 }}>
       {/* Sticky Header */}
       <div style={{ position: "sticky", top: 0, zIndex: 30, margin: "0 -16px", padding: "12px 16px", background: "oklch(0.045 0.003 250 / 97%)", backdropFilter: "blur(8px)", borderBottom: "1px solid oklch(0.27 0.005 250)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>

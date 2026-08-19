@@ -109,10 +109,10 @@ function Dashboard() {
     : "~60 min";
 
   // Show skeleton while critical data is loading
-  if (!days || !history) return <DashboardSkeleton />;
+  if (!days || !history) return <div className="page-enter"><DashboardSkeleton /></div>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+    <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       {/* Heading */}
       <div>
         <p style={{ margin: 0, fontSize: 14, color: "oklch(0.63 0.006 250)" }}>{todayLabel}</p>

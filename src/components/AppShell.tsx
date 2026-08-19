@@ -189,9 +189,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ? (isHistoryDetailPage ? 96 : 96)
           : 0,
       }}>
-        <div key={pathname} className="page-enter">
-          {children}
-        </div>
+        {children}
       </main>
 
       {/* Bottom Tab Bar — mobile navigation */}
