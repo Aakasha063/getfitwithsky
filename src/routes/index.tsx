@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
 import { fetchBodyMetrics, fetchDays, fetchHistory, fetchPRs } from "@/lib/api";
+import { DashboardSkeleton } from "@/components/Skeleton";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -107,6 +108,8 @@ function Dashboard() {
     ? `${today.estimated_minutes_min}–${today.estimated_minutes_max ?? ""} min`
     : "~60 min";
 
+  // Show skeleton while critical data is loading
+  if (!days || !history) return <DashboardSkeleton />;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>

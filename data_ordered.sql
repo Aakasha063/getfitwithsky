@@ -1,0 +1,12 @@
+COPY public.profiles (id, name, height_cm, current_weight_kg, starting_weight_kg, date_of_birth, training_experience, primary_goal, target_weight_kg, target_body_fat, weight_unit, length_unit, preferred_cardio, rest_timer_seconds, theme, reminders_enabled, onboarding_completed, plan_start_date, created_at, updated_at) FROM stdin;
+COPY public.exercises (id, slug, name, primary_muscle, secondary_muscles, category, equipment, setup, execution, breathing, cues, common_mistakes, should_feel, lower_back_notes, default_rest_seconds, default_rir, default_rep_range, is_compound, created_at) FROM stdin;
+COPY public.workout_templates (id, slug, name, description, notes, created_at) FROM stdin;
+COPY public.workout_days (id, template_id, slug, day_of_week, name, focus, is_optional, is_rest, specialization, estimated_minutes_min, estimated_minutes_max, cardio_note, notes, sort_order) FROM stdin;
+COPY public.workout_exercises (id, day_id, exercise_id, "position", sets, rep_range, rep_min, rep_max, rir_target, rest_note, rest_seconds, block, notes) FROM stdin;
+COPY public.workout_sessions (id, user_id, day_id, title, session_date, status, started_at, finished_at, duration_seconds, paused_seconds, mood, energy, difficulty, notes, is_deload, created_at, updated_at) FROM stdin;
+COPY public.exercise_sessions (id, user_id, session_id, exercise_id, workout_exercise_id, "position", target_sets, target_rep_range, notes, completed, created_at) FROM stdin;
+COPY public.sets (id, user_id, exercise_session_id, exercise_id, set_number, weight_kg, reps, rir, is_warmup, completed, note, performed_at, created_at, updated_at) FROM stdin;
+COPY public.personal_records (id, user_id, exercise_id, session_id, record_type, weight_kg, reps, estimated_1rm, volume_kg, achieved_on, created_at) FROM stdin;
+COPY public.cardio_sessions (id, user_id, session_id, performed_on, cardio_type, duration_minutes, distance_km, incline_percent, speed_kph, rounds, avg_heart_rate, notes, created_at) FROM stdin;
+COPY public.body_metrics (id, user_id, measured_on, weight_kg, waist_cm, body_fat_percent, height_cm, chest_cm, arm_cm, thigh_cm, notes, created_at, updated_at, target_calories) FROM stdin;
+COPY public.exercise_notes (id, user_id, exercise_id, note, created_at, updated_at) FROM stdin;

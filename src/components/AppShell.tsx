@@ -1,9 +1,9 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
-import { fetchProfile } from "@/lib/api";
+import { fetchProfile, fetchDays, fetchHistory } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
@@ -37,6 +37,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth();
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const qc = useQueryClient();
+
+  // Prefetch shared data immediately on login so all pages get instant cache hits
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const uid = session.user.id;
+    qc.prefetchQuery({ queryKey: ["days"], queryFn: fetchDays });
+    qc.prefetchQuery({ queryKey: ["history", uid], queryFn: () => fetchHistory(uid) });
+  }, [session?.user?.id, qc]);
 
   useEffect(() => {
     if (!loading && !session) router.navigate({ to: "/auth" });
@@ -180,7 +189,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           ? (isHistoryDetailPage ? 96 : 96)
           : 0,
       }}>
-        {children}
+        <div key={pathname} className="page-enter">
+          {children}
+        </div>
       </main>
 
       {/* Bottom Tab Bar — mobile navigation */}
@@ -205,11 +216,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               display: "flex", flexDirection: "column", alignItems: "center",
               justifyContent: "center", gap: 3,
               color: tabColor(tabToday), textDecoration: "none",
+              position: "relative",
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 11l9-7 9 7" /><path d="M5 10v9h14v-9" />
               </svg>
               <span style={{ fontSize: 10.5, fontWeight: 600 }}>Today</span>
+              {tabToday && <span style={{ position: "absolute", bottom: 2, width: 4, height: 4, borderRadius: 999, background: "oklch(0.92 0.25 110)" }} />}
             </Link>
 
             {/* Plan */}
@@ -217,6 +230,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               display: "flex", flexDirection: "column", alignItems: "center",
               justifyContent: "center", gap: 3,
               color: tabColor(tabPlan), textDecoration: "none",
+              position: "relative",
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="4" y="5" width="16" height="15" rx="2" />
@@ -225,6 +239,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <line x1="16" y1="3" x2="16" y2="7" />
               </svg>
               <span style={{ fontSize: 10.5, fontWeight: 600 }}>Plan</span>
+              {tabPlan && <span style={{ position: "absolute", bottom: 2, width: 4, height: 4, borderRadius: 999, background: "oklch(0.92 0.25 110)" }} />}
             </Link>
 
             {/* Body */}
@@ -232,11 +247,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               display: "flex", flexDirection: "column", alignItems: "center",
               justifyContent: "center", gap: 3,
               color: tabColor(tabBody), textDecoration: "none",
+              position: "relative",
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 12h4l2 6 4-14 2 8h6" />
               </svg>
               <span style={{ fontSize: 10.5, fontWeight: 600 }}>Body</span>
+              {tabBody && <span style={{ position: "absolute", bottom: 2, width: 4, height: 4, borderRadius: 999, background: "oklch(0.92 0.25 110)" }} />}
             </Link>
 
             {/* Profile */}
@@ -244,12 +261,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               display: "flex", flexDirection: "column", alignItems: "center",
               justifyContent: "center", gap: 3,
               color: tabColor(tabProfile), textDecoration: "none",
+              position: "relative",
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="3.5" />
                 <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" />
               </svg>
               <span style={{ fontSize: 10.5, fontWeight: 600 }}>Profile</span>
+              {tabProfile && <span style={{ position: "absolute", bottom: 2, width: 4, height: 4, borderRadius: 999, background: "oklch(0.92 0.25 110)" }} />}
             </Link>
           </div>
         </nav>

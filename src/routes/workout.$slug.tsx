@@ -6,6 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { RestTimer } from "@/components/RestTimer";
 import { ExerciseInstructions } from "@/components/ExerciseInstructions";
 import { HIITInstructions } from "@/components/HIITInstructions";
+import { WorkoutSkeleton } from "@/components/Skeleton";
 import { useAuth } from "@/lib/auth";
 import {
   fetchDayWithExercises,
@@ -150,9 +151,7 @@ function WorkoutPage() {
   // Calculate total volume for this session
   const sessionVolume = (detail?.sets ?? []).reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
 
-  if (!plan) return (
-    <p style={{ fontSize: 14, color: "oklch(0.63 0.006 250)" }}>Loading…</p>
-  );
+  if (!plan) return <WorkoutSkeleton />;
 
   if (completedSummary) {
     return (
@@ -372,6 +371,13 @@ function ExerciseCard(props: {
 
   const done = props.loggedSets.length >= props.sets;
 
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Auto-collapse when exercise becomes done
+  useEffect(() => {
+    if (done) setCollapsed(true);
+  }, [done]);
+
   async function submit() {
     if (!props.userId || !props.exerciseSessionId) return;
     if (done) return;
@@ -407,6 +413,9 @@ function ExerciseCard(props: {
         rir: null,
       });
 
+      // Haptic feedback on mobile
+      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+
       props.onLogged();
     } catch (e: any) {
       toast.error("Failed to log set");
@@ -438,8 +447,8 @@ function ExerciseCard(props: {
     <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 12, padding: 16 }}>
       {/* Title row */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-        <div style={{ display: "flex", gap: 10, minWidth: 0 }}>
-          <div style={{ minWidth: 0 }}>
+        <div style={{ display: "flex", gap: 10, minWidth: 0, flex: 1 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{props.name}</h3>
               {done && (
@@ -459,6 +468,21 @@ function ExerciseCard(props: {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+          {done && (
+            <button
+              onClick={() => setCollapsed(v => !v)}
+              aria-label={collapsed ? "Expand" : "Collapse"}
+              style={{
+                width: 28, height: 28, borderRadius: 7, border: "none",
+                background: "transparent", color: "oklch(0.63 0.006 250)", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14, transition: "transform 0.2s",
+                transform: collapsed ? "rotate(0deg)" : "rotate(180deg)",
+              }}
+            >
+              ▾
+            </button>
+          )}
           <button
             onClick={props.onInfo}
             aria-label="How to perform"
@@ -477,8 +501,19 @@ function ExerciseCard(props: {
         </div>
       </div>
 
+      {/* Collapsed summary for done exercises */}
+      {done && collapsed && (
+        <div style={{ marginTop: 10, display: "flex", gap: 12, flexWrap: "wrap" }}>
+          {props.loggedSets.map((s, i) => (
+            <span key={s.id} style={{ fontSize: 12, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>
+              S{i + 1}: {s.weight_kg ?? "—"}kg × {s.reps ?? "—"}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Suggestion box */}
-      {!props.isCardio && (
+      {!props.isCardio && !collapsed && (
         <div style={{ marginTop: 12, borderRadius: 8, background: "oklch(0.22 0.005 250 / 50%)", padding: "10px 12px", fontSize: 12.5 }}>
           <p style={{ margin: 0, fontWeight: 600, color: "oklch(0.63 0.006 250)" }}>
             {previous ? `Last session · ${previous.performedAt.slice(0, 10)}` : "No previous data"}
@@ -492,7 +527,7 @@ function ExerciseCard(props: {
       )}
 
       {/* Cardio / Input area */}
-      {props.isCardio ? (
+      {!collapsed && props.isCardio ? (
         done ? (
           <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <p style={{ margin: 0, fontSize: 13, color: "oklch(0.63 0.006 250)" }}>
@@ -527,7 +562,7 @@ function ExerciseCard(props: {
             </button>
           </div>
         )
-      ) : (
+      ) : !collapsed ? (
         <div style={{ marginTop: 12, borderRadius: 8, border: "1px solid oklch(0.27 0.005 250 / 70%)", overflow: "hidden", userSelect: "none" }}>
           <div style={{ display: "grid", gridTemplateColumns: "36px 1fr 1fr 82px", background: "oklch(0.22 0.005 250 / 40%)", padding: "6px 10px", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", color: "oklch(0.63 0.006 250)" }}>
             <span>Set</span><span>Kg</span><span>Reps</span><span style={{ textAlign: "right" }}>Status</span>
@@ -596,7 +631,7 @@ function ExerciseCard(props: {
             );
           })}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,7214 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict EREhk4RzEg6ysUSc5mRvcqDkiJ9gwZRMcihND20z6MhtJwciD7HxxFCIFt5fj6C
+
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 18.4
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: auth; Type: SCHEMA; Schema: -; Owner: supabase_admin
+--
+
+CREATE SCHEMA auth;
+
+
+ALTER SCHEMA auth OWNER TO supabase_admin;
+
+--
+-- Name: extensions; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA extensions;
+
+
+ALTER SCHEMA extensions OWNER TO postgres;
+
+--
+-- Name: graphql; Type: SCHEMA; Schema: -; Owner: supabase_admin
+--
+
+CREATE SCHEMA graphql;
+
+
+ALTER SCHEMA graphql OWNER TO supabase_admin;
+
+--
+-- Name: graphql_public; Type: SCHEMA; Schema: -; Owner: supabase_admin
+--
+
+CREATE SCHEMA graphql_public;
+
+
+ALTER SCHEMA graphql_public OWNER TO supabase_admin;
+
+--
+-- Name: pgbouncer; Type: SCHEMA; Schema: -; Owner: pgbouncer
+--
+
+CREATE SCHEMA pgbouncer;
+
+
+ALTER SCHEMA pgbouncer OWNER TO pgbouncer;
+
+--
+-- Name: private; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA private;
+
+
+ALTER SCHEMA private OWNER TO postgres;
+
+--
+-- Name: realtime; Type: SCHEMA; Schema: -; Owner: supabase_admin
+--
+
+CREATE SCHEMA realtime;
+
+
+ALTER SCHEMA realtime OWNER TO supabase_admin;
+
+--
+-- Name: storage; Type: SCHEMA; Schema: -; Owner: supabase_admin
+--
+
+CREATE SCHEMA storage;
+
+
+ALTER SCHEMA storage OWNER TO supabase_admin;
+
+--
+-- Name: supabase_migrations; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA supabase_migrations;
+
+
+ALTER SCHEMA supabase_migrations OWNER TO postgres;
+
+--
+-- Name: vault; Type: SCHEMA; Schema: -; Owner: supabase_admin
+--
+
+CREATE SCHEMA vault;
+
+
+ALTER SCHEMA vault OWNER TO supabase_admin;
+
+--
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA extensions;
+
+
+--
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track planning and execution statistics of all SQL statements executed';
+
+
+--
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
+-- Name: supabase_vault; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS supabase_vault WITH SCHEMA vault;
+
+
+--
+-- Name: EXTENSION supabase_vault; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION supabase_vault IS 'Supabase Vault Extension';
+
+
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+--
+-- Name: aal_level; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.aal_level AS ENUM (
+    'aal1',
+    'aal2',
+    'aal3'
+);
+
+
+ALTER TYPE auth.aal_level OWNER TO supabase_auth_admin;
+
+--
+-- Name: code_challenge_method; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.code_challenge_method AS ENUM (
+    's256',
+    'plain'
+);
+
+
+ALTER TYPE auth.code_challenge_method OWNER TO supabase_auth_admin;
+
+--
+-- Name: factor_status; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.factor_status AS ENUM (
+    'unverified',
+    'verified'
+);
+
+
+ALTER TYPE auth.factor_status OWNER TO supabase_auth_admin;
+
+--
+-- Name: factor_type; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.factor_type AS ENUM (
+    'totp',
+    'webauthn',
+    'phone'
+);
+
+
+ALTER TYPE auth.factor_type OWNER TO supabase_auth_admin;
+
+--
+-- Name: oauth_authorization_status; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.oauth_authorization_status AS ENUM (
+    'pending',
+    'approved',
+    'denied',
+    'expired'
+);
+
+
+ALTER TYPE auth.oauth_authorization_status OWNER TO supabase_auth_admin;
+
+--
+-- Name: oauth_client_type; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.oauth_client_type AS ENUM (
+    'public',
+    'confidential'
+);
+
+
+ALTER TYPE auth.oauth_client_type OWNER TO supabase_auth_admin;
+
+--
+-- Name: oauth_registration_type; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.oauth_registration_type AS ENUM (
+    'dynamic',
+    'manual'
+);
+
+
+ALTER TYPE auth.oauth_registration_type OWNER TO supabase_auth_admin;
+
+--
+-- Name: oauth_response_type; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.oauth_response_type AS ENUM (
+    'code'
+);
+
+
+ALTER TYPE auth.oauth_response_type OWNER TO supabase_auth_admin;
+
+--
+-- Name: one_time_token_type; Type: TYPE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TYPE auth.one_time_token_type AS ENUM (
+    'confirmation_token',
+    'reauthentication_token',
+    'recovery_token',
+    'email_change_token_new',
+    'email_change_token_current',
+    'phone_change_token'
+);
+
+
+ALTER TYPE auth.one_time_token_type OWNER TO supabase_auth_admin;
+
+--
+-- Name: buckettype; Type: TYPE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TYPE storage.buckettype AS ENUM (
+    'STANDARD',
+    'ANALYTICS',
+    'VECTOR'
+);
+
+
+ALTER TYPE storage.buckettype OWNER TO supabase_storage_admin;
+
+--
+-- Name: email(); Type: FUNCTION; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE FUNCTION auth.email() RETURNS text
+    LANGUAGE sql STABLE
+    AS $$
+  select 
+  coalesce(
+    nullif(current_setting('request.jwt.claim.email', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'email')
+  )::text
+$$;
+
+
+ALTER FUNCTION auth.email() OWNER TO supabase_auth_admin;
+
+--
+-- Name: FUNCTION email(); Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON FUNCTION auth.email() IS 'Deprecated. Use auth.jwt() -> ''email'' instead.';
+
+
+--
+-- Name: jwt(); Type: FUNCTION; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE FUNCTION auth.jwt() RETURNS jsonb
+    LANGUAGE sql STABLE
+    AS $$
+  select 
+    coalesce(
+        nullif(current_setting('request.jwt.claim', true), ''),
+        nullif(current_setting('request.jwt.claims', true), '')
+    )::jsonb
+$$;
+
+
+ALTER FUNCTION auth.jwt() OWNER TO supabase_auth_admin;
+
+--
+-- Name: role(); Type: FUNCTION; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE FUNCTION auth.role() RETURNS text
+    LANGUAGE sql STABLE
+    AS $$
+  select 
+  coalesce(
+    nullif(current_setting('request.jwt.claim.role', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')
+  )::text
+$$;
+
+
+ALTER FUNCTION auth.role() OWNER TO supabase_auth_admin;
+
+--
+-- Name: FUNCTION role(); Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON FUNCTION auth.role() IS 'Deprecated. Use auth.jwt() -> ''role'' instead.';
+
+
+--
+-- Name: uid(); Type: FUNCTION; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE FUNCTION auth.uid() RETURNS uuid
+    LANGUAGE sql STABLE
+    AS $$
+  select 
+  coalesce(
+    nullif(current_setting('request.jwt.claim.sub', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
+  )::uuid
+$$;
+
+
+ALTER FUNCTION auth.uid() OWNER TO supabase_auth_admin;
+
+--
+-- Name: FUNCTION uid(); Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON FUNCTION auth.uid() IS 'Deprecated. Use auth.jwt() -> ''sub'' instead.';
+
+
+--
+-- Name: grant_pg_cron_access(); Type: FUNCTION; Schema: extensions; Owner: supabase_admin
+--
+
+CREATE FUNCTION extensions.grant_pg_cron_access() RETURNS event_trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF EXISTS (
+    SELECT
+    FROM pg_event_trigger_ddl_commands() AS ev
+    JOIN pg_extension AS ext
+    ON ev.objid = ext.oid
+    WHERE ext.extname = 'pg_cron'
+  )
+  THEN
+    grant usage on schema cron to postgres with grant option;
+
+    alter default privileges in schema cron grant all on tables to postgres with grant option;
+    alter default privileges in schema cron grant all on functions to postgres with grant option;
+    alter default privileges in schema cron grant all on sequences to postgres with grant option;
+
+    alter default privileges for user supabase_admin in schema cron grant all
+        on sequences to postgres with grant option;
+    alter default privileges for user supabase_admin in schema cron grant all
+        on tables to postgres with grant option;
+    alter default privileges for user supabase_admin in schema cron grant all
+        on functions to postgres with grant option;
+
+    grant all privileges on all tables in schema cron to postgres with grant option;
+    revoke all on table cron.job from postgres;
+    grant select on table cron.job to postgres with grant option;
+  END IF;
+END;
+$$;
+
+
+ALTER FUNCTION extensions.grant_pg_cron_access() OWNER TO supabase_admin;
+
+--
+-- Name: FUNCTION grant_pg_cron_access(); Type: COMMENT; Schema: extensions; Owner: supabase_admin
+--
+
+COMMENT ON FUNCTION extensions.grant_pg_cron_access() IS 'Grants access to pg_cron';
+
+
+--
+-- Name: grant_pg_graphql_access(); Type: FUNCTION; Schema: extensions; Owner: supabase_admin
+--
+
+CREATE FUNCTION extensions.grant_pg_graphql_access() RETURNS event_trigger
+    LANGUAGE plpgsql
+    AS $_$
+begin
+    if not exists (
+        select 1
+        from pg_event_trigger_ddl_commands() ev
+        join pg_catalog.pg_extension e on ev.objid = e.oid
+        where e.extname = 'pg_graphql'
+    ) then
+        return;
+    end if;
+
+    drop function if exists graphql_public.graphql;
+    create or replace function graphql_public.graphql(
+        "operationName" text default null,
+        query text default null,
+        variables jsonb default null,
+        extensions jsonb default null
+    )
+        returns jsonb
+        language sql
+    as $$
+        select graphql.resolve(
+            query := query,
+            variables := coalesce(variables, '{}'),
+            "operationName" := "operationName",
+            extensions := extensions
+        );
+    $$;
+
+    -- Attach the wrapper to the extension so DROP EXTENSION cascades to it,
+    -- which in turn triggers set_graphql_placeholder to reinstall the "not enabled" stub.
+    alter extension pg_graphql add function graphql_public.graphql(text, text, jsonb, jsonb);
+
+    grant usage on schema graphql to postgres, anon, authenticated, service_role;
+    grant execute on function graphql.resolve to postgres, anon, authenticated, service_role;
+    grant usage on schema graphql to postgres with grant option;
+    grant usage on schema graphql_public to postgres with grant option;
+end;
+$_$;
+
+
+ALTER FUNCTION extensions.grant_pg_graphql_access() OWNER TO supabase_admin;
+
+--
+-- Name: FUNCTION grant_pg_graphql_access(); Type: COMMENT; Schema: extensions; Owner: supabase_admin
+--
+
+COMMENT ON FUNCTION extensions.grant_pg_graphql_access() IS 'Grants access to pg_graphql';
+
+
+--
+-- Name: grant_pg_net_access(); Type: FUNCTION; Schema: extensions; Owner: supabase_admin
+--
+
+CREATE FUNCTION extensions.grant_pg_net_access() RETURNS event_trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM pg_event_trigger_ddl_commands() AS ev
+    JOIN pg_extension AS ext
+    ON ev.objid = ext.oid
+    WHERE ext.extname = 'pg_net'
+  )
+  THEN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_roles
+      WHERE rolname = 'supabase_functions_admin'
+    )
+    THEN
+      CREATE USER supabase_functions_admin NOINHERIT CREATEROLE LOGIN NOREPLICATION;
+    END IF;
+
+    GRANT USAGE ON SCHEMA net TO supabase_functions_admin, postgres, anon, authenticated, service_role;
+
+    IF EXISTS (
+      SELECT FROM pg_extension
+      WHERE extname = 'pg_net'
+      -- all versions in use on existing projects as of 2025-02-20
+      -- version 0.12.0 onwards don't need these applied
+      AND extversion IN ('0.2', '0.6', '0.7', '0.7.1', '0.8', '0.10.0', '0.11.0')
+    ) THEN
+      ALTER function net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) SECURITY DEFINER;
+      ALTER function net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) SECURITY DEFINER;
+
+      ALTER function net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) SET search_path = net;
+      ALTER function net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) SET search_path = net;
+
+      REVOKE ALL ON FUNCTION net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) FROM PUBLIC;
+      REVOKE ALL ON FUNCTION net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) FROM PUBLIC;
+
+      GRANT EXECUTE ON FUNCTION net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
+      GRANT EXECUTE ON FUNCTION net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
+    END IF;
+  END IF;
+END;
+$$;
+
+
+ALTER FUNCTION extensions.grant_pg_net_access() OWNER TO supabase_admin;
+
+--
+-- Name: FUNCTION grant_pg_net_access(); Type: COMMENT; Schema: extensions; Owner: supabase_admin
+--
+
+COMMENT ON FUNCTION extensions.grant_pg_net_access() IS 'Grants access to pg_net';
+
+
+--
+-- Name: pgrst_ddl_watch(); Type: FUNCTION; Schema: extensions; Owner: supabase_admin
+--
+
+CREATE FUNCTION extensions.pgrst_ddl_watch() RETURNS event_trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  cmd record;
+BEGIN
+  FOR cmd IN SELECT * FROM pg_event_trigger_ddl_commands()
+  LOOP
+    IF cmd.command_tag IN (
+      'CREATE SCHEMA', 'ALTER SCHEMA'
+    , 'CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO', 'ALTER TABLE'
+    , 'CREATE FOREIGN TABLE', 'ALTER FOREIGN TABLE'
+    , 'CREATE VIEW', 'ALTER VIEW'
+    , 'CREATE MATERIALIZED VIEW', 'ALTER MATERIALIZED VIEW'
+    , 'CREATE FUNCTION', 'ALTER FUNCTION'
+    , 'CREATE TRIGGER'
+    , 'CREATE TYPE', 'ALTER TYPE'
+    , 'CREATE RULE'
+    , 'COMMENT'
+    )
+    -- don't notify in case of CREATE TEMP table or other objects created on pg_temp
+    AND cmd.schema_name is distinct from 'pg_temp'
+    THEN
+      NOTIFY pgrst, 'reload schema';
+    END IF;
+  END LOOP;
+END; $$;
+
+
+ALTER FUNCTION extensions.pgrst_ddl_watch() OWNER TO supabase_admin;
+
+--
+-- Name: pgrst_drop_watch(); Type: FUNCTION; Schema: extensions; Owner: supabase_admin
+--
+
+CREATE FUNCTION extensions.pgrst_drop_watch() RETURNS event_trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  obj record;
+BEGIN
+  FOR obj IN SELECT * FROM pg_event_trigger_dropped_objects()
+  LOOP
+    IF obj.object_type IN (
+      'schema'
+    , 'table'
+    , 'foreign table'
+    , 'view'
+    , 'materialized view'
+    , 'function'
+    , 'trigger'
+    , 'type'
+    , 'rule'
+    )
+    AND obj.is_temporary IS false -- no pg_temp objects
+    THEN
+      NOTIFY pgrst, 'reload schema';
+    END IF;
+  END LOOP;
+END; $$;
+
+
+ALTER FUNCTION extensions.pgrst_drop_watch() OWNER TO supabase_admin;
+
+--
+-- Name: set_graphql_placeholder(); Type: FUNCTION; Schema: extensions; Owner: supabase_admin
+--
+
+CREATE FUNCTION extensions.set_graphql_placeholder() RETURNS event_trigger
+    LANGUAGE plpgsql
+    AS $_$
+    DECLARE
+    graphql_is_dropped bool;
+    BEGIN
+    graphql_is_dropped = (
+        SELECT ev.schema_name = 'graphql_public'
+        FROM pg_event_trigger_dropped_objects() AS ev
+        WHERE ev.schema_name = 'graphql_public'
+    );
+
+    IF graphql_is_dropped
+    THEN
+        create or replace function graphql_public.graphql(
+            "operationName" text default null,
+            query text default null,
+            variables jsonb default null,
+            extensions jsonb default null
+        )
+            returns jsonb
+            language plpgsql
+        as $$
+            DECLARE
+                server_version float;
+            BEGIN
+                server_version = (SELECT (SPLIT_PART((select version()), ' ', 2))::float);
+
+                IF server_version >= 14 THEN
+                    RETURN jsonb_build_object(
+                        'errors', jsonb_build_array(
+                            jsonb_build_object(
+                                'message', 'pg_graphql extension is not enabled.'
+                            )
+                        )
+                    );
+                ELSE
+                    RETURN jsonb_build_object(
+                        'errors', jsonb_build_array(
+                            jsonb_build_object(
+                                'message', 'pg_graphql is only available on projects running Postgres 14 onwards.'
+                            )
+                        )
+                    );
+                END IF;
+            END;
+        $$;
+    END IF;
+
+    END;
+$_$;
+
+
+ALTER FUNCTION extensions.set_graphql_placeholder() OWNER TO supabase_admin;
+
+--
+-- Name: FUNCTION set_graphql_placeholder(); Type: COMMENT; Schema: extensions; Owner: supabase_admin
+--
+
+COMMENT ON FUNCTION extensions.set_graphql_placeholder() IS 'Reintroduces placeholder function for graphql_public.graphql';
+
+
+--
+-- Name: graphql(text, text, jsonb, jsonb); Type: FUNCTION; Schema: graphql_public; Owner: supabase_admin
+--
+
+CREATE FUNCTION graphql_public.graphql("operationName" text DEFAULT NULL::text, query text DEFAULT NULL::text, variables jsonb DEFAULT NULL::jsonb, extensions jsonb DEFAULT NULL::jsonb) RETURNS jsonb
+    LANGUAGE plpgsql
+    AS $$
+            DECLARE
+                server_version float;
+            BEGIN
+                server_version = (SELECT (SPLIT_PART((select version()), ' ', 2))::float);
+
+                IF server_version >= 14 THEN
+                    RETURN jsonb_build_object(
+                        'errors', jsonb_build_array(
+                            jsonb_build_object(
+                                'message', 'pg_graphql extension is not enabled.'
+                            )
+                        )
+                    );
+                ELSE
+                    RETURN jsonb_build_object(
+                        'errors', jsonb_build_array(
+                            jsonb_build_object(
+                                'message', 'pg_graphql is only available on projects running Postgres 14 onwards.'
+                            )
+                        )
+                    );
+                END IF;
+            END;
+        $$;
+
+
+ALTER FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) OWNER TO supabase_admin;
+
+--
+-- Name: get_auth(text); Type: FUNCTION; Schema: pgbouncer; Owner: supabase_admin
+--
+
+CREATE FUNCTION pgbouncer.get_auth(p_usename text) RETURNS TABLE(username text, password text)
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO ''
+    AS $_$
+  BEGIN
+      RAISE DEBUG 'PgBouncer auth request: %', p_usename;
+
+      RETURN QUERY
+      SELECT
+          rolname::text,
+          CASE WHEN rolvaliduntil < now()
+              THEN null
+              ELSE rolpassword::text
+          END
+      FROM pg_authid
+      WHERE rolname=$1 and rolcanlogin;
+  END;
+  $_$;
+
+
+ALTER FUNCTION pgbouncer.get_auth(p_usename text) OWNER TO supabase_admin;
+
+--
+-- Name: leaderboard(integer); Type: FUNCTION; Schema: private; Owner: postgres
+--
+
+CREATE FUNCTION private.leaderboard(period_days integer DEFAULT 30) RETURNS TABLE(user_id uuid, display_name text, sessions integer, sets_count integer, total_volume numeric, last_session date, active_weeks integer)
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+  select
+    p.id,
+    coalesce(nullif(trim(p.name), ''), 'Athlete ' || left(p.id::text, 4)) as display_name,
+    (
+      select count(*) from public.workout_sessions ws
+      where ws.user_id = p.id and ws.status = 'completed'
+        and ws.session_date >= current_date - period_days
+    )::int,
+    (
+      select count(*) from public.sets s
+      where s.user_id = p.id and s.completed and not s.is_warmup
+        and s.performed_at >= now() - make_interval(days => period_days)
+    )::int,
+    coalesce((
+      select sum(coalesce(s.weight_kg, 0) * coalesce(s.reps, 0)) from public.sets s
+      where s.user_id = p.id and s.completed and not s.is_warmup
+        and s.performed_at >= now() - make_interval(days => period_days)
+    ), 0)::numeric,
+    (
+      select max(ws.session_date) from public.workout_sessions ws
+      where ws.user_id = p.id and ws.status = 'completed'
+    ),
+    (
+      select count(distinct date_trunc('week', ws.session_date)) from public.workout_sessions ws
+      where ws.user_id = p.id and ws.status = 'completed'
+        and ws.session_date >= current_date - period_days
+    )::int
+  from public.profiles p
+$$;
+
+
+ALTER FUNCTION private.leaderboard(period_days integer) OWNER TO postgres;
+
+--
+-- Name: get_leaderboard(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.get_leaderboard(period_days integer DEFAULT 30) RETURNS TABLE(user_id uuid, display_name text, sessions integer, sets_count integer, total_volume numeric, last_session date, active_weeks integer)
+    LANGUAGE sql STABLE
+    SET search_path TO 'public'
+    AS $$
+  select * from private.leaderboard(period_days)
+$$;
+
+
+ALTER FUNCTION public.get_leaderboard(period_days integer) OWNER TO postgres;
+
+--
+-- Name: handle_new_user(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.handle_new_user() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+BEGIN
+  INSERT INTO public.profiles (id, name)
+  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'full_name'))
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END; $$;
+
+
+ALTER FUNCTION public.handle_new_user() OWNER TO postgres;
+
+--
+-- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_updated_at_column() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'public'
+    AS $$ BEGIN NEW.updated_at = now(); RETURN NEW; END; $$;
+
+
+ALTER FUNCTION public.update_updated_at_column() OWNER TO postgres;
+
+--
+-- Name: allow_any_operation(text[]); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.allow_any_operation(expected_operations text[]) RETURNS boolean
+    LANGUAGE sql STABLE
+    AS $$
+  WITH current_operation AS (
+    SELECT storage.operation() AS raw_operation
+  ),
+  normalized AS (
+    SELECT CASE
+      WHEN raw_operation LIKE 'storage.%' THEN substr(raw_operation, 9)
+      ELSE raw_operation
+    END AS current_operation
+    FROM current_operation
+  )
+  SELECT EXISTS (
+    SELECT 1
+    FROM normalized n
+    CROSS JOIN LATERAL unnest(expected_operations) AS expected_operation
+    WHERE expected_operation IS NOT NULL
+      AND expected_operation <> ''
+      AND n.current_operation = CASE
+        WHEN expected_operation LIKE 'storage.%' THEN substr(expected_operation, 9)
+        ELSE expected_operation
+      END
+  );
+$$;
+
+
+ALTER FUNCTION storage.allow_any_operation(expected_operations text[]) OWNER TO supabase_storage_admin;
+
+--
+-- Name: allow_only_operation(text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.allow_only_operation(expected_operation text) RETURNS boolean
+    LANGUAGE sql STABLE
+    AS $$
+  WITH current_operation AS (
+    SELECT storage.operation() AS raw_operation
+  ),
+  normalized AS (
+    SELECT
+      CASE
+        WHEN raw_operation LIKE 'storage.%' THEN substr(raw_operation, 9)
+        ELSE raw_operation
+      END AS current_operation,
+      CASE
+        WHEN expected_operation LIKE 'storage.%' THEN substr(expected_operation, 9)
+        ELSE expected_operation
+      END AS requested_operation
+    FROM current_operation
+  )
+  SELECT CASE
+    WHEN requested_operation IS NULL OR requested_operation = '' THEN FALSE
+    ELSE COALESCE(current_operation = requested_operation, FALSE)
+  END
+  FROM normalized;
+$$;
+
+
+ALTER FUNCTION storage.allow_only_operation(expected_operation text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: can_insert_object(text, text, uuid, jsonb); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.can_insert_object(bucketid text, name text, owner uuid, metadata jsonb) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  INSERT INTO "storage"."objects" ("bucket_id", "name", "owner", "metadata") VALUES (bucketid, name, owner, metadata);
+  -- hack to rollback the successful insert
+  RAISE sqlstate 'PT200' using
+  message = 'ROLLBACK',
+  detail = 'rollback successful insert';
+END
+$$;
+
+
+ALTER FUNCTION storage.can_insert_object(bucketid text, name text, owner uuid, metadata jsonb) OWNER TO supabase_storage_admin;
+
+--
+-- Name: enforce_bucket_name_length(); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.enforce_bucket_name_length() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+begin
+    if length(new.name) > 100 then
+        raise exception 'bucket name "%" is too long (% characters). Max is 100.', new.name, length(new.name);
+    end if;
+    return new;
+end;
+$$;
+
+
+ALTER FUNCTION storage.enforce_bucket_name_length() OWNER TO supabase_storage_admin;
+
+--
+-- Name: extension(text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.extension(name text) RETURNS text
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+DECLARE
+    _parts text[];
+    _filename text;
+BEGIN
+    -- Split on "/" to get path segments
+    SELECT string_to_array(name, '/') INTO _parts;
+    -- Get the last path segment (the actual filename)
+    SELECT _parts[array_length(_parts, 1)] INTO _filename;
+    -- Extract extension: reverse, split on '.', then reverse again
+    RETURN reverse(split_part(reverse(_filename), '.', 1));
+END
+$$;
+
+
+ALTER FUNCTION storage.extension(name text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: filename(text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.filename(name text) RETURNS text
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+DECLARE
+    _parts text[];
+BEGIN
+    SELECT string_to_array(name, '/') INTO _parts;
+    RETURN _parts[array_length(_parts, 1)];
+END
+$$;
+
+
+ALTER FUNCTION storage.filename(name text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: foldername(text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.foldername(name text) RETURNS text[]
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+DECLARE
+    _parts text[];
+BEGIN
+    -- Split on "/" to get path segments
+    SELECT string_to_array(name, '/') INTO _parts;
+    -- Return everything except the last segment
+    RETURN _parts[1 : array_length(_parts,1) - 1];
+END
+$$;
+
+
+ALTER FUNCTION storage.foldername(name text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: get_common_prefix(text, text, text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.get_common_prefix(p_key text, p_prefix text, p_delimiter text) RETURNS text
+    LANGUAGE sql IMMUTABLE
+    AS $$
+SELECT CASE
+    WHEN position(p_delimiter IN substring(p_key FROM length(p_prefix) + 1)) > 0
+    THEN left(p_key, length(p_prefix) + position(p_delimiter IN substring(p_key FROM length(p_prefix) + 1)))
+    ELSE NULL
+END;
+$$;
+
+
+ALTER FUNCTION storage.get_common_prefix(p_key text, p_prefix text, p_delimiter text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: get_size_by_bucket(); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.get_size_by_bucket() RETURNS TABLE(size bigint, bucket_id text)
+    LANGUAGE plpgsql STABLE
+    AS $$
+BEGIN
+    return query
+        select sum((metadata->>'size')::bigint)::bigint as size, obj.bucket_id
+        from "storage".objects as obj
+        group by obj.bucket_id;
+END
+$$;
+
+
+ALTER FUNCTION storage.get_size_by_bucket() OWNER TO supabase_storage_admin;
+
+--
+-- Name: list_multipart_uploads_with_delimiter(text, text, text, integer, text, text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.list_multipart_uploads_with_delimiter(bucket_id text, prefix_param text, delimiter_param text, max_keys integer DEFAULT 100, next_key_token text DEFAULT ''::text, next_upload_token text DEFAULT ''::text) RETURNS TABLE(key text, id text, created_at timestamp with time zone)
+    LANGUAGE plpgsql
+    AS $_$
+BEGIN
+    RETURN QUERY EXECUTE
+        'SELECT DISTINCT ON(key COLLATE "C") * from (
+            SELECT
+                CASE
+                    WHEN position($2 IN substring(key from length($1) + 1)) > 0 THEN
+                        substring(key from 1 for length($1) + position($2 IN substring(key from length($1) + 1)))
+                    ELSE
+                        key
+                END AS key, id, created_at
+            FROM
+                storage.s3_multipart_uploads
+            WHERE
+                bucket_id = $5 AND
+                key ILIKE $1 || ''%'' AND
+                CASE
+                    WHEN $4 != '''' AND $6 = '''' THEN
+                        CASE
+                            WHEN position($2 IN substring(key from length($1) + 1)) > 0 THEN
+                                substring(key from 1 for length($1) + position($2 IN substring(key from length($1) + 1))) COLLATE "C" > $4
+                            ELSE
+                                key COLLATE "C" > $4
+                            END
+                    ELSE
+                        true
+                END AND
+                CASE
+                    WHEN $6 != '''' THEN
+                        id COLLATE "C" > $6
+                    ELSE
+                        true
+                    END
+            ORDER BY
+                key COLLATE "C" ASC, created_at ASC) as e order by key COLLATE "C" LIMIT $3'
+        USING prefix_param, delimiter_param, max_keys, next_key_token, bucket_id, next_upload_token;
+END;
+$_$;
+
+
+ALTER FUNCTION storage.list_multipart_uploads_with_delimiter(bucket_id text, prefix_param text, delimiter_param text, max_keys integer, next_key_token text, next_upload_token text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: list_objects_with_delimiter(text, text, text, integer, text, text, text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.list_objects_with_delimiter(_bucket_id text, prefix_param text, delimiter_param text, max_keys integer DEFAULT 100, start_after text DEFAULT ''::text, next_token text DEFAULT ''::text, sort_order text DEFAULT 'asc'::text) RETURNS TABLE(name text, id uuid, metadata jsonb, updated_at timestamp with time zone, created_at timestamp with time zone, last_accessed_at timestamp with time zone)
+    LANGUAGE plpgsql STABLE
+    AS $_$
+DECLARE
+    v_peek_name TEXT;
+    v_current RECORD;
+    v_common_prefix TEXT;
+
+    -- Configuration
+    v_is_asc BOOLEAN;
+    v_prefix TEXT;
+    v_start TEXT;
+    v_upper_bound TEXT;
+    v_file_batch_size INT;
+
+    -- Seek state
+    v_next_seek TEXT;
+    v_count INT := 0;
+
+    -- Dynamic SQL for batch query only
+    v_batch_query TEXT;
+
+BEGIN
+    -- ========================================================================
+    -- INITIALIZATION
+    -- ========================================================================
+    v_is_asc := lower(coalesce(sort_order, 'asc')) = 'asc';
+    v_prefix := coalesce(prefix_param, '');
+    v_start := CASE WHEN coalesce(next_token, '') <> '' THEN next_token ELSE coalesce(start_after, '') END;
+    v_file_batch_size := LEAST(GREATEST(max_keys * 2, 100), 1000);
+
+    -- Calculate upper bound for prefix filtering (bytewise, using COLLATE "C")
+    IF v_prefix = '' THEN
+        v_upper_bound := NULL;
+    ELSIF right(v_prefix, 1) = delimiter_param THEN
+        v_upper_bound := left(v_prefix, -1) || chr(ascii(delimiter_param) + 1);
+    ELSE
+        v_upper_bound := left(v_prefix, -1) || chr(ascii(right(v_prefix, 1)) + 1);
+    END IF;
+
+    -- Build batch query (dynamic SQL - called infrequently, amortized over many rows)
+    IF v_is_asc THEN
+        IF v_upper_bound IS NOT NULL THEN
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND o.name COLLATE "C" >= $2 ' ||
+                'AND o.name COLLATE "C" < $3 ORDER BY o.name COLLATE "C" ASC LIMIT $4';
+        ELSE
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND o.name COLLATE "C" >= $2 ' ||
+                'ORDER BY o.name COLLATE "C" ASC LIMIT $4';
+        END IF;
+    ELSE
+        IF v_upper_bound IS NOT NULL THEN
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND o.name COLLATE "C" < $2 ' ||
+                'AND o.name COLLATE "C" >= $3 ORDER BY o.name COLLATE "C" DESC LIMIT $4';
+        ELSE
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND o.name COLLATE "C" < $2 ' ||
+                'ORDER BY o.name COLLATE "C" DESC LIMIT $4';
+        END IF;
+    END IF;
+
+    -- ========================================================================
+    -- SEEK INITIALIZATION: Determine starting position
+    -- ========================================================================
+    IF v_start = '' THEN
+        IF v_is_asc THEN
+            v_next_seek := v_prefix;
+        ELSE
+            -- DESC without cursor: find the last item in range
+            IF v_upper_bound IS NOT NULL THEN
+                SELECT o.name INTO v_next_seek FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" >= v_prefix AND o.name COLLATE "C" < v_upper_bound
+                ORDER BY o.name COLLATE "C" DESC LIMIT 1;
+            ELSIF v_prefix <> '' THEN
+                SELECT o.name INTO v_next_seek FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" >= v_prefix
+                ORDER BY o.name COLLATE "C" DESC LIMIT 1;
+            ELSE
+                SELECT o.name INTO v_next_seek FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id
+                ORDER BY o.name COLLATE "C" DESC LIMIT 1;
+            END IF;
+
+            IF v_next_seek IS NOT NULL THEN
+                v_next_seek := v_next_seek || delimiter_param;
+            ELSE
+                RETURN;
+            END IF;
+        END IF;
+    ELSE
+        -- Cursor provided: determine if it refers to a folder or leaf
+        IF EXISTS (
+            SELECT 1 FROM storage.objects o
+            WHERE o.bucket_id = _bucket_id
+              AND o.name COLLATE "C" LIKE v_start || delimiter_param || '%'
+            LIMIT 1
+        ) THEN
+            -- Cursor refers to a folder
+            IF v_is_asc THEN
+                v_next_seek := v_start || chr(ascii(delimiter_param) + 1);
+            ELSE
+                v_next_seek := v_start || delimiter_param;
+            END IF;
+        ELSE
+            -- Cursor refers to a leaf object
+            IF v_is_asc THEN
+                v_next_seek := v_start || delimiter_param;
+            ELSE
+                v_next_seek := v_start;
+            END IF;
+        END IF;
+    END IF;
+
+    -- ========================================================================
+    -- MAIN LOOP: Hybrid peek-then-batch algorithm
+    -- Uses STATIC SQL for peek (hot path) and DYNAMIC SQL for batch
+    -- ========================================================================
+    LOOP
+        EXIT WHEN v_count >= max_keys;
+
+        -- STEP 1: PEEK using STATIC SQL (plan cached, very fast)
+        IF v_is_asc THEN
+            IF v_upper_bound IS NOT NULL THEN
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" >= v_next_seek AND o.name COLLATE "C" < v_upper_bound
+                ORDER BY o.name COLLATE "C" ASC LIMIT 1;
+            ELSE
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" >= v_next_seek
+                ORDER BY o.name COLLATE "C" ASC LIMIT 1;
+            END IF;
+        ELSE
+            IF v_upper_bound IS NOT NULL THEN
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" < v_next_seek AND o.name COLLATE "C" >= v_prefix
+                ORDER BY o.name COLLATE "C" DESC LIMIT 1;
+            ELSIF v_prefix <> '' THEN
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" < v_next_seek AND o.name COLLATE "C" >= v_prefix
+                ORDER BY o.name COLLATE "C" DESC LIMIT 1;
+            ELSE
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = _bucket_id AND o.name COLLATE "C" < v_next_seek
+                ORDER BY o.name COLLATE "C" DESC LIMIT 1;
+            END IF;
+        END IF;
+
+        EXIT WHEN v_peek_name IS NULL;
+
+        -- STEP 2: Check if this is a FOLDER or FILE
+        v_common_prefix := storage.get_common_prefix(v_peek_name, v_prefix, delimiter_param);
+
+        IF v_common_prefix IS NOT NULL THEN
+            -- FOLDER: Emit and skip to next folder (no heap access needed)
+            name := rtrim(v_common_prefix, delimiter_param);
+            id := NULL;
+            updated_at := NULL;
+            created_at := NULL;
+            last_accessed_at := NULL;
+            metadata := NULL;
+            RETURN NEXT;
+            v_count := v_count + 1;
+
+            -- Advance seek past the folder range
+            IF v_is_asc THEN
+                v_next_seek := left(v_common_prefix, -1) || chr(ascii(delimiter_param) + 1);
+            ELSE
+                v_next_seek := v_common_prefix;
+            END IF;
+        ELSE
+            -- FILE: Batch fetch using DYNAMIC SQL (overhead amortized over many rows)
+            -- For ASC: upper_bound is the exclusive upper limit (< condition)
+            -- For DESC: prefix is the inclusive lower limit (>= condition)
+            FOR v_current IN EXECUTE v_batch_query USING _bucket_id, v_next_seek,
+                CASE WHEN v_is_asc THEN COALESCE(v_upper_bound, v_prefix) ELSE v_prefix END, v_file_batch_size
+            LOOP
+                v_common_prefix := storage.get_common_prefix(v_current.name, v_prefix, delimiter_param);
+
+                IF v_common_prefix IS NOT NULL THEN
+                    -- Hit a folder: exit batch, let peek handle it
+                    v_next_seek := v_current.name;
+                    EXIT;
+                END IF;
+
+                -- Emit file
+                name := v_current.name;
+                id := v_current.id;
+                updated_at := v_current.updated_at;
+                created_at := v_current.created_at;
+                last_accessed_at := v_current.last_accessed_at;
+                metadata := v_current.metadata;
+                RETURN NEXT;
+                v_count := v_count + 1;
+
+                -- Advance seek past this file
+                IF v_is_asc THEN
+                    v_next_seek := v_current.name || delimiter_param;
+                ELSE
+                    v_next_seek := v_current.name;
+                END IF;
+
+                EXIT WHEN v_count >= max_keys;
+            END LOOP;
+        END IF;
+    END LOOP;
+END;
+$_$;
+
+
+ALTER FUNCTION storage.list_objects_with_delimiter(_bucket_id text, prefix_param text, delimiter_param text, max_keys integer, start_after text, next_token text, sort_order text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: operation(); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.operation() RETURNS text
+    LANGUAGE plpgsql STABLE
+    AS $$
+BEGIN
+    RETURN current_setting('storage.operation', true);
+END;
+$$;
+
+
+ALTER FUNCTION storage.operation() OWNER TO supabase_storage_admin;
+
+--
+-- Name: protect_delete(); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.protect_delete() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Check if storage.allow_delete_query is set to 'true'
+    IF COALESCE(current_setting('storage.allow_delete_query', true), 'false') != 'true' THEN
+        RAISE EXCEPTION 'Direct deletion from storage tables is not allowed. Use the Storage API instead.'
+            USING HINT = 'This prevents accidental data loss from orphaned objects.',
+                  ERRCODE = '42501';
+    END IF;
+    RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION storage.protect_delete() OWNER TO supabase_storage_admin;
+
+--
+-- Name: search(text, text, integer, integer, integer, text, text, text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.search(prefix text, bucketname text, limits integer DEFAULT 100, levels integer DEFAULT 1, offsets integer DEFAULT 0, search text DEFAULT ''::text, sortcolumn text DEFAULT 'name'::text, sortorder text DEFAULT 'asc'::text) RETURNS TABLE(name text, id uuid, updated_at timestamp with time zone, created_at timestamp with time zone, last_accessed_at timestamp with time zone, metadata jsonb)
+    LANGUAGE plpgsql STABLE
+    AS $_$
+DECLARE
+    v_peek_name TEXT;
+    v_current RECORD;
+    v_common_prefix TEXT;
+    v_delimiter CONSTANT TEXT := '/';
+
+    -- Configuration
+    v_limit INT;
+    v_prefix TEXT;
+    v_prefix_lower TEXT;
+    v_is_asc BOOLEAN;
+    v_order_by TEXT;
+    v_sort_order TEXT;
+    v_upper_bound TEXT;
+    v_file_batch_size INT;
+
+    -- Dynamic SQL for batch query only
+    v_batch_query TEXT;
+
+    -- Seek state
+    v_next_seek TEXT;
+    v_count INT := 0;
+    v_skipped INT := 0;
+BEGIN
+    -- ========================================================================
+    -- INITIALIZATION
+    -- ========================================================================
+    v_limit := LEAST(coalesce(limits, 100), 1500);
+    v_prefix := coalesce(prefix, '') || coalesce(search, '');
+    v_prefix_lower := lower(v_prefix);
+    v_is_asc := lower(coalesce(sortorder, 'asc')) = 'asc';
+    v_file_batch_size := LEAST(GREATEST(v_limit * 2, 100), 1000);
+
+    -- Validate sort column
+    CASE lower(coalesce(sortcolumn, 'name'))
+        WHEN 'name' THEN v_order_by := 'name';
+        WHEN 'updated_at' THEN v_order_by := 'updated_at';
+        WHEN 'created_at' THEN v_order_by := 'created_at';
+        WHEN 'last_accessed_at' THEN v_order_by := 'last_accessed_at';
+        ELSE v_order_by := 'name';
+    END CASE;
+
+    v_sort_order := CASE WHEN v_is_asc THEN 'asc' ELSE 'desc' END;
+
+    -- ========================================================================
+    -- NON-NAME SORTING: Use path_tokens approach (unchanged)
+    -- ========================================================================
+    IF v_order_by != 'name' THEN
+        RETURN QUERY EXECUTE format(
+            $sql$
+            WITH folders AS (
+                SELECT path_tokens[$1] AS folder
+                FROM storage.objects
+                WHERE objects.name ILIKE $2 || '%%'
+                  AND bucket_id = $3
+                  AND array_length(objects.path_tokens, 1) <> $1
+                GROUP BY folder
+                ORDER BY folder %s
+            )
+            (SELECT folder AS "name",
+                   NULL::uuid AS id,
+                   NULL::timestamptz AS updated_at,
+                   NULL::timestamptz AS created_at,
+                   NULL::timestamptz AS last_accessed_at,
+                   NULL::jsonb AS metadata FROM folders)
+            UNION ALL
+            (SELECT path_tokens[$1] AS "name",
+                   id, updated_at, created_at, last_accessed_at, metadata
+             FROM storage.objects
+             WHERE objects.name ILIKE $2 || '%%'
+               AND bucket_id = $3
+               AND array_length(objects.path_tokens, 1) = $1
+             ORDER BY %I %s)
+            LIMIT $4 OFFSET $5
+            $sql$, v_sort_order, v_order_by, v_sort_order
+        ) USING levels, v_prefix, bucketname, v_limit, offsets;
+        RETURN;
+    END IF;
+
+    -- ========================================================================
+    -- NAME SORTING: Hybrid skip-scan with batch optimization
+    -- ========================================================================
+
+    -- Calculate upper bound for prefix filtering
+    IF v_prefix_lower = '' THEN
+        v_upper_bound := NULL;
+    ELSIF right(v_prefix_lower, 1) = v_delimiter THEN
+        v_upper_bound := left(v_prefix_lower, -1) || chr(ascii(v_delimiter) + 1);
+    ELSE
+        v_upper_bound := left(v_prefix_lower, -1) || chr(ascii(right(v_prefix_lower, 1)) + 1);
+    END IF;
+
+    -- Build batch query (dynamic SQL - called infrequently, amortized over many rows)
+    IF v_is_asc THEN
+        IF v_upper_bound IS NOT NULL THEN
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND lower(o.name) COLLATE "C" >= $2 ' ||
+                'AND lower(o.name) COLLATE "C" < $3 ORDER BY lower(o.name) COLLATE "C" ASC LIMIT $4';
+        ELSE
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND lower(o.name) COLLATE "C" >= $2 ' ||
+                'ORDER BY lower(o.name) COLLATE "C" ASC LIMIT $4';
+        END IF;
+    ELSE
+        IF v_upper_bound IS NOT NULL THEN
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND lower(o.name) COLLATE "C" < $2 ' ||
+                'AND lower(o.name) COLLATE "C" >= $3 ORDER BY lower(o.name) COLLATE "C" DESC LIMIT $4';
+        ELSE
+            v_batch_query := 'SELECT o.name, o.id, o.updated_at, o.created_at, o.last_accessed_at, o.metadata ' ||
+                'FROM storage.objects o WHERE o.bucket_id = $1 AND lower(o.name) COLLATE "C" < $2 ' ||
+                'ORDER BY lower(o.name) COLLATE "C" DESC LIMIT $4';
+        END IF;
+    END IF;
+
+    -- Initialize seek position
+    IF v_is_asc THEN
+        v_next_seek := v_prefix_lower;
+    ELSE
+        -- DESC: find the last item in range first (static SQL)
+        IF v_upper_bound IS NOT NULL THEN
+            SELECT o.name INTO v_peek_name FROM storage.objects o
+            WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" >= v_prefix_lower AND lower(o.name) COLLATE "C" < v_upper_bound
+            ORDER BY lower(o.name) COLLATE "C" DESC LIMIT 1;
+        ELSIF v_prefix_lower <> '' THEN
+            SELECT o.name INTO v_peek_name FROM storage.objects o
+            WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" >= v_prefix_lower
+            ORDER BY lower(o.name) COLLATE "C" DESC LIMIT 1;
+        ELSE
+            SELECT o.name INTO v_peek_name FROM storage.objects o
+            WHERE o.bucket_id = bucketname
+            ORDER BY lower(o.name) COLLATE "C" DESC LIMIT 1;
+        END IF;
+
+        IF v_peek_name IS NOT NULL THEN
+            v_next_seek := lower(v_peek_name) || v_delimiter;
+        ELSE
+            RETURN;
+        END IF;
+    END IF;
+
+    -- ========================================================================
+    -- MAIN LOOP: Hybrid peek-then-batch algorithm
+    -- Uses STATIC SQL for peek (hot path) and DYNAMIC SQL for batch
+    -- ========================================================================
+    LOOP
+        EXIT WHEN v_count >= v_limit;
+
+        -- STEP 1: PEEK using STATIC SQL (plan cached, very fast)
+        IF v_is_asc THEN
+            IF v_upper_bound IS NOT NULL THEN
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" >= v_next_seek AND lower(o.name) COLLATE "C" < v_upper_bound
+                ORDER BY lower(o.name) COLLATE "C" ASC LIMIT 1;
+            ELSE
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" >= v_next_seek
+                ORDER BY lower(o.name) COLLATE "C" ASC LIMIT 1;
+            END IF;
+        ELSE
+            IF v_upper_bound IS NOT NULL THEN
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" < v_next_seek AND lower(o.name) COLLATE "C" >= v_prefix_lower
+                ORDER BY lower(o.name) COLLATE "C" DESC LIMIT 1;
+            ELSIF v_prefix_lower <> '' THEN
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" < v_next_seek AND lower(o.name) COLLATE "C" >= v_prefix_lower
+                ORDER BY lower(o.name) COLLATE "C" DESC LIMIT 1;
+            ELSE
+                SELECT o.name INTO v_peek_name FROM storage.objects o
+                WHERE o.bucket_id = bucketname AND lower(o.name) COLLATE "C" < v_next_seek
+                ORDER BY lower(o.name) COLLATE "C" DESC LIMIT 1;
+            END IF;
+        END IF;
+
+        EXIT WHEN v_peek_name IS NULL;
+
+        -- STEP 2: Check if this is a FOLDER or FILE
+        v_common_prefix := storage.get_common_prefix(lower(v_peek_name), v_prefix_lower, v_delimiter);
+
+        IF v_common_prefix IS NOT NULL THEN
+            -- FOLDER: Handle offset, emit if needed, skip to next folder
+            IF v_skipped < offsets THEN
+                v_skipped := v_skipped + 1;
+            ELSE
+                name := split_part(rtrim(storage.get_common_prefix(v_peek_name, v_prefix, v_delimiter), v_delimiter), v_delimiter, levels);
+                id := NULL;
+                updated_at := NULL;
+                created_at := NULL;
+                last_accessed_at := NULL;
+                metadata := NULL;
+                RETURN NEXT;
+                v_count := v_count + 1;
+            END IF;
+
+            -- Advance seek past the folder range
+            IF v_is_asc THEN
+                v_next_seek := lower(left(v_common_prefix, -1)) || chr(ascii(v_delimiter) + 1);
+            ELSE
+                v_next_seek := lower(v_common_prefix);
+            END IF;
+        ELSE
+            -- FILE: Batch fetch using DYNAMIC SQL (overhead amortized over many rows)
+            -- For ASC: upper_bound is the exclusive upper limit (< condition)
+            -- For DESC: prefix_lower is the inclusive lower limit (>= condition)
+            FOR v_current IN EXECUTE v_batch_query
+                USING bucketname, v_next_seek,
+                    CASE WHEN v_is_asc THEN COALESCE(v_upper_bound, v_prefix_lower) ELSE v_prefix_lower END, v_file_batch_size
+            LOOP
+                v_common_prefix := storage.get_common_prefix(lower(v_current.name), v_prefix_lower, v_delimiter);
+
+                IF v_common_prefix IS NOT NULL THEN
+                    -- Hit a folder: exit batch, let peek handle it
+                    v_next_seek := lower(v_current.name);
+                    EXIT;
+                END IF;
+
+                -- Handle offset skipping
+                IF v_skipped < offsets THEN
+                    v_skipped := v_skipped + 1;
+                ELSE
+                    -- Emit file
+                    name := split_part(v_current.name, v_delimiter, levels);
+                    id := v_current.id;
+                    updated_at := v_current.updated_at;
+                    created_at := v_current.created_at;
+                    last_accessed_at := v_current.last_accessed_at;
+                    metadata := v_current.metadata;
+                    RETURN NEXT;
+                    v_count := v_count + 1;
+                END IF;
+
+                -- Advance seek past this file
+                IF v_is_asc THEN
+                    v_next_seek := lower(v_current.name) || v_delimiter;
+                ELSE
+                    v_next_seek := lower(v_current.name);
+                END IF;
+
+                EXIT WHEN v_count >= v_limit;
+            END LOOP;
+        END IF;
+    END LOOP;
+END;
+$_$;
+
+
+ALTER FUNCTION storage.search(prefix text, bucketname text, limits integer, levels integer, offsets integer, search text, sortcolumn text, sortorder text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: search_by_timestamp(text, text, integer, integer, text, text, text, text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.search_by_timestamp(p_prefix text, p_bucket_id text, p_limit integer, p_level integer, p_start_after text, p_sort_order text, p_sort_column text, p_sort_column_after text) RETURNS TABLE(key text, name text, id uuid, updated_at timestamp with time zone, created_at timestamp with time zone, last_accessed_at timestamp with time zone, metadata jsonb)
+    LANGUAGE plpgsql STABLE
+    AS $_$
+DECLARE
+    v_cursor_op text;
+    v_query text;
+    v_prefix text;
+BEGIN
+    v_prefix := coalesce(p_prefix, '');
+
+    IF p_sort_order = 'asc' THEN
+        v_cursor_op := '>';
+    ELSE
+        v_cursor_op := '<';
+    END IF;
+
+    v_query := format($sql$
+        WITH raw_objects AS (
+            SELECT
+                o.name AS obj_name,
+                o.id AS obj_id,
+                o.updated_at AS obj_updated_at,
+                o.created_at AS obj_created_at,
+                o.last_accessed_at AS obj_last_accessed_at,
+                o.metadata AS obj_metadata,
+                storage.get_common_prefix(o.name, $1, '/') AS common_prefix
+            FROM storage.objects o
+            WHERE o.bucket_id = $2
+              AND o.name COLLATE "C" LIKE $1 || '%%'
+        ),
+        -- Aggregate common prefixes (folders)
+        -- Both created_at and updated_at use MIN(obj_created_at) to match the old prefixes table behavior
+        aggregated_prefixes AS (
+            SELECT
+                rtrim(common_prefix, '/') AS name,
+                NULL::uuid AS id,
+                MIN(obj_created_at) AS updated_at,
+                MIN(obj_created_at) AS created_at,
+                NULL::timestamptz AS last_accessed_at,
+                NULL::jsonb AS metadata,
+                TRUE AS is_prefix
+            FROM raw_objects
+            WHERE common_prefix IS NOT NULL
+            GROUP BY common_prefix
+        ),
+        leaf_objects AS (
+            SELECT
+                obj_name AS name,
+                obj_id AS id,
+                obj_updated_at AS updated_at,
+                obj_created_at AS created_at,
+                obj_last_accessed_at AS last_accessed_at,
+                obj_metadata AS metadata,
+                FALSE AS is_prefix
+            FROM raw_objects
+            WHERE common_prefix IS NULL
+        ),
+        combined AS (
+            SELECT * FROM aggregated_prefixes
+            UNION ALL
+            SELECT * FROM leaf_objects
+        ),
+        filtered AS (
+            SELECT *
+            FROM combined
+            WHERE (
+                $5 = ''
+                OR ROW(
+                    date_trunc('milliseconds', %I),
+                    name COLLATE "C"
+                ) %s ROW(
+                    COALESCE(NULLIF($6, '')::timestamptz, 'epoch'::timestamptz),
+                    $5
+                )
+            )
+        )
+        SELECT
+            split_part(name, '/', $3) AS key,
+            name,
+            id,
+            updated_at,
+            created_at,
+            last_accessed_at,
+            metadata
+        FROM filtered
+        ORDER BY
+            COALESCE(date_trunc('milliseconds', %I), 'epoch'::timestamptz) %s,
+            name COLLATE "C" %s
+        LIMIT $4
+    $sql$,
+        p_sort_column,
+        v_cursor_op,
+        p_sort_column,
+        p_sort_order,
+        p_sort_order
+    );
+
+    RETURN QUERY EXECUTE v_query
+    USING v_prefix, p_bucket_id, p_level, p_limit, p_start_after, p_sort_column_after;
+END;
+$_$;
+
+
+ALTER FUNCTION storage.search_by_timestamp(p_prefix text, p_bucket_id text, p_limit integer, p_level integer, p_start_after text, p_sort_order text, p_sort_column text, p_sort_column_after text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: search_v2(text, text, integer, integer, text, text, text, text); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.search_v2(prefix text, bucket_name text, limits integer DEFAULT 100, levels integer DEFAULT 1, start_after text DEFAULT ''::text, sort_order text DEFAULT 'asc'::text, sort_column text DEFAULT 'name'::text, sort_column_after text DEFAULT ''::text) RETURNS TABLE(key text, name text, id uuid, updated_at timestamp with time zone, created_at timestamp with time zone, last_accessed_at timestamp with time zone, metadata jsonb)
+    LANGUAGE plpgsql STABLE
+    AS $$
+DECLARE
+    v_sort_col text;
+    v_sort_ord text;
+    v_limit int;
+BEGIN
+    -- Cap limit to maximum of 1500 records
+    v_limit := LEAST(coalesce(limits, 100), 1500);
+
+    -- Validate and normalize sort_order
+    v_sort_ord := lower(coalesce(sort_order, 'asc'));
+    IF v_sort_ord NOT IN ('asc', 'desc') THEN
+        v_sort_ord := 'asc';
+    END IF;
+
+    -- Validate and normalize sort_column
+    v_sort_col := lower(coalesce(sort_column, 'name'));
+    IF v_sort_col NOT IN ('name', 'updated_at', 'created_at') THEN
+        v_sort_col := 'name';
+    END IF;
+
+    -- Route to appropriate implementation
+    IF v_sort_col = 'name' THEN
+        -- Use list_objects_with_delimiter for name sorting (most efficient: O(k * log n))
+        RETURN QUERY
+        SELECT
+            split_part(l.name, '/', levels) AS key,
+            l.name AS name,
+            l.id,
+            l.updated_at,
+            l.created_at,
+            l.last_accessed_at,
+            l.metadata
+        FROM storage.list_objects_with_delimiter(
+            bucket_name,
+            coalesce(prefix, ''),
+            '/',
+            v_limit,
+            start_after,
+            '',
+            v_sort_ord
+        ) l;
+    ELSE
+        -- Use aggregation approach for timestamp sorting
+        -- Not efficient for large datasets but supports correct pagination
+        RETURN QUERY SELECT * FROM storage.search_by_timestamp(
+            prefix, bucket_name, v_limit, levels, start_after,
+            v_sort_ord, v_sort_col, sort_column_after
+        );
+    END IF;
+END;
+$$;
+
+
+ALTER FUNCTION storage.search_v2(prefix text, bucket_name text, limits integer, levels integer, start_after text, sort_order text, sort_column text, sort_column_after text) OWNER TO supabase_storage_admin;
+
+--
+-- Name: update_updated_at_column(); Type: FUNCTION; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE FUNCTION storage.update_updated_at_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW; 
+END;
+$$;
+
+
+ALTER FUNCTION storage.update_updated_at_column() OWNER TO supabase_storage_admin;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: audit_log_entries; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.audit_log_entries (
+    instance_id uuid,
+    id uuid NOT NULL,
+    payload json,
+    created_at timestamp with time zone,
+    ip_address character varying(64) DEFAULT ''::character varying NOT NULL
+);
+
+
+ALTER TABLE auth.audit_log_entries OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE audit_log_entries; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.audit_log_entries IS 'Auth: Audit trail for user actions.';
+
+
+--
+-- Name: custom_oauth_providers; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.custom_oauth_providers (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    provider_type text NOT NULL,
+    identifier text NOT NULL,
+    name text NOT NULL,
+    client_id text NOT NULL,
+    client_secret text NOT NULL,
+    acceptable_client_ids text[] DEFAULT '{}'::text[] NOT NULL,
+    scopes text[] DEFAULT '{}'::text[] NOT NULL,
+    pkce_enabled boolean DEFAULT true NOT NULL,
+    attribute_mapping jsonb DEFAULT '{}'::jsonb NOT NULL,
+    authorization_params jsonb DEFAULT '{}'::jsonb NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    email_optional boolean DEFAULT false NOT NULL,
+    issuer text,
+    discovery_url text,
+    skip_nonce_check boolean DEFAULT false NOT NULL,
+    cached_discovery jsonb,
+    discovery_cached_at timestamp with time zone,
+    authorization_url text,
+    token_url text,
+    userinfo_url text,
+    jwks_uri text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    custom_claims_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
+    CONSTRAINT custom_oauth_providers_authorization_url_https CHECK (((authorization_url IS NULL) OR (authorization_url ~~ 'https://%'::text))),
+    CONSTRAINT custom_oauth_providers_authorization_url_length CHECK (((authorization_url IS NULL) OR (char_length(authorization_url) <= 2048))),
+    CONSTRAINT custom_oauth_providers_client_id_length CHECK (((char_length(client_id) >= 1) AND (char_length(client_id) <= 512))),
+    CONSTRAINT custom_oauth_providers_discovery_url_length CHECK (((discovery_url IS NULL) OR (char_length(discovery_url) <= 2048))),
+    CONSTRAINT custom_oauth_providers_identifier_format CHECK ((identifier ~ '^[a-z0-9][a-z0-9:-]{0,48}[a-z0-9]$'::text)),
+    CONSTRAINT custom_oauth_providers_issuer_length CHECK (((issuer IS NULL) OR ((char_length(issuer) >= 1) AND (char_length(issuer) <= 2048)))),
+    CONSTRAINT custom_oauth_providers_jwks_uri_https CHECK (((jwks_uri IS NULL) OR (jwks_uri ~~ 'https://%'::text))),
+    CONSTRAINT custom_oauth_providers_jwks_uri_length CHECK (((jwks_uri IS NULL) OR (char_length(jwks_uri) <= 2048))),
+    CONSTRAINT custom_oauth_providers_name_length CHECK (((char_length(name) >= 1) AND (char_length(name) <= 100))),
+    CONSTRAINT custom_oauth_providers_oauth2_requires_endpoints CHECK (((provider_type <> 'oauth2'::text) OR ((authorization_url IS NOT NULL) AND (token_url IS NOT NULL) AND (userinfo_url IS NOT NULL)))),
+    CONSTRAINT custom_oauth_providers_oidc_discovery_url_https CHECK (((provider_type <> 'oidc'::text) OR (discovery_url IS NULL) OR (discovery_url ~~ 'https://%'::text))),
+    CONSTRAINT custom_oauth_providers_oidc_issuer_https CHECK (((provider_type <> 'oidc'::text) OR (issuer IS NULL) OR (issuer ~~ 'https://%'::text))),
+    CONSTRAINT custom_oauth_providers_oidc_requires_issuer CHECK (((provider_type <> 'oidc'::text) OR (issuer IS NOT NULL))),
+    CONSTRAINT custom_oauth_providers_provider_type_check CHECK ((provider_type = ANY (ARRAY['oauth2'::text, 'oidc'::text]))),
+    CONSTRAINT custom_oauth_providers_token_url_https CHECK (((token_url IS NULL) OR (token_url ~~ 'https://%'::text))),
+    CONSTRAINT custom_oauth_providers_token_url_length CHECK (((token_url IS NULL) OR (char_length(token_url) <= 2048))),
+    CONSTRAINT custom_oauth_providers_userinfo_url_https CHECK (((userinfo_url IS NULL) OR (userinfo_url ~~ 'https://%'::text))),
+    CONSTRAINT custom_oauth_providers_userinfo_url_length CHECK (((userinfo_url IS NULL) OR (char_length(userinfo_url) <= 2048)))
+);
+
+
+ALTER TABLE auth.custom_oauth_providers OWNER TO supabase_auth_admin;
+
+--
+-- Name: flow_state; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.flow_state (
+    id uuid NOT NULL,
+    user_id uuid,
+    auth_code text,
+    code_challenge_method auth.code_challenge_method,
+    code_challenge text,
+    provider_type text NOT NULL,
+    provider_access_token text,
+    provider_refresh_token text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    authentication_method text NOT NULL,
+    auth_code_issued_at timestamp with time zone,
+    invite_token text,
+    referrer text,
+    oauth_client_state_id uuid,
+    linking_target_id uuid,
+    email_optional boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE auth.flow_state OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE flow_state; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.flow_state IS 'Stores metadata for all OAuth/SSO login flows';
+
+
+--
+-- Name: identities; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.identities (
+    provider_id text NOT NULL,
+    user_id uuid NOT NULL,
+    identity_data jsonb NOT NULL,
+    provider text NOT NULL,
+    last_sign_in_at timestamp with time zone,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    email text GENERATED ALWAYS AS (lower((identity_data ->> 'email'::text))) STORED,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE auth.identities OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE identities; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.identities IS 'Auth: Stores identities associated to a user.';
+
+
+--
+-- Name: COLUMN identities.email; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.identities.email IS 'Auth: Email is a generated column that references the optional email property in the identity_data';
+
+
+--
+-- Name: instances; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.instances (
+    id uuid NOT NULL,
+    uuid uuid,
+    raw_base_config text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone
+);
+
+
+ALTER TABLE auth.instances OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE instances; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.instances IS 'Auth: Manages users across multiple sites.';
+
+
+--
+-- Name: mfa_amr_claims; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.mfa_amr_claims (
+    session_id uuid NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    authentication_method text NOT NULL,
+    id uuid NOT NULL
+);
+
+
+ALTER TABLE auth.mfa_amr_claims OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE mfa_amr_claims; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.mfa_amr_claims IS 'auth: stores authenticator method reference claims for multi factor authentication';
+
+
+--
+-- Name: mfa_challenges; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.mfa_challenges (
+    id uuid NOT NULL,
+    factor_id uuid NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    verified_at timestamp with time zone,
+    ip_address inet NOT NULL,
+    otp_code text,
+    web_authn_session_data jsonb
+);
+
+
+ALTER TABLE auth.mfa_challenges OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE mfa_challenges; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.mfa_challenges IS 'auth: stores metadata about challenge requests made';
+
+
+--
+-- Name: mfa_factors; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.mfa_factors (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    friendly_name text,
+    factor_type auth.factor_type NOT NULL,
+    status auth.factor_status NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    secret text,
+    phone text,
+    last_challenged_at timestamp with time zone,
+    web_authn_credential jsonb,
+    web_authn_aaguid uuid,
+    last_webauthn_challenge_data jsonb
+);
+
+
+ALTER TABLE auth.mfa_factors OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE mfa_factors; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.mfa_factors IS 'auth: stores metadata about factors';
+
+
+--
+-- Name: COLUMN mfa_factors.last_webauthn_challenge_data; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.mfa_factors.last_webauthn_challenge_data IS 'Stores the latest WebAuthn challenge data including attestation/assertion for customer verification';
+
+
+--
+-- Name: oauth_authorizations; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.oauth_authorizations (
+    id uuid NOT NULL,
+    authorization_id text NOT NULL,
+    client_id uuid NOT NULL,
+    user_id uuid,
+    redirect_uri text NOT NULL,
+    scope text NOT NULL,
+    state text,
+    resource text,
+    code_challenge text,
+    code_challenge_method auth.code_challenge_method,
+    response_type auth.oauth_response_type DEFAULT 'code'::auth.oauth_response_type NOT NULL,
+    status auth.oauth_authorization_status DEFAULT 'pending'::auth.oauth_authorization_status NOT NULL,
+    authorization_code text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    expires_at timestamp with time zone DEFAULT (now() + '00:03:00'::interval) NOT NULL,
+    approved_at timestamp with time zone,
+    nonce text,
+    CONSTRAINT oauth_authorizations_authorization_code_length CHECK ((char_length(authorization_code) <= 255)),
+    CONSTRAINT oauth_authorizations_code_challenge_length CHECK ((char_length(code_challenge) <= 128)),
+    CONSTRAINT oauth_authorizations_expires_at_future CHECK ((expires_at > created_at)),
+    CONSTRAINT oauth_authorizations_nonce_length CHECK ((char_length(nonce) <= 255)),
+    CONSTRAINT oauth_authorizations_redirect_uri_length CHECK ((char_length(redirect_uri) <= 2048)),
+    CONSTRAINT oauth_authorizations_resource_length CHECK ((char_length(resource) <= 2048)),
+    CONSTRAINT oauth_authorizations_scope_length CHECK ((char_length(scope) <= 4096)),
+    CONSTRAINT oauth_authorizations_state_length CHECK ((char_length(state) <= 4096))
+);
+
+
+ALTER TABLE auth.oauth_authorizations OWNER TO supabase_auth_admin;
+
+--
+-- Name: oauth_client_states; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.oauth_client_states (
+    id uuid NOT NULL,
+    provider_type text NOT NULL,
+    code_verifier text,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE auth.oauth_client_states OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE oauth_client_states; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.oauth_client_states IS 'Stores OAuth states for third-party provider authentication flows where Supabase acts as the OAuth client.';
+
+
+--
+-- Name: oauth_clients; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.oauth_clients (
+    id uuid NOT NULL,
+    client_secret_hash text,
+    registration_type auth.oauth_registration_type NOT NULL,
+    redirect_uris text NOT NULL,
+    grant_types text NOT NULL,
+    client_name text,
+    client_uri text,
+    logo_uri text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone,
+    client_type auth.oauth_client_type DEFAULT 'confidential'::auth.oauth_client_type NOT NULL,
+    token_endpoint_auth_method text NOT NULL,
+    CONSTRAINT oauth_clients_client_name_length CHECK ((char_length(client_name) <= 1024)),
+    CONSTRAINT oauth_clients_client_uri_length CHECK ((char_length(client_uri) <= 2048)),
+    CONSTRAINT oauth_clients_logo_uri_length CHECK ((char_length(logo_uri) <= 2048)),
+    CONSTRAINT oauth_clients_token_endpoint_auth_method_check CHECK ((token_endpoint_auth_method = ANY (ARRAY['client_secret_basic'::text, 'client_secret_post'::text, 'none'::text])))
+);
+
+
+ALTER TABLE auth.oauth_clients OWNER TO supabase_auth_admin;
+
+--
+-- Name: oauth_consents; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.oauth_consents (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    client_id uuid NOT NULL,
+    scopes text NOT NULL,
+    granted_at timestamp with time zone DEFAULT now() NOT NULL,
+    revoked_at timestamp with time zone,
+    CONSTRAINT oauth_consents_revoked_after_granted CHECK (((revoked_at IS NULL) OR (revoked_at >= granted_at))),
+    CONSTRAINT oauth_consents_scopes_length CHECK ((char_length(scopes) <= 2048)),
+    CONSTRAINT oauth_consents_scopes_not_empty CHECK ((char_length(TRIM(BOTH FROM scopes)) > 0))
+);
+
+
+ALTER TABLE auth.oauth_consents OWNER TO supabase_auth_admin;
+
+--
+-- Name: one_time_tokens; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.one_time_tokens (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    token_type auth.one_time_token_type NOT NULL,
+    token_hash text NOT NULL,
+    relates_to text NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT one_time_tokens_token_hash_check CHECK ((char_length(token_hash) > 0))
+);
+
+
+ALTER TABLE auth.one_time_tokens OWNER TO supabase_auth_admin;
+
+--
+-- Name: refresh_tokens; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.refresh_tokens (
+    instance_id uuid,
+    id bigint NOT NULL,
+    token character varying(255),
+    user_id character varying(255),
+    revoked boolean,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    parent character varying(255),
+    session_id uuid
+);
+
+
+ALTER TABLE auth.refresh_tokens OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE refresh_tokens; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.refresh_tokens IS 'Auth: Store of tokens used to refresh JWT tokens once they expire.';
+
+
+--
+-- Name: refresh_tokens_id_seq; Type: SEQUENCE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE SEQUENCE auth.refresh_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE auth.refresh_tokens_id_seq OWNER TO supabase_auth_admin;
+
+--
+-- Name: refresh_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER SEQUENCE auth.refresh_tokens_id_seq OWNED BY auth.refresh_tokens.id;
+
+
+--
+-- Name: saml_providers; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.saml_providers (
+    id uuid NOT NULL,
+    sso_provider_id uuid NOT NULL,
+    entity_id text NOT NULL,
+    metadata_xml text NOT NULL,
+    metadata_url text,
+    attribute_mapping jsonb,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    name_id_format text,
+    CONSTRAINT "entity_id not empty" CHECK ((char_length(entity_id) > 0)),
+    CONSTRAINT "metadata_url not empty" CHECK (((metadata_url = NULL::text) OR (char_length(metadata_url) > 0))),
+    CONSTRAINT "metadata_xml not empty" CHECK ((char_length(metadata_xml) > 0))
+);
+
+
+ALTER TABLE auth.saml_providers OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE saml_providers; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.saml_providers IS 'Auth: Manages SAML Identity Provider connections.';
+
+
+--
+-- Name: saml_relay_states; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.saml_relay_states (
+    id uuid NOT NULL,
+    sso_provider_id uuid NOT NULL,
+    request_id text NOT NULL,
+    for_email text,
+    redirect_to text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    flow_state_id uuid,
+    CONSTRAINT "request_id not empty" CHECK ((char_length(request_id) > 0))
+);
+
+
+ALTER TABLE auth.saml_relay_states OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE saml_relay_states; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.saml_relay_states IS 'Auth: Contains SAML Relay State information for each Service Provider initiated login.';
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.schema_migrations (
+    version character varying(255) NOT NULL
+);
+
+
+ALTER TABLE auth.schema_migrations OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE schema_migrations; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.schema_migrations IS 'Auth: Manages updates to the auth system.';
+
+
+--
+-- Name: sessions; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.sessions (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    factor_id uuid,
+    aal auth.aal_level,
+    not_after timestamp with time zone,
+    refreshed_at timestamp without time zone,
+    user_agent text,
+    ip inet,
+    tag text,
+    oauth_client_id uuid,
+    refresh_token_hmac_key text,
+    refresh_token_counter bigint,
+    scopes text,
+    CONSTRAINT sessions_scopes_length CHECK ((char_length(scopes) <= 4096))
+);
+
+
+ALTER TABLE auth.sessions OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE sessions; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.sessions IS 'Auth: Stores session data associated to a user.';
+
+
+--
+-- Name: COLUMN sessions.not_after; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.sessions.not_after IS 'Auth: Not after is a nullable column that contains a timestamp after which the session should be regarded as expired.';
+
+
+--
+-- Name: COLUMN sessions.refresh_token_hmac_key; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.sessions.refresh_token_hmac_key IS 'Holds a HMAC-SHA256 key used to sign refresh tokens for this session.';
+
+
+--
+-- Name: COLUMN sessions.refresh_token_counter; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.sessions.refresh_token_counter IS 'Holds the ID (counter) of the last issued refresh token.';
+
+
+--
+-- Name: sso_domains; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.sso_domains (
+    id uuid NOT NULL,
+    sso_provider_id uuid NOT NULL,
+    domain text NOT NULL,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    CONSTRAINT "domain not empty" CHECK ((char_length(domain) > 0))
+);
+
+
+ALTER TABLE auth.sso_domains OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE sso_domains; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.sso_domains IS 'Auth: Manages SSO email address domain mapping to an SSO Identity Provider.';
+
+
+--
+-- Name: sso_providers; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.sso_providers (
+    id uuid NOT NULL,
+    resource_id text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    disabled boolean,
+    CONSTRAINT "resource_id not empty" CHECK (((resource_id = NULL::text) OR (char_length(resource_id) > 0)))
+);
+
+
+ALTER TABLE auth.sso_providers OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE sso_providers; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.sso_providers IS 'Auth: Manages SSO identity provider information; see saml_providers for SAML.';
+
+
+--
+-- Name: COLUMN sso_providers.resource_id; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.sso_providers.resource_id IS 'Auth: Uniquely identifies a SSO provider according to a user-chosen resource ID (case insensitive), useful in infrastructure as code.';
+
+
+--
+-- Name: users; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.users (
+    instance_id uuid,
+    id uuid NOT NULL,
+    aud character varying(255),
+    role character varying(255),
+    email character varying(255),
+    encrypted_password character varying(255),
+    email_confirmed_at timestamp with time zone,
+    invited_at timestamp with time zone,
+    confirmation_token character varying(255),
+    confirmation_sent_at timestamp with time zone,
+    recovery_token character varying(255),
+    recovery_sent_at timestamp with time zone,
+    email_change_token_new character varying(255),
+    email_change character varying(255),
+    email_change_sent_at timestamp with time zone,
+    last_sign_in_at timestamp with time zone,
+    raw_app_meta_data jsonb,
+    raw_user_meta_data jsonb,
+    is_super_admin boolean,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    phone text DEFAULT NULL::character varying,
+    phone_confirmed_at timestamp with time zone,
+    phone_change text DEFAULT ''::character varying,
+    phone_change_token character varying(255) DEFAULT ''::character varying,
+    phone_change_sent_at timestamp with time zone,
+    confirmed_at timestamp with time zone GENERATED ALWAYS AS (LEAST(email_confirmed_at, phone_confirmed_at)) STORED,
+    email_change_token_current character varying(255) DEFAULT ''::character varying,
+    email_change_confirm_status smallint DEFAULT 0,
+    banned_until timestamp with time zone,
+    reauthentication_token character varying(255) DEFAULT ''::character varying,
+    reauthentication_sent_at timestamp with time zone,
+    is_sso_user boolean DEFAULT false NOT NULL,
+    deleted_at timestamp with time zone,
+    is_anonymous boolean DEFAULT false NOT NULL,
+    CONSTRAINT users_email_change_confirm_status_check CHECK (((email_change_confirm_status >= 0) AND (email_change_confirm_status <= 2)))
+);
+
+
+ALTER TABLE auth.users OWNER TO supabase_auth_admin;
+
+--
+-- Name: TABLE users; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON TABLE auth.users IS 'Auth: Stores user login data within a secure schema.';
+
+
+--
+-- Name: COLUMN users.is_sso_user; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON COLUMN auth.users.is_sso_user IS 'Auth: Set this column to true when the account comes from SSO. These accounts can have duplicate emails.';
+
+
+--
+-- Name: webauthn_challenges; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.webauthn_challenges (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid,
+    challenge_type text NOT NULL,
+    session_data jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    expires_at timestamp with time zone NOT NULL,
+    CONSTRAINT webauthn_challenges_challenge_type_check CHECK ((challenge_type = ANY (ARRAY['signup'::text, 'registration'::text, 'authentication'::text])))
+);
+
+
+ALTER TABLE auth.webauthn_challenges OWNER TO supabase_auth_admin;
+
+--
+-- Name: webauthn_credentials; Type: TABLE; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TABLE auth.webauthn_credentials (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    credential_id bytea NOT NULL,
+    public_key bytea NOT NULL,
+    attestation_type text DEFAULT ''::text NOT NULL,
+    aaguid uuid,
+    sign_count bigint DEFAULT 0 NOT NULL,
+    transports jsonb DEFAULT '[]'::jsonb NOT NULL,
+    backup_eligible boolean DEFAULT false NOT NULL,
+    backed_up boolean DEFAULT false NOT NULL,
+    friendly_name text DEFAULT ''::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    last_used_at timestamp with time zone
+);
+
+
+ALTER TABLE auth.webauthn_credentials OWNER TO supabase_auth_admin;
+
+--
+-- Name: body_metrics; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.body_metrics (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    measured_on date DEFAULT CURRENT_DATE NOT NULL,
+    weight_kg numeric,
+    waist_cm numeric,
+    body_fat_percent numeric,
+    height_cm numeric,
+    chest_cm numeric,
+    arm_cm numeric,
+    thigh_cm numeric,
+    notes text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    target_calories numeric
+);
+
+
+ALTER TABLE public.body_metrics OWNER TO postgres;
+
+--
+-- Name: cardio_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cardio_sessions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    session_id uuid,
+    performed_on date DEFAULT CURRENT_DATE NOT NULL,
+    cardio_type text NOT NULL,
+    duration_minutes numeric,
+    distance_km numeric,
+    incline_percent numeric,
+    speed_kph numeric,
+    rounds integer,
+    avg_heart_rate integer,
+    notes text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.cardio_sessions OWNER TO postgres;
+
+--
+-- Name: exercise_notes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.exercise_notes (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    exercise_id uuid NOT NULL,
+    note text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.exercise_notes OWNER TO postgres;
+
+--
+-- Name: exercise_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.exercise_sessions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    session_id uuid NOT NULL,
+    exercise_id uuid NOT NULL,
+    workout_exercise_id uuid,
+    "position" integer DEFAULT 0 NOT NULL,
+    target_sets integer,
+    target_rep_range text,
+    notes text,
+    completed boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.exercise_sessions OWNER TO postgres;
+
+--
+-- Name: exercises; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.exercises (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    slug text NOT NULL,
+    name text NOT NULL,
+    primary_muscle text,
+    secondary_muscles text[] DEFAULT '{}'::text[] NOT NULL,
+    category text,
+    equipment text,
+    setup text[] DEFAULT '{}'::text[] NOT NULL,
+    execution text[] DEFAULT '{}'::text[] NOT NULL,
+    breathing text,
+    cues text[] DEFAULT '{}'::text[] NOT NULL,
+    common_mistakes text[] DEFAULT '{}'::text[] NOT NULL,
+    should_feel text,
+    lower_back_notes text,
+    default_rest_seconds integer,
+    default_rir text,
+    default_rep_range text,
+    is_compound boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.exercises OWNER TO postgres;
+
+--
+-- Name: personal_records; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.personal_records (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    exercise_id uuid,
+    session_id uuid,
+    record_type text NOT NULL,
+    weight_kg numeric,
+    reps integer,
+    estimated_1rm numeric,
+    volume_kg numeric,
+    achieved_on date DEFAULT CURRENT_DATE NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.personal_records OWNER TO postgres;
+
+--
+-- Name: profiles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.profiles (
+    id uuid NOT NULL,
+    name text,
+    height_cm numeric,
+    current_weight_kg numeric,
+    starting_weight_kg numeric,
+    date_of_birth date,
+    training_experience text,
+    primary_goal text,
+    target_weight_kg numeric,
+    target_body_fat numeric,
+    weight_unit text DEFAULT 'kg'::text NOT NULL,
+    length_unit text DEFAULT 'cm'::text NOT NULL,
+    preferred_cardio text,
+    rest_timer_seconds integer DEFAULT 120 NOT NULL,
+    theme text DEFAULT 'dark'::text NOT NULL,
+    reminders_enabled boolean DEFAULT false NOT NULL,
+    onboarding_completed boolean DEFAULT false NOT NULL,
+    plan_start_date date,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.profiles OWNER TO postgres;
+
+--
+-- Name: sets; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sets (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    exercise_session_id uuid NOT NULL,
+    exercise_id uuid NOT NULL,
+    set_number integer NOT NULL,
+    weight_kg numeric,
+    reps integer,
+    rir numeric,
+    is_warmup boolean DEFAULT false NOT NULL,
+    completed boolean DEFAULT false NOT NULL,
+    note text,
+    performed_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.sets OWNER TO postgres;
+
+--
+-- Name: workout_days; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.workout_days (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    template_id uuid NOT NULL,
+    slug text NOT NULL,
+    day_of_week smallint,
+    name text NOT NULL,
+    focus text,
+    is_optional boolean DEFAULT false NOT NULL,
+    is_rest boolean DEFAULT false NOT NULL,
+    specialization text,
+    estimated_minutes_min integer,
+    estimated_minutes_max integer,
+    cardio_note text,
+    notes text,
+    sort_order integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.workout_days OWNER TO postgres;
+
+--
+-- Name: workout_exercises; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.workout_exercises (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    day_id uuid NOT NULL,
+    exercise_id uuid NOT NULL,
+    "position" integer NOT NULL,
+    sets integer NOT NULL,
+    rep_range text NOT NULL,
+    rep_min integer,
+    rep_max integer,
+    rir_target text,
+    rest_note text,
+    rest_seconds integer,
+    block text,
+    notes text
+);
+
+
+ALTER TABLE public.workout_exercises OWNER TO postgres;
+
+--
+-- Name: workout_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.workout_sessions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    day_id uuid,
+    title text NOT NULL,
+    session_date date DEFAULT CURRENT_DATE NOT NULL,
+    status text DEFAULT 'in_progress'::text NOT NULL,
+    started_at timestamp with time zone DEFAULT now() NOT NULL,
+    finished_at timestamp with time zone,
+    duration_seconds integer,
+    paused_seconds integer DEFAULT 0 NOT NULL,
+    mood text,
+    energy smallint,
+    difficulty smallint,
+    notes text,
+    is_deload boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.workout_sessions OWNER TO postgres;
+
+--
+-- Name: workout_templates; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.workout_templates (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    slug text NOT NULL,
+    name text NOT NULL,
+    description text,
+    notes text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.workout_templates OWNER TO postgres;
+
+--
+-- Name: buckets; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.buckets (
+    id text NOT NULL,
+    name text NOT NULL,
+    owner uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    public boolean DEFAULT false,
+    avif_autodetection boolean DEFAULT false,
+    file_size_limit bigint,
+    allowed_mime_types text[],
+    owner_id text,
+    type storage.buckettype DEFAULT 'STANDARD'::storage.buckettype NOT NULL
+);
+
+
+ALTER TABLE storage.buckets OWNER TO supabase_storage_admin;
+
+--
+-- Name: COLUMN buckets.owner; Type: COMMENT; Schema: storage; Owner: supabase_storage_admin
+--
+
+COMMENT ON COLUMN storage.buckets.owner IS 'Field is deprecated, use owner_id instead';
+
+
+--
+-- Name: buckets_analytics; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.buckets_analytics (
+    name text NOT NULL,
+    type storage.buckettype DEFAULT 'ANALYTICS'::storage.buckettype NOT NULL,
+    format text DEFAULT 'ICEBERG'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE storage.buckets_analytics OWNER TO supabase_storage_admin;
+
+--
+-- Name: buckets_vectors; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.buckets_vectors (
+    id text NOT NULL,
+    type storage.buckettype DEFAULT 'VECTOR'::storage.buckettype NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE storage.buckets_vectors OWNER TO supabase_storage_admin;
+
+--
+-- Name: migrations; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.migrations (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    hash character varying(40) NOT NULL,
+    executed_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE storage.migrations OWNER TO supabase_storage_admin;
+
+--
+-- Name: objects; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.objects (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    bucket_id text,
+    name text,
+    owner uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    last_accessed_at timestamp with time zone DEFAULT now(),
+    metadata jsonb,
+    path_tokens text[] GENERATED ALWAYS AS (string_to_array(name, '/'::text)) STORED,
+    version text,
+    owner_id text,
+    user_metadata jsonb
+);
+
+
+ALTER TABLE storage.objects OWNER TO supabase_storage_admin;
+
+--
+-- Name: COLUMN objects.owner; Type: COMMENT; Schema: storage; Owner: supabase_storage_admin
+--
+
+COMMENT ON COLUMN storage.objects.owner IS 'Field is deprecated, use owner_id instead';
+
+
+--
+-- Name: s3_multipart_uploads; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.s3_multipart_uploads (
+    id text NOT NULL,
+    in_progress_size bigint DEFAULT 0 NOT NULL,
+    upload_signature text NOT NULL,
+    bucket_id text NOT NULL,
+    key text NOT NULL COLLATE pg_catalog."C",
+    version text NOT NULL,
+    owner_id text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_metadata jsonb,
+    metadata jsonb
+);
+
+
+ALTER TABLE storage.s3_multipart_uploads OWNER TO supabase_storage_admin;
+
+--
+-- Name: s3_multipart_uploads_parts; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.s3_multipart_uploads_parts (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    upload_id text NOT NULL,
+    size bigint DEFAULT 0 NOT NULL,
+    part_number integer NOT NULL,
+    bucket_id text NOT NULL,
+    key text NOT NULL COLLATE pg_catalog."C",
+    etag text NOT NULL,
+    owner_id text,
+    version text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE storage.s3_multipart_uploads_parts OWNER TO supabase_storage_admin;
+
+--
+-- Name: vector_indexes; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.vector_indexes (
+    id text DEFAULT gen_random_uuid() NOT NULL,
+    name text NOT NULL COLLATE pg_catalog."C",
+    bucket_id text NOT NULL,
+    data_type text NOT NULL,
+    dimension integer NOT NULL,
+    distance_metric text NOT NULL,
+    metadata_configuration jsonb,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE storage.vector_indexes OWNER TO supabase_storage_admin;
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: supabase_migrations; Owner: postgres
+--
+
+CREATE TABLE supabase_migrations.schema_migrations (
+    version text NOT NULL,
+    statements text[],
+    name text,
+    created_by text,
+    idempotency_key text,
+    rollback text[]
+);
+
+
+ALTER TABLE supabase_migrations.schema_migrations OWNER TO postgres;
+
+--
+-- Name: refresh_tokens id; Type: DEFAULT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens ALTER COLUMN id SET DEFAULT nextval('auth.refresh_tokens_id_seq'::regclass);
+
+
+--
+-- Data for Name: audit_log_entries; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.audit_log_entries (instance_id, id, payload, created_at, ip_address) FROM stdin;
+\.
+
+
+--
+-- Data for Name: custom_oauth_providers; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.custom_oauth_providers (id, provider_type, identifier, name, client_id, client_secret, acceptable_client_ids, scopes, pkce_enabled, attribute_mapping, authorization_params, enabled, email_optional, issuer, discovery_url, skip_nonce_check, cached_discovery, discovery_cached_at, authorization_url, token_url, userinfo_url, jwks_uri, created_at, updated_at, custom_claims_allowlist) FROM stdin;
+\.
+
+
+--
+-- Data for Name: flow_state; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.flow_state (id, user_id, auth_code, code_challenge_method, code_challenge, provider_type, provider_access_token, provider_refresh_token, created_at, updated_at, authentication_method, auth_code_issued_at, invite_token, referrer, oauth_client_state_id, linking_target_id, email_optional) FROM stdin;
+\.
+
+
+--
+-- Data for Name: identities; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at, id) FROM stdin;
+cb1df7de-189c-41f5-a1b7-0483a54c9ff5	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	{"sub": "cb1df7de-189c-41f5-a1b7-0483a54c9ff5", "name": "Aakash Aggarwal", "email": "aakasha063@gmail.com", "email_verified": true, "phone_verified": false}	email	2026-08-13 09:55:48.932266+00	2026-08-13 09:55:48.932316+00	2026-08-13 09:55:48.932316+00	3b058d94-9bc7-430c-a09e-487707594015
+b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	{"sub": "b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f", "name": "Tushar verma", "email": "tusharverma1404@gmail.com", "email_verified": true, "phone_verified": false}	email	2026-08-14 07:12:48.807821+00	2026-08-14 07:12:48.807869+00	2026-08-14 07:12:48.807869+00	73af5192-b3b3-4e96-af27-dfd6095625ba
+3d9b618f-0054-461e-aa5d-f6551bbcea96	3d9b618f-0054-461e-aa5d-f6551bbcea96	{"sub": "3d9b618f-0054-461e-aa5d-f6551bbcea96", "name": "Tyagi", "email": "akashttyagi21@gmail.com", "email_verified": true, "phone_verified": false}	email	2026-08-16 17:44:42.050831+00	2026-08-16 17:44:42.050878+00	2026-08-16 17:44:42.050878+00	5580a503-cabf-47dd-9acd-5ed0c33e30c8
+101776080745949563819	7d507113-f400-45ce-9618-2bd079b4445d	{"iss": "https://accounts.google.com", "sub": "101776080745949563819", "name": "Hemraj Verma", "email": "hemrajverma5768@gmail.com", "picture": "https://lh3.googleusercontent.com/a/ACg8ocKAPVMZ22Mb6fNffb6FazqK2KAXkqn8FV2K9KPp9xfAbpoerA=s96-c", "full_name": "Hemraj Verma", "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocKAPVMZ22Mb6fNffb6FazqK2KAXkqn8FV2K9KPp9xfAbpoerA=s96-c", "provider_id": "101776080745949563819", "email_verified": true, "phone_verified": false}	google	2026-08-17 05:31:05.140085+00	2026-08-17 05:31:05.140138+00	2026-08-17 05:31:05.140138+00	ba96b3ec-247b-42ec-bee8-0987bfe415e0
+43db9f06-01c9-4d14-9fc6-c01f6b25761f	43db9f06-01c9-4d14-9fc6-c01f6b25761f	{"sub": "43db9f06-01c9-4d14-9fc6-c01f6b25761f", "name": "Dharshit", "email": "littletufanff@gmail.com", "email_verified": true, "phone_verified": false}	email	2026-08-14 11:57:39.818823+00	2026-08-14 11:57:39.818874+00	2026-08-14 11:57:39.818874+00	4355ad1d-2b62-43ec-98da-d09b2f6a626c
+102786455580092718507	eef54a00-fad7-4e80-b83b-eeff68c3807f	{"iss": "https://accounts.google.com", "sub": "102786455580092718507", "name": "Sonika Devi", "email": "sonikasaanjh@gmail.com", "picture": "https://lh3.googleusercontent.com/a/ACg8ocIbbq3epcmz8oSiQVSSrebNVI-vCcxvxQfGesREYERoU0uDXlIh=s96-c", "full_name": "Sonika Devi", "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocIbbq3epcmz8oSiQVSSrebNVI-vCcxvxQfGesREYERoU0uDXlIh=s96-c", "provider_id": "102786455580092718507", "email_verified": true, "phone_verified": false}	google	2026-08-17 18:03:53.432454+00	2026-08-17 18:03:53.432507+00	2026-08-17 18:15:08.490471+00	b49c16e8-307b-44ca-8679-a00050724bdd
+\.
+
+
+--
+-- Data for Name: instances; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.instances (id, uuid, raw_base_config, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mfa_amr_claims; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.mfa_amr_claims (session_id, created_at, updated_at, authentication_method, id) FROM stdin;
+a19c0c14-5361-41f7-be23-bb5b2404e1d9	2026-08-13 09:56:12.508879+00	2026-08-13 09:56:12.508879+00	otp	f5289ce1-665a-4a59-af29-479c8701ef13
+8722d1b3-eaa3-4c4d-b059-02e29fb8042f	2026-08-13 09:59:08.389956+00	2026-08-13 09:59:08.389956+00	password	7f5a0bf7-916f-4c0c-b71e-d84cdc76778f
+e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb	2026-08-13 10:09:01.204938+00	2026-08-13 10:09:01.204938+00	password	49b7d1d6-8bdd-4d5e-90a6-62f36df9f2d6
+3acc87a2-58e0-496a-b67b-0676b5f90230	2026-08-14 06:50:11.96352+00	2026-08-14 06:50:11.96352+00	password	c1099fc8-ec0b-4d82-9e52-afb1718468b1
+63c1540c-3d30-489d-998a-cd1e4326ff0b	2026-08-14 06:55:20.190098+00	2026-08-14 06:55:20.190098+00	password	4e1e64da-2806-4306-9b95-4a026703deb1
+763b91b8-7978-454a-8aec-afed0ed8172b	2026-08-14 07:13:08.00107+00	2026-08-14 07:13:08.00107+00	otp	2f0f60a7-d156-42f9-aa52-b76c2123f4d8
+d8d648da-c5ac-4158-98a4-0c733b05ea98	2026-08-16 17:44:56.326985+00	2026-08-16 17:44:56.326985+00	otp	bf261075-b221-4db0-b888-da90ea090b5e
+6c7925a1-63cb-4444-b784-0810374e9429	2026-08-16 17:46:06.684296+00	2026-08-16 17:46:06.684296+00	password	15d47e6d-55ad-4fe1-9f3d-63c84c28de13
+8fb5c6cb-20ed-4f0e-85c0-73d04f6466ab	2026-08-17 05:31:05.170566+00	2026-08-17 05:31:05.170566+00	oauth	b80d75a2-73ca-4f82-b095-916af2c272a6
+f592d132-b58d-4bfc-b521-aa78b09d8379	2026-08-17 11:22:45.919181+00	2026-08-17 11:22:45.919181+00	otp	e42a13c9-1860-4285-87b9-014a6a3df82b
+0edb4595-d6e5-4119-ab47-3242136f5523	2026-08-17 18:15:08.50388+00	2026-08-17 18:15:08.50388+00	oauth	c768793e-0ec3-4f63-9d8e-9ab4b0870acb
+\.
+
+
+--
+-- Data for Name: mfa_challenges; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.mfa_challenges (id, factor_id, created_at, verified_at, ip_address, otp_code, web_authn_session_data) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mfa_factors; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.mfa_factors (id, user_id, friendly_name, factor_type, status, created_at, updated_at, secret, phone, last_challenged_at, web_authn_credential, web_authn_aaguid, last_webauthn_challenge_data) FROM stdin;
+\.
+
+
+--
+-- Data for Name: oauth_authorizations; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.oauth_authorizations (id, authorization_id, client_id, user_id, redirect_uri, scope, state, resource, code_challenge, code_challenge_method, response_type, status, authorization_code, created_at, expires_at, approved_at, nonce) FROM stdin;
+\.
+
+
+--
+-- Data for Name: oauth_client_states; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.oauth_client_states (id, provider_type, code_verifier, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: oauth_clients; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.oauth_clients (id, client_secret_hash, registration_type, redirect_uris, grant_types, client_name, client_uri, logo_uri, created_at, updated_at, deleted_at, client_type, token_endpoint_auth_method) FROM stdin;
+\.
+
+
+--
+-- Data for Name: oauth_consents; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.oauth_consents (id, user_id, client_id, scopes, granted_at, revoked_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: one_time_tokens; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.one_time_tokens (id, user_id, token_type, token_hash, relates_to, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: refresh_tokens; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.refresh_tokens (instance_id, id, token, user_id, revoked, created_at, updated_at, parent, session_id) FROM stdin;
+00000000-0000-0000-0000-000000000000	74	m7pch3q3yyxx	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	f	2026-08-18 06:35:03.06117+00	2026-08-18 06:35:03.06117+00	mpww75jxsoic	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	2	fcfpbfm2y5mr	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-13 09:59:08.386161+00	2026-08-13 11:21:13.606439+00	\N	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	3	qmv2ewi72uxl	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-13 10:09:01.201134+00	2026-08-13 11:52:15.102975+00	\N	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	1	wskkakfw26qy	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-13 09:56:12.49797+00	2026-08-13 14:31:04.511063+00	\N	a19c0c14-5361-41f7-be23-bb5b2404e1d9
+00000000-0000-0000-0000-000000000000	6	s225iotfxyvf	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	f	2026-08-13 14:31:04.523724+00	2026-08-13 14:31:04.523724+00	wskkakfw26qy	a19c0c14-5361-41f7-be23-bb5b2404e1d9
+00000000-0000-0000-0000-000000000000	5	vr73ckuuksmg	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-13 11:52:15.10993+00	2026-08-14 06:36:36.631657+00	qmv2ewi72uxl	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	4	nibjojhu2cuq	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-13 11:21:13.6249+00	2026-08-14 06:39:47.063999+00	fcfpbfm2y5mr	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	7	ek6xb6arq3k2	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 06:36:36.653019+00	2026-08-14 07:35:05.267499+00	vr73ckuuksmg	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	12	bs2htgihp5dt	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 07:35:05.285481+00	2026-08-14 11:56:17.16932+00	ek6xb6arq3k2	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	11	we4mrjsq3vjv	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-14 07:13:07.986667+00	2026-08-14 14:48:36.179993+00	\N	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	13	aclxhclhzvbx	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 11:56:17.181493+00	2026-08-14 14:52:17.789515+00	bs2htgihp5dt	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	10	h4u7bxqxkc7i	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 06:55:20.182189+00	2026-08-15 04:34:56.325859+00	\N	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	8	ij2sjtumetwh	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 06:39:47.070072+00	2026-08-15 04:35:10.552739+00	nibjojhu2cuq	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	9	vuq5yuudpclk	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 06:50:11.943921+00	2026-08-15 04:35:47.07854+00	\N	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	16	whqs7dorirh7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 04:34:56.346096+00	2026-08-15 05:33:03.541947+00	h4u7bxqxkc7i	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	17	2nixuvb2xsir	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 04:35:10.554007+00	2026-08-15 05:45:13.410906+00	ij2sjtumetwh	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	19	2rrmmwwk4fd5	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 05:33:03.553275+00	2026-08-15 16:27:05.81258+00	whqs7dorirh7	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	21	27cjivwawrbk	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 16:27:05.82044+00	2026-08-15 17:52:03.913335+00	2rrmmwwk4fd5	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	22	y4d7flwotqm4	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 17:52:03.91797+00	2026-08-15 19:02:04.274911+00	27cjivwawrbk	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	14	2mocqohn2br4	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-14 14:48:36.193979+00	2026-08-16 05:55:30.14148+00	we4mrjsq3vjv	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	24	smo3cwl34wgi	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-16 05:55:30.150768+00	2026-08-16 07:23:18.928753+00	2mocqohn2br4	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	25	czizcoh2hvbx	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-16 07:23:18.937538+00	2026-08-16 08:32:57.98162+00	smo3cwl34wgi	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	23	c5mp32prmqey	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 19:02:04.28823+00	2026-08-16 09:30:11.351124+00	y4d7flwotqm4	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	20	27e5fqsonr7j	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 05:45:13.416631+00	2026-08-16 09:30:24.536692+00	2nixuvb2xsir	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	15	t6qkl35f6xco	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-14 14:52:17.79396+00	2026-08-16 09:51:01.517324+00	aclxhclhzvbx	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	27	7ojleaetol7l	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 09:30:11.358911+00	2026-08-16 10:51:57.530089+00	c5mp32prmqey	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	29	xxubs4webtd3	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 09:51:01.527507+00	2026-08-16 11:56:59.775385+00	t6qkl35f6xco	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	31	5mdigqffytl7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 11:56:59.784377+00	2026-08-16 17:41:58.359415+00	xxubs4webtd3	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	26	z32jzv7xh7s2	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-16 08:32:57.993842+00	2026-08-16 17:43:07.246977+00	czizcoh2hvbx	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	34	fuyechutuxe3	3d9b618f-0054-461e-aa5d-f6551bbcea96	f	2026-08-16 17:44:56.323746+00	2026-08-16 17:44:56.323746+00	\N	d8d648da-c5ac-4158-98a4-0c733b05ea98
+00000000-0000-0000-0000-000000000000	35	g5e5ad4gsb76	3d9b618f-0054-461e-aa5d-f6551bbcea96	f	2026-08-16 17:46:06.678369+00	2026-08-16 17:46:06.678369+00	\N	6c7925a1-63cb-4444-b784-0810374e9429
+00000000-0000-0000-0000-000000000000	30	dhtr6fc3o3gu	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 10:51:57.539877+00	2026-08-16 18:35:17.055589+00	7ojleaetol7l	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	33	3d53a6ino6de	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-16 17:43:07.252038+00	2026-08-16 19:22:39.176058+00	z32jzv7xh7s2	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	28	v5pjzjujajfp	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 09:30:24.537073+00	2026-08-16 19:29:29.463575+00	27e5fqsonr7j	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	32	2svcep6af2ht	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 17:41:58.367077+00	2026-08-17 05:29:13.885648+00	5mdigqffytl7	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	40	vvtu3z6mok5z	7d507113-f400-45ce-9618-2bd079b4445d	f	2026-08-17 05:31:05.167997+00	2026-08-17 05:31:05.167997+00	\N	8fb5c6cb-20ed-4f0e-85c0-73d04f6466ab
+00000000-0000-0000-0000-000000000000	36	riws2billp7q	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 18:35:17.07154+00	2026-08-17 05:47:41.086374+00	dhtr6fc3o3gu	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	18	tphpbqk3esxg	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-15 04:35:47.078931+00	2026-08-17 05:52:43.361539+00	vuq5yuudpclk	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	41	w22tpzugwe6v	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 05:47:41.090565+00	2026-08-17 07:17:08.486191+00	riws2billp7q	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	38	kf5lvsc6u5im	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-16 19:29:29.471509+00	2026-08-17 07:23:42.791757+00	v5pjzjujajfp	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	39	iqg75ox7tkus	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 05:29:13.904219+00	2026-08-17 11:23:18.298162+00	2svcep6af2ht	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	37	yqzqcwnubamw	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-16 19:22:39.18283+00	2026-08-17 11:32:00.834268+00	3d53a6ino6de	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	46	5ipyat2seb2g	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 11:23:18.300504+00	2026-08-17 12:21:29.280317+00	iqg75ox7tkus	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	45	lx3a5zrb3h2b	43db9f06-01c9-4d14-9fc6-c01f6b25761f	t	2026-08-17 11:22:45.90052+00	2026-08-17 12:22:08.993316+00	\N	f592d132-b58d-4bfc-b521-aa78b09d8379
+00000000-0000-0000-0000-000000000000	47	lzjd2iwgp3ko	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-17 11:32:00.841843+00	2026-08-17 12:30:04.119711+00	yqzqcwnubamw	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	48	ddwca3zv22dj	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 12:21:29.289223+00	2026-08-17 13:24:32.713489+00	5ipyat2seb2g	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	49	xjhuuvy2fx3o	43db9f06-01c9-4d14-9fc6-c01f6b25761f	t	2026-08-17 12:22:08.994164+00	2026-08-17 13:25:43.109901+00	lx3a5zrb3h2b	f592d132-b58d-4bfc-b521-aa78b09d8379
+00000000-0000-0000-0000-000000000000	50	5tgwcgd7bux2	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-17 12:30:04.12683+00	2026-08-17 13:32:45.118366+00	lzjd2iwgp3ko	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	43	3ggd64f5m7pt	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 07:17:08.504449+00	2026-08-17 14:09:06.629591+00	w22tpzugwe6v	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	42	4k3lnbzdsohk	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 05:52:43.36421+00	2026-08-17 18:45:01.495813+00	tphpbqk3esxg	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	44	k7l6bjzfedo2	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 07:23:42.799917+00	2026-08-17 19:23:57.52268+00	kf5lvsc6u5im	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	70	mpww75jxsoic	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 05:32:19.213226+00	2026-08-18 06:35:03.0562+00	eas26spv2tat	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	66	wkam4e3hzccv	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 04:17:36.288715+00	2026-08-18 06:52:24.926088+00	lyqmkrfg5pmw	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	72	3rnisizlhicu	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 06:04:13.851129+00	2026-08-18 07:06:00.262628+00	sx6xk3dx3uft	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	54	caf2kn4hg65a	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 14:09:06.645671+00	2026-08-17 15:08:24.061832+00	3ggd64f5m7pt	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	55	h2fuh6yu7bcj	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 15:08:24.071632+00	2026-08-17 16:41:33.545178+00	caf2kn4hg65a	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	73	2l6cgt2b2f7z	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 06:13:16.501574+00	2026-08-18 07:22:14.364614+00	xegh4kwop6v4	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	53	54zkkbjq7s2q	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-17 13:32:45.123244+00	2026-08-17 16:46:08.879273+00	5tgwcgd7bux2	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	77	latnwtb4bvrk	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	f	2026-08-18 07:22:14.370374+00	2026-08-18 07:22:14.370374+00	2l6cgt2b2f7z	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	56	hs7xoybbqqm7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 16:41:33.553257+00	2026-08-17 17:41:34.327229+00	h2fuh6yu7bcj	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	52	6nboks7sioos	43db9f06-01c9-4d14-9fc6-c01f6b25761f	t	2026-08-17 13:25:43.11096+00	2026-08-17 17:54:48.973107+00	xjhuuvy2fx3o	f592d132-b58d-4bfc-b521-aa78b09d8379
+00000000-0000-0000-0000-000000000000	75	4u5hrcaqei2f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 06:52:24.939565+00	2026-08-18 07:51:13.052231+00	wkam4e3hzccv	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	51	2wum4ooha2lc	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 13:24:32.727158+00	2026-08-17 18:10:33.34027+00	ddwca3zv22dj	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	79	dukw5kzd7xbl	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	f	2026-08-18 07:51:13.059721+00	2026-08-18 07:51:13.059721+00	4u5hrcaqei2f	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	62	ph3qhnncimt4	eef54a00-fad7-4e80-b83b-eeff68c3807f	f	2026-08-17 18:15:08.499734+00	2026-08-17 18:15:08.499734+00	\N	0edb4595-d6e5-4119-ab47-3242136f5523
+00000000-0000-0000-0000-000000000000	76	j5a6xqgqp4cv	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 07:06:00.267695+00	2026-08-18 08:05:27.062984+00	3rnisizlhicu	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	58	vbs3vhcjgw67	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 17:41:34.343004+00	2026-08-17 19:23:34.844668+00	hs7xoybbqqm7	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	80	o4aemisplcdk	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	f	2026-08-18 08:05:27.067874+00	2026-08-18 08:05:27.067874+00	j5a6xqgqp4cv	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	61	lyqmkrfg5pmw	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 18:10:33.35147+00	2026-08-18 04:17:36.273426+00	2wum4ooha2lc	e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb
+00000000-0000-0000-0000-000000000000	65	l2pq3kblhxmc	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 19:23:57.523319+00	2026-08-18 04:33:58.696258+00	k7l6bjzfedo2	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	64	5aivehg4qh4i	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 19:23:34.861581+00	2026-08-18 04:34:43.82572+00	vbs3vhcjgw67	63c1540c-3d30-489d-998a-cd1e4326ff0b
+00000000-0000-0000-0000-000000000000	57	t2w5gyb4dzce	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	t	2026-08-17 16:46:08.88483+00	2026-08-18 05:05:49.221353+00	54zkkbjq7s2q	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	69	srmtfbbhoy32	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	f	2026-08-18 05:05:49.234874+00	2026-08-18 05:05:49.234874+00	t2w5gyb4dzce	763b91b8-7978-454a-8aec-afed0ed8172b
+00000000-0000-0000-0000-000000000000	67	eas26spv2tat	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 04:33:58.701551+00	2026-08-18 05:32:19.202661+00	l2pq3kblhxmc	8722d1b3-eaa3-4c4d-b059-02e29fb8042f
+00000000-0000-0000-0000-000000000000	59	o4exuhmgntzt	43db9f06-01c9-4d14-9fc6-c01f6b25761f	t	2026-08-17 17:54:48.977216+00	2026-08-18 05:55:21.64395+00	6nboks7sioos	f592d132-b58d-4bfc-b521-aa78b09d8379
+00000000-0000-0000-0000-000000000000	71	viftlzx7yexj	43db9f06-01c9-4d14-9fc6-c01f6b25761f	f	2026-08-18 05:55:21.647722+00	2026-08-18 05:55:21.647722+00	o4exuhmgntzt	f592d132-b58d-4bfc-b521-aa78b09d8379
+00000000-0000-0000-0000-000000000000	63	sx6xk3dx3uft	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-17 18:45:01.507301+00	2026-08-18 06:04:13.846694+00	4k3lnbzdsohk	3acc87a2-58e0-496a-b67b-0676b5f90230
+00000000-0000-0000-0000-000000000000	68	xegh4kwop6v4	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	t	2026-08-18 04:34:43.833007+00	2026-08-18 06:13:16.493707+00	5aivehg4qh4i	63c1540c-3d30-489d-998a-cd1e4326ff0b
+\.
+
+
+--
+-- Data for Name: saml_providers; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.saml_providers (id, sso_provider_id, entity_id, metadata_xml, metadata_url, attribute_mapping, created_at, updated_at, name_id_format) FROM stdin;
+\.
+
+
+--
+-- Data for Name: saml_relay_states; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.saml_relay_states (id, sso_provider_id, request_id, for_email, redirect_to, created_at, updated_at, flow_state_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.schema_migrations (version) FROM stdin;
+20171026211738
+20171026211808
+20171026211834
+20180103212743
+20180108183307
+20180119214651
+20180125194653
+00
+20210710035447
+20210722035447
+20210730183235
+20210909172000
+20210927181326
+20211122151130
+20211124214934
+20211202183645
+20220114185221
+20220114185340
+20220224000811
+20220323170000
+20220429102000
+20220531120530
+20220614074223
+20220811173540
+20221003041349
+20221003041400
+20221011041400
+20221020193600
+20221021073300
+20221021082433
+20221027105023
+20221114143122
+20221114143410
+20221125140132
+20221208132122
+20221215195500
+20221215195800
+20221215195900
+20230116124310
+20230116124412
+20230131181311
+20230322519590
+20230402418590
+20230411005111
+20230508135423
+20230523124323
+20230818113222
+20230914180801
+20231027141322
+20231114161723
+20231117164230
+20240115144230
+20240214120130
+20240306115329
+20240314092811
+20240427152123
+20240612123726
+20240729123726
+20240802193726
+20240806073726
+20241009103726
+20250717082212
+20250731150234
+20250804100000
+20250901200500
+20250903112500
+20250904133000
+20250925093508
+20251007112900
+20251104100000
+20251111201300
+20251201000000
+20260115000000
+20260121000000
+20260219120000
+20260302000000
+20260625000000
+\.
+
+
+--
+-- Data for Name: sessions; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.sessions (id, user_id, created_at, updated_at, factor_id, aal, not_after, refreshed_at, user_agent, ip, tag, oauth_client_id, refresh_token_hmac_key, refresh_token_counter, scopes) FROM stdin;
+3acc87a2-58e0-496a-b67b-0676b5f90230	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-14 06:50:11.923983+00	2026-08-18 08:05:27.077926+00	\N	aal1	\N	2026-08-18 08:05:27.077824	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	122.183.49.134	\N	\N	\N	\N	\N
+a19c0c14-5361-41f7-be23-bb5b2404e1d9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-13 09:56:12.490543+00	2026-08-13 14:31:04.544467+00	\N	aal1	\N	2026-08-13 14:31:04.544329	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	122.183.42.22	\N	\N	\N	\N	\N
+d8d648da-c5ac-4158-98a4-0c733b05ea98	3d9b618f-0054-461e-aa5d-f6551bbcea96	2026-08-16 17:44:56.317448+00	2026-08-16 17:44:56.317448+00	\N	aal1	\N	\N	Mozilla/5.0 (iPhone; CPU iPhone OS 18_2_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/151.0.7922.112 Mobile/15E148 Safari/604.1	223.181.23.78	\N	\N	\N	\N	\N
+6c7925a1-63cb-4444-b784-0810374e9429	3d9b618f-0054-461e-aa5d-f6551bbcea96	2026-08-16 17:46:06.6762+00	2026-08-16 17:46:06.6762+00	\N	aal1	\N	\N	Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1	104.28.70.4	\N	\N	\N	\N	\N
+8fb5c6cb-20ed-4f0e-85c0-73d04f6466ab	7d507113-f400-45ce-9618-2bd079b4445d	2026-08-17 05:31:05.157617+00	2026-08-17 05:31:05.157617+00	\N	aal1	\N	\N	Go-http-client/2.0	34.6.158.52	\N	\N	\N	\N	\N
+0edb4595-d6e5-4119-ab47-3242136f5523	eef54a00-fad7-4e80-b83b-eeff68c3807f	2026-08-17 18:15:08.497752+00	2026-08-17 18:15:08.497752+00	\N	aal1	\N	\N	Go-http-client/2.0	34.141.225.3	\N	\N	\N	\N	\N
+763b91b8-7978-454a-8aec-afed0ed8172b	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	2026-08-14 07:13:07.965612+00	2026-08-18 05:05:49.251936+00	\N	aal1	\N	2026-08-18 05:05:49.251826	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36	49.36.138.45	\N	\N	\N	\N	\N
+f592d132-b58d-4bfc-b521-aa78b09d8379	43db9f06-01c9-4d14-9fc6-c01f6b25761f	2026-08-17 11:22:45.882225+00	2026-08-18 05:55:21.657425+00	\N	aal1	\N	2026-08-18 05:55:21.657319	Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36	152.59.84.122	\N	\N	\N	\N	\N
+8722d1b3-eaa3-4c4d-b059-02e29fb8042f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-13 09:59:08.38294+00	2026-08-18 06:35:03.077133+00	\N	aal1	\N	2026-08-18 06:35:03.077005	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36	122.183.49.134	\N	\N	\N	\N	\N
+63c1540c-3d30-489d-998a-cd1e4326ff0b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-14 06:55:20.1743+00	2026-08-18 07:22:14.377492+00	\N	aal1	\N	2026-08-18 07:22:14.377388	Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1	122.183.49.134	\N	\N	\N	\N	\N
+e1f0ecb0-8dc9-4401-b4bf-1b18efd546bb	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-13 10:09:01.193868+00	2026-08-18 07:51:13.071061+00	\N	aal1	\N	2026-08-18 07:51:13.07092	Mozilla/5.0 (iPhone; CPU iPhone OS 26_6_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/151.0.7922.112 Mobile/15E148 Safari/604.1	122.183.49.134	\N	\N	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: sso_domains; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.sso_domains (id, sso_provider_id, domain, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: sso_providers; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.sso_providers (id, resource_id, created_at, updated_at, disabled) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user, deleted_at, is_anonymous) FROM stdin;
+00000000-0000-0000-0000-000000000000	3d9b618f-0054-461e-aa5d-f6551bbcea96	authenticated	authenticated	akashttyagi21@gmail.com	$2a$10$vuT670eC.unJFBxWduNvueJnar1MRwgzVniq0SQLKcEM.2Yct0nei	2026-08-16 17:44:56.312173+00	\N		2026-08-16 17:44:42.057253+00		\N			\N	2026-08-16 17:46:06.676068+00	{"provider": "email", "providers": ["email"]}	{"sub": "3d9b618f-0054-461e-aa5d-f6551bbcea96", "name": "Tyagi", "email": "akashttyagi21@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-08-16 17:44:42.012376+00	2026-08-16 17:46:06.68181+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	7d507113-f400-45ce-9618-2bd079b4445d	authenticated	authenticated	hemrajverma5768@gmail.com	\N	2026-08-17 05:31:05.148582+00	\N		\N		\N			\N	2026-08-17 05:31:05.156435+00	{"provider": "google", "providers": ["google"]}	{"iss": "https://accounts.google.com", "sub": "101776080745949563819", "name": "Hemraj Verma", "email": "hemrajverma5768@gmail.com", "picture": "https://lh3.googleusercontent.com/a/ACg8ocKAPVMZ22Mb6fNffb6FazqK2KAXkqn8FV2K9KPp9xfAbpoerA=s96-c", "full_name": "Hemraj Verma", "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocKAPVMZ22Mb6fNffb6FazqK2KAXkqn8FV2K9KPp9xfAbpoerA=s96-c", "provider_id": "101776080745949563819", "email_verified": true, "phone_verified": false}	\N	2026-08-17 05:31:05.098879+00	2026-08-17 05:31:05.169967+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	authenticated	authenticated	aakasha063@gmail.com	$2a$10$tfwDuaz1iFegehnZZv7ddOP4ZYG6B5Abgmjn.WX4.2sDhHoTKJb7G	2026-08-13 09:56:12.486396+00	\N		2026-08-13 09:55:48.936936+00		\N			\N	2026-08-14 06:55:20.173603+00	{"provider": "email", "providers": ["email"]}	{"sub": "cb1df7de-189c-41f5-a1b7-0483a54c9ff5", "name": "Aakash Aggarwal", "email": "aakasha063@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-08-13 09:55:48.905589+00	2026-08-18 08:05:27.070127+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	authenticated	authenticated	tusharverma1404@gmail.com	$2a$10$mw4fEwrqAQ0G0Td4tX1kueB3pL3DDfE3XPJ8UFQ5ML546Hn4vU0ga	2026-08-14 07:13:07.952289+00	\N		2026-08-14 07:12:48.814581+00		\N			\N	2026-08-14 07:13:07.963164+00	{"provider": "email", "providers": ["email"]}	{"sub": "b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f", "name": "Tushar verma", "email": "tusharverma1404@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-08-14 07:12:48.755678+00	2026-08-18 05:05:49.240426+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	43db9f06-01c9-4d14-9fc6-c01f6b25761f	authenticated	authenticated	littletufanff@gmail.com	$2a$10$oHUHUhL9eByB7tMTE2vZhOtL4WZGkAmQ8cAEbFw.1Uj4eBJrN.eJi	2026-08-17 11:22:45.850857+00	\N		2026-08-17 11:21:35.951998+00		\N			\N	2026-08-17 11:22:45.881153+00	{"provider": "email", "providers": ["email"]}	{"sub": "43db9f06-01c9-4d14-9fc6-c01f6b25761f", "name": "Dharshit", "email": "littletufanff@gmail.com", "email_verified": true, "phone_verified": false}	\N	2026-08-14 11:57:39.765827+00	2026-08-18 05:55:21.649239+00	\N	\N			\N		0	\N		\N	f	\N	f
+00000000-0000-0000-0000-000000000000	eef54a00-fad7-4e80-b83b-eeff68c3807f	authenticated	authenticated	sonikasaanjh@gmail.com	\N	2026-08-17 18:03:53.438655+00	\N		\N		\N			\N	2026-08-17 18:15:08.49692+00	{"provider": "google", "providers": ["google"]}	{"iss": "https://accounts.google.com", "sub": "102786455580092718507", "name": "Sonika Devi", "email": "sonikasaanjh@gmail.com", "picture": "https://lh3.googleusercontent.com/a/ACg8ocIbbq3epcmz8oSiQVSSrebNVI-vCcxvxQfGesREYERoU0uDXlIh=s96-c", "full_name": "Sonika Devi", "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocIbbq3epcmz8oSiQVSSrebNVI-vCcxvxQfGesREYERoU0uDXlIh=s96-c", "provider_id": "102786455580092718507", "email_verified": true, "phone_verified": false}	\N	2026-08-17 18:03:53.403817+00	2026-08-17 18:15:08.501406+00	\N	\N			\N		0	\N		\N	f	\N	f
+\.
+
+
+--
+-- Data for Name: webauthn_challenges; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.webauthn_challenges (id, user_id, challenge_type, session_data, created_at, expires_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: webauthn_credentials; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
+--
+
+COPY auth.webauthn_credentials (id, user_id, credential_id, public_key, attestation_type, aaguid, sign_count, transports, backup_eligible, backed_up, friendly_name, created_at, updated_at, last_used_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: body_metrics; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.body_metrics (id, user_id, measured_on, weight_kg, waist_cm, body_fat_percent, height_cm, chest_cm, arm_cm, thigh_cm, notes, created_at, updated_at, target_calories) FROM stdin;
+b18af71c-e003-4233-be3d-7bd507b6f4f4	43db9f06-01c9-4d14-9fc6-c01f6b25761f	2026-08-17	60	81	\N	\N	\N	\N	\N	\N	2026-08-17 11:27:50.274261+00	2026-08-17 11:27:50.274261+00	\N
+dde92867-ec0f-4f03-b40a-0ef1f1daac19	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	2026-08-17	71	\N	\N	\N	\N	\N	\N	\N	2026-08-17 13:24:45.103805+00	2026-08-17 13:24:45.103805+00	\N
+ef8860d7-dffd-4023-976f-42d010bcfaa8	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	2026-08-17	74	\N	\N	\N	\N	\N	\N	\N	2026-08-17 13:24:47.660714+00	2026-08-17 13:24:47.660714+00	\N
+161d4e38-2bfb-4f65-95df-eb36c0d9d2c5	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	2026-08-17	74	\N	\N	\N	\N	\N	\N	\N	2026-08-17 13:26:29.21118+00	2026-08-17 13:26:29.21118+00	\N
+ac91a3ed-1de1-476b-b5df-15f680f06b8d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-17	78	45	\N	\N	\N	\N	\N	\N	2026-08-17 13:28:28.161757+00	2026-08-17 13:28:28.161757+00	\N
+41e294a2-0143-446f-93dd-8abf7c61a8ef	eef54a00-fad7-4e80-b83b-eeff68c3807f	2026-08-17	56	71	\N	\N	\N	\N	\N	\N	2026-08-17 18:05:13.327796+00	2026-08-17 18:05:13.327796+00	\N
+c4a7d215-7a08-4406-9849-ffb0a4d22eb8	eef54a00-fad7-4e80-b83b-eeff68c3807f	2026-08-17	56	\N	\N	\N	\N	\N	\N	\N	2026-08-17 18:13:08.802521+00	2026-08-17 18:13:08.802521+00	2680
+253a942f-791a-40e7-b22b-3826081e3d0f	eef54a00-fad7-4e80-b83b-eeff68c3807f	2026-08-17	\N	71	1.5	172.72	\N	\N	\N	\N	2026-08-17 18:13:50.652335+00	2026-08-17 18:13:50.652335+00	\N
+12c5ed5e-093c-4ed8-a5cb-0212c22bd529	eef54a00-fad7-4e80-b83b-eeff68c3807f	2026-08-17	56	\N	\N	\N	\N	\N	\N	\N	2026-08-17 18:14:06.316602+00	2026-08-17 18:14:06.316602+00	2660
+09eafa22-2fbd-486a-9a64-3047092f880d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-18	\N	76.2	10.4	182.88	\N	\N	\N	\N	2026-08-17 18:30:06.491189+00	2026-08-17 18:30:06.491189+00	\N
+3a3e80f9-a546-4bf1-95fd-c7b2583d0783	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-18	78	\N	\N	\N	\N	\N	\N	\N	2026-08-17 18:30:37.101996+00	2026-08-17 18:30:37.101996+00	2920
+e18529b0-444f-4283-ae1e-ee90883b159b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-18	78	30	\N	\N	\N	\N	\N	\N	2026-08-17 18:31:04.557456+00	2026-08-17 18:31:04.557456+00	\N
+3e80fedc-18b8-4a4c-b7da-d6f3a8ffb60b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-18	77.5	76	\N	\N	\N	\N	\N	\N	2026-08-18 05:50:34.922862+00	2026-08-18 05:50:34.922862+00	\N
+272187f7-eb6d-4534-9405-049c0662f896	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	2026-08-18	78	78	12.3	184	\N	\N	\N	\N	2026-08-18 06:03:39.689783+00	2026-08-18 06:10:21.260198+00	\N
+\.
+
+
+--
+-- Data for Name: cardio_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cardio_sessions (id, user_id, session_id, performed_on, cardio_type, duration_minutes, distance_km, incline_percent, speed_kph, rounds, avg_heart_rate, notes, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: exercise_notes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.exercise_notes (id, user_id, exercise_id, note, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: exercise_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.exercise_sessions (id, user_id, session_id, exercise_id, workout_exercise_id, "position", target_sets, target_rep_range, notes, completed, created_at) FROM stdin;
+bb6fbac0-ac05-4e7a-83b5-bf1d82ffc5f9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	\N	1	4	8-10	\N	f	2026-08-13 09:56:57.101538+00
+b5e21eaa-cbc0-4220-838d-69873d308315	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	4ab9e5f4-ebc6-4902-b4b6-404097741b79	\N	2	4	12-15	\N	f	2026-08-13 09:56:57.101538+00
+47f9e303-f918-4bd3-acfe-4ea545815739	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	4518aa4b-304f-4cba-a14e-b060f69c8fa8	\N	3	3	15-20	\N	f	2026-08-13 09:56:57.101538+00
+85e460e2-c88d-49f2-97ce-923937e7c341	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	0132c471-e57c-4d7a-b379-555b0c2ac506	\N	4	3	10-12	\N	f	2026-08-13 09:56:57.101538+00
+ffa44877-9085-4d6e-942e-bb2b45f2eaf6	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	ce51a877-1fe3-49ca-b7a1-cb4a395db4a9	\N	5	3	10-12	\N	f	2026-08-13 09:56:57.101538+00
+0a1cf148-53ec-49a9-90f2-6e17e8a49ce0	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	\N	6	3	12-15	\N	f	2026-08-13 09:56:57.101538+00
+dee0c15a-2cdf-4ff4-81fb-479c0aae6792	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	e59803b7-57be-4539-ba4e-714220e8a369	\N	7	2	10-12	\N	f	2026-08-13 09:56:57.101538+00
+7fa19bdb-9b9e-4ba0-a2be-3d84205a9268	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	3f632d04-ac4b-43f8-a97d-b90b81d40027	b0bface7-5949-43bc-b105-0cb93d7657fc	\N	8	2	15-20	\N	f	2026-08-13 09:56:57.101538+00
+314855ff-c0e2-43e3-b542-2644cb599acc	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	cb07506b-1629-425c-858f-092ac50d3132	\N	1	4	8-10	\N	f	2026-08-13 10:09:37.176414+00
+7734730e-9503-4605-9db7-2737bbf2b5a5	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	6db961ec-fe29-4e96-b8e3-e37f36b85cab	\N	2	3	8-12	\N	f	2026-08-13 10:09:37.176414+00
+50fc3e34-0652-40a6-8337-2b4db678f321	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	b0bface7-5949-43bc-b105-0cb93d7657fc	\N	3	4	12-15	\N	f	2026-08-13 10:09:37.176414+00
+946a8440-6967-4414-8762-259f5c2709da	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	f21231e0-3b85-4604-9b23-f9d37d399d65	\N	4	3	12-15	\N	f	2026-08-13 10:09:37.176414+00
+cd85743f-ff28-4a6f-bd69-6b90ae2347b8	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	\N	5	3	10-12	\N	f	2026-08-13 10:09:37.176414+00
+f833b97e-c5a3-4de5-9450-c1004bc729fb	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	\N	6	3	12-15	\N	f	2026-08-13 10:09:37.176414+00
+4172f810-fd2e-4b01-a610-291ea3a50d8d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	8fa3708c-f14f-4f77-88ce-b3555bbc99af	\N	7	3	12/side	\N	f	2026-08-13 10:09:37.176414+00
+cfb1556a-f804-4470-8981-ed9516df25cb	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	982a0879-5e4f-42f4-b58f-5099de3507ce	\N	8	1	15-20 min	\N	f	2026-08-13 10:09:37.176414+00
+bca9f767-9e8c-4eff-8bec-8ba4442699d9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	e5c60e5c-6494-48a4-9a7e-9b9defc75f3d	\N	1	3	8-10	\N	f	2026-08-13 10:11:41.268904+00
+98af3b6d-c749-480d-923c-b722cd465143	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	4ab9e5f4-ebc6-4902-b4b6-404097741b79	\N	2	4	12-15	\N	f	2026-08-13 10:11:41.268904+00
+945144a5-9762-4e3a-8400-0558cb578d6f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	b0bface7-5949-43bc-b105-0cb93d7657fc	\N	3	3	15-20	\N	f	2026-08-13 10:11:41.268904+00
+a61ac9ec-c863-4d4c-8b3e-c226e76865f7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	64fc2b70-491f-4abf-a231-18c4631f57a8	\N	4	4	15-20	\N	f	2026-08-13 10:11:41.268904+00
+1fbf0e2f-c407-4c35-92d5-62fc401c3f7b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	\N	5	3	15-20	\N	f	2026-08-13 10:11:41.268904+00
+28242641-1b5b-4679-92f1-056025636e23	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	982a0879-5e4f-42f4-b58f-5099de3507ce	\N	6	1	15-20 min	\N	f	2026-08-13 10:11:41.268904+00
+6b86a130-03ea-4d7c-bc2b-f9d9c1cf15e9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	9851fd78-07da-4a45-ad50-077b1396b1be	\N	1	4	8-10	\N	f	2026-08-14 06:37:05.355157+00
+05bca148-9d05-481c-a971-c798c46d0260	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	\N	2	4	8-12	\N	f	2026-08-14 06:37:05.355157+00
+d7f2b760-9dd9-4a12-a305-cc2cb296f8c1	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	caa90bf6-0e87-4962-8342-0156731af321	\N	3	3	12-15	\N	f	2026-08-14 06:37:05.355157+00
+25e7923b-4aea-4aa3-9486-0a240be5af8d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	64fc2b70-491f-4abf-a231-18c4631f57a8	\N	4	4	12-15	\N	f	2026-08-14 06:37:05.355157+00
+574b6724-b121-4602-b11c-7dbcb650c1b2	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	\N	5	2	15-20	\N	f	2026-08-14 06:37:05.355157+00
+0f141492-e2bc-48cf-b1aa-1d57e16e98be	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	4864bcd3-ac45-48fc-b9af-2cc15556bfcc	\N	6	3	8-12	\N	f	2026-08-14 06:37:05.355157+00
+329592e7-6d02-466c-9dac-73cf47a8ef06	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	91da5f94-a91f-4630-a362-0b2555c15e2b	\N	7	3	10-15	\N	f	2026-08-14 06:37:05.355157+00
+184fa3b7-10f4-4336-8425-95ee0dd5460a	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	57c25d2a-01b6-4136-875b-49e62770ea1d	\N	8	3	10-15	\N	f	2026-08-14 06:37:05.355157+00
+13683436-553b-417e-b399-2f3a79aa9dbf	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	80e0900f-c21a-40c7-a20f-632769eab30b	\N	1	4	8-12	\N	f	2026-08-14 06:37:37.594489+00
+6ec6a184-6a51-4294-9f10-87dc1add60b6	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	444c4727-1be9-4be6-a9f6-565a18283bf1	\N	2	3	8-10	\N	f	2026-08-14 06:37:37.594489+00
+e89e32b0-0966-470d-9fec-210a62609223	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	c73065c9-cfc2-4b47-b96e-a2ea51271b7a	\N	3	4	10-12	\N	f	2026-08-14 06:37:37.594489+00
+ecbbde82-81c9-4a23-b265-f8dfcca10f12	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	91e90c0f-9b65-4614-acd1-299bcdc83fc3	\N	4	3	8-10 / leg	\N	f	2026-08-14 06:37:37.594489+00
+8ec4638b-a33e-489c-af47-15e4ca7eb25d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	8525ccdd-f1ce-4868-921b-1ea953365500	\N	5	3	12-15	\N	f	2026-08-14 06:37:37.594489+00
+396520f9-5106-4ede-80fd-a002a65f3a54	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	\N	6	4	12-15	\N	f	2026-08-14 06:37:37.594489+00
+fde14fb2-bf24-4019-8057-dbda10eb41dc	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	91da5f94-a91f-4630-a362-0b2555c15e2b	\N	7	3	10-15	\N	f	2026-08-14 06:37:37.594489+00
+cce73178-0dde-4fe4-a11b-72a2073938f2	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	57c25d2a-01b6-4136-875b-49e62770ea1d	\N	8	3	10-15	\N	f	2026-08-14 06:37:37.594489+00
+afd10c2e-1448-44c3-ad24-d2e0d91aeb26	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	982a0879-5e4f-42f4-b58f-5099de3507ce	\N	9	1	20 min	\N	f	2026-08-14 06:37:37.594489+00
+eaa1ad36-ab9d-4b33-a8e8-ba6c3a8c1525	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	dbe692d8-5484-4d52-9ab2-c23d4999fc19	\N	1	3	8-10	\N	f	2026-08-14 06:38:50.259872+00
+9bdbffd8-4578-4923-afd8-1e6f526fad94	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	10933878-e0d9-42d9-9ce1-fae93b2d78b8	\N	2	4	8-10	\N	f	2026-08-14 06:38:50.259872+00
+8f92e39f-01b4-43f1-9f01-e2df05bdb43e	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	486498b6-0887-4735-a5b9-318d5c448874	\N	3	3	12-15	\N	f	2026-08-14 06:38:50.259872+00
+17f20d96-b173-4ba4-a324-475d3afae37b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	\N	4	3	8-12	\N	f	2026-08-14 06:38:50.259872+00
+0ce036ba-6ac6-47a5-bd6d-d7eb110152b3	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	fbf0ad46-e549-4dcf-9b5f-f102b4657ba0	\N	5	3	8-12	\N	f	2026-08-14 06:38:50.259872+00
+f160b752-14f4-4829-826c-9930dca7caf1	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	b0bface7-5949-43bc-b105-0cb93d7657fc	\N	6	3	15-20	\N	f	2026-08-14 06:38:50.259872+00
+6ebcbd9e-61b5-4ff0-9cc2-29243d4e98c2	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	\N	7	4	12-15	\N	f	2026-08-14 06:38:50.259872+00
+554a632e-0c35-4a23-b829-de1b1be966bd	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	91da5f94-a91f-4630-a362-0b2555c15e2b	\N	8	3	10-15	\N	f	2026-08-14 06:38:50.259872+00
+132627c3-11dc-4ed0-bca6-3d2703245188	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	8fa3708c-f14f-4f77-88ce-b3555bbc99af	\N	9	3	12/side	\N	f	2026-08-14 06:38:50.259872+00
+79a63b60-7901-4f27-b554-d46296508590	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	982a0879-5e4f-42f4-b58f-5099de3507ce	\N	10	1	20 min	\N	f	2026-08-14 06:38:50.259872+00
+c021f850-ff49-431d-9d36-b173d08b1e9f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	dbe692d8-5484-4d52-9ab2-c23d4999fc19	00752111-7307-4c09-982a-2b45831fd95a	1	3	8-10	\N	f	2026-08-14 06:53:31.76773+00
+2e2cbc33-b363-49cd-b3f6-a747d9392dd7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	10933878-e0d9-42d9-9ce1-fae93b2d78b8	65ac9b00-8cbd-4a90-840b-50ccfd727f07	2	4	8-10	\N	f	2026-08-14 06:53:31.76773+00
+b6673405-01ea-4eae-a4f4-cb85e716cff1	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	486498b6-0887-4735-a5b9-318d5c448874	9d4e85a6-ce05-4696-9c6d-3ec39d795dc3	3	3	12-15	\N	f	2026-08-14 06:53:31.76773+00
+d2ff51cf-c57e-4864-a51b-5fa24db6c587	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	131fefbe-cb8d-484b-a653-82a71e5fc674	4	3	8-12	\N	f	2026-08-14 06:53:31.76773+00
+80e317ac-2ea2-4449-b7cb-f446c927bbbb	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	fbf0ad46-e549-4dcf-9b5f-f102b4657ba0	5869dcb2-8244-4026-b560-ff42d0244a24	5	3	8-12	\N	f	2026-08-14 06:53:31.76773+00
+fca2a6bf-f100-49c8-9946-59df80a95b8b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	b0bface7-5949-43bc-b105-0cb93d7657fc	af327ae2-aae9-4c87-8893-4ffbf5f229ff	6	3	15-20	\N	f	2026-08-14 06:53:31.76773+00
+80617352-a849-4286-b051-1f1493a53019	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	8dca3ca3-89c6-46b1-bc87-bd57073c7452	7	4	12-15	\N	f	2026-08-14 06:53:31.76773+00
+0b7dc7fa-bb62-4876-a1c3-a7a14f7b57f8	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	8fa3708c-f14f-4f77-88ce-b3555bbc99af	55115245-e2af-4bd0-b1dd-e26fa60a67d1	8	3	10-12 / side	\N	f	2026-08-14 06:53:31.76773+00
+0251d483-1ee2-4381-9d65-2e291b09851d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	67ae5c1c-1e53-466d-ae1c-7dbe2161a679	982a0879-5e4f-42f4-b58f-5099de3507ce	e026101c-23be-4fa5-81a4-dc8b682084f9	9	1	20 min	\N	f	2026-08-14 06:53:31.76773+00
+40263634-6d21-4c81-be8e-77b42739a640	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-14 07:04:30.422006+00
+7029b904-d3b1-4415-8be7-9a87fd674824	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-14 07:04:30.422006+00
+048a6e29-165b-41d5-89b9-7bd35d4db324	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-14 07:04:30.422006+00
+afe0dc72-cbee-4768-89ea-731849ee551d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-14 07:04:30.422006+00
+241d403d-a3ec-479d-b2b5-df9080a0b8f1	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-14 07:04:30.422006+00
+813069d2-7cbc-4ad0-a220-a2d20eacc237	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-14 07:04:30.422006+00
+e17b4b30-fed9-4cb6-8a0e-f5329d1ebf13	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-14 07:04:30.422006+00
+38d82ed4-351c-4f42-9c6f-33946df2036c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	296bc519-76a0-48eb-88cb-e5718682513c	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-14 07:04:30.422006+00
+8b53ed05-3ed2-4f58-a464-378f174ad513	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-14 14:49:02.932352+00
+cc946853-1e1a-479d-afb0-49fd9f6b2d33	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-14 14:49:02.932352+00
+743f94c0-5c0d-4072-b868-96cfb7ed6843	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-14 14:49:02.932352+00
+79a15481-af10-4542-9dce-c6ecef52646c	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-14 14:49:02.932352+00
+438c34ae-1fd6-4473-9713-58f7cf3dbb53	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-14 14:49:02.932352+00
+11af7eb3-03c5-4314-8c43-372805cb794a	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-14 14:49:02.932352+00
+896c0d26-4ed9-4846-94e5-8c62fc87d19f	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-14 14:49:02.932352+00
+a3be4c05-c432-4857-8ca8-9957e192fb81	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-14 14:49:02.932352+00
+def8f4f7-7427-42f0-a5e4-388d4108e5b3	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	80e0900f-c21a-40c7-a20f-632769eab30b	cdc7b925-c9eb-48b6-b29c-f3dbdf0e404c	1	4	8-12	\N	f	2026-08-14 14:52:01.155137+00
+aca89727-4a3a-4c44-b660-f5a92dd5f386	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	444c4727-1be9-4be6-a9f6-565a18283bf1	b3b175f9-e456-4410-9f40-4338b0c18dce	2	3	8-10	\N	f	2026-08-14 14:52:01.155137+00
+c6024de1-bcc7-4472-8130-7ee61ad408ca	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	c73065c9-cfc2-4b47-b96e-a2ea51271b7a	ef799a9e-98fc-47c6-a7a6-5f17ff63a90c	3	4	10-12	\N	f	2026-08-14 14:52:01.155137+00
+dbf48244-c738-4702-ba22-34e2e35df5f5	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	91e90c0f-9b65-4614-acd1-299bcdc83fc3	2b0382ea-5d7c-4ab3-b43e-16b18197ec17	4	3	8-10 / leg	\N	f	2026-08-14 14:52:01.155137+00
+ad3b53b7-c5db-4ef1-9a48-f0da0f22113d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	8525ccdd-f1ce-4868-921b-1ea953365500	5432b490-6ea9-4423-ab62-148ac9095f8c	5	3	12-15	\N	f	2026-08-14 14:52:01.155137+00
+0f6ff018-3bba-4a9f-9a55-fce0aac6b4de	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	2a431573-f489-4a2a-87c3-da9fc41cb33e	6	4	12-15	\N	f	2026-08-14 14:52:01.155137+00
+5f2b059b-6a11-4487-9ad0-ce380466da1a	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	9ec3e3a5-e0db-4c6c-8cf2-e07831091dd9	20e7ef92-f621-4a10-ab13-d43d36941a66	7	3	8-10 / side	\N	f	2026-08-14 14:52:01.155137+00
+8548976c-cf0a-4ea5-aad7-722fc1f55eb2	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	93891774-32cc-47a6-bb5f-86e74ea39346	982a0879-5e4f-42f4-b58f-5099de3507ce	62ab592d-4c68-4601-a376-4cb8d7c4862e	8	1	20 min	\N	f	2026-08-14 14:52:01.155137+00
+96b230f6-8667-440c-ae11-5beab341441c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	e5c60e5c-6494-48a4-9a7e-9b9defc75f3d	55519651-9ede-4f35-b107-74441772d601	1	3	8-10	\N	f	2026-08-14 14:53:08.497356+00
+23989280-dbd2-4b14-8bfb-6881b64591c0	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	4ab9e5f4-ebc6-4902-b4b6-404097741b79	e0d08e50-dbff-4410-9ec5-dda5dc4fa04b	2	4	12-15	\N	f	2026-08-14 14:53:08.497356+00
+68e226c7-490a-4c2f-b939-2789edec6a78	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	b0bface7-5949-43bc-b105-0cb93d7657fc	290e8594-212c-48dc-9673-4354482db37c	3	3	15-20	\N	f	2026-08-14 14:53:08.497356+00
+7204939d-ecb4-4283-bd85-7ac832a3bf1f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	64fc2b70-491f-4abf-a231-18c4631f57a8	9e6c18e5-0dcf-4672-960d-78983c396111	4	4	15-20	\N	f	2026-08-14 14:53:08.497356+00
+9acee284-af74-4484-90bb-6fdc9d33ee51	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	20d1865a-70c3-4b91-9384-8d4e949593fe	5	3	15-20	\N	f	2026-08-14 14:53:08.497356+00
+e30f97e7-d4fa-4f5e-880f-7f391d5363f5	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	982a0879-5e4f-42f4-b58f-5099de3507ce	6391fd85-cae0-4a88-87bd-1b43476bdd04	6	1	15-20 min	\N	f	2026-08-14 14:53:08.497356+00
+5eafa620-1589-4bc6-ac0f-ce5be1f52c1b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	80e0900f-c21a-40c7-a20f-632769eab30b	cdc7b925-c9eb-48b6-b29c-f3dbdf0e404c	1	4	8-12	\N	f	2026-08-16 10:04:38.933005+00
+c7a79964-cd99-415d-851f-e51cd079f433	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	444c4727-1be9-4be6-a9f6-565a18283bf1	b3b175f9-e456-4410-9f40-4338b0c18dce	2	3	8-10	\N	f	2026-08-16 10:04:38.933005+00
+3a411dc0-468f-457b-890f-a0215d0d43e1	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	c73065c9-cfc2-4b47-b96e-a2ea51271b7a	ef799a9e-98fc-47c6-a7a6-5f17ff63a90c	3	4	10-12	\N	f	2026-08-16 10:04:38.933005+00
+110ca63b-d2da-4371-853d-9af1894d67a3	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	91e90c0f-9b65-4614-acd1-299bcdc83fc3	2b0382ea-5d7c-4ab3-b43e-16b18197ec17	4	3	8-10 / leg	\N	f	2026-08-16 10:04:38.933005+00
+74cf2fc5-a8d1-4d7e-80fe-251e71fcd25d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	8525ccdd-f1ce-4868-921b-1ea953365500	5432b490-6ea9-4423-ab62-148ac9095f8c	5	3	12-15	\N	f	2026-08-16 10:04:38.933005+00
+ff7101af-6a39-4a45-9ff7-9c15e600def8	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	2a431573-f489-4a2a-87c3-da9fc41cb33e	6	4	12-15	\N	f	2026-08-16 10:04:38.933005+00
+4af83ac9-59d3-472d-a982-94292c733345	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	9ec3e3a5-e0db-4c6c-8cf2-e07831091dd9	20e7ef92-f621-4a10-ab13-d43d36941a66	7	3	8-10 / side	\N	f	2026-08-16 10:04:38.933005+00
+21d11304-b486-4530-9045-f7d2b43f58fe	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	1418eee3-3de8-4572-b865-61984be64607	982a0879-5e4f-42f4-b58f-5099de3507ce	62ab592d-4c68-4601-a376-4cb8d7c4862e	8	1	20 min	\N	f	2026-08-16 10:04:38.933005+00
+acd45fab-fee8-4758-9bb2-e66b90e6a66a	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-16 17:45:17.633546+00
+fbbc0648-2fb2-426a-aa64-aaf96cae297e	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-16 17:45:17.633546+00
+fda1479e-27b8-4d50-9a78-061d747748f1	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-16 17:45:17.633546+00
+5c680892-adde-4bd0-b3f3-ca5c16457035	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-16 17:45:17.633546+00
+3009691b-29f9-4f1b-9c36-17267bddcbea	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-16 17:45:17.633546+00
+d0270018-5087-4946-b52d-a48117490145	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-16 17:45:17.633546+00
+0d4dbed3-9ee6-43e4-bbdf-d24b6bc376b6	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-16 17:45:17.633546+00
+25b56a89-3df1-4c28-a838-272385c4df53	3d9b618f-0054-461e-aa5d-f6551bbcea96	b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-16 17:45:17.633546+00
+331ed87e-156c-464b-8d2e-e067ae41ef9e	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	dbe692d8-5484-4d52-9ab2-c23d4999fc19	00752111-7307-4c09-982a-2b45831fd95a	1	3	8-10	\N	f	2026-08-16 17:45:29.641749+00
+b7f5a647-5a46-4311-94f7-98c4cf124c95	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	10933878-e0d9-42d9-9ce1-fae93b2d78b8	65ac9b00-8cbd-4a90-840b-50ccfd727f07	2	4	8-10	\N	f	2026-08-16 17:45:29.641749+00
+25c1170a-b2cf-4277-a778-8c5a18f81e08	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	486498b6-0887-4735-a5b9-318d5c448874	9d4e85a6-ce05-4696-9c6d-3ec39d795dc3	3	3	12-15	\N	f	2026-08-16 17:45:29.641749+00
+88b5649f-8a30-4249-8a67-d3c3d524b241	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	131fefbe-cb8d-484b-a653-82a71e5fc674	4	3	8-12	\N	f	2026-08-16 17:45:29.641749+00
+95c53715-5635-4812-aa37-e8cea799c9b6	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	fbf0ad46-e549-4dcf-9b5f-f102b4657ba0	5869dcb2-8244-4026-b560-ff42d0244a24	5	3	8-12	\N	f	2026-08-16 17:45:29.641749+00
+afe0ff56-2753-46a2-bafe-be6158b0058d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	b0bface7-5949-43bc-b105-0cb93d7657fc	af327ae2-aae9-4c87-8893-4ffbf5f229ff	6	3	15-20	\N	f	2026-08-16 17:45:29.641749+00
+eba859be-30e3-4de1-a5f2-4096f860cb76	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	8dca3ca3-89c6-46b1-bc87-bd57073c7452	7	4	12-15	\N	f	2026-08-16 17:45:29.641749+00
+b67720e3-b547-443c-ab2a-3fd7f2704d4e	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	8fa3708c-f14f-4f77-88ce-b3555bbc99af	55115245-e2af-4bd0-b1dd-e26fa60a67d1	8	3	10-12 / side	\N	f	2026-08-16 17:45:29.641749+00
+8f8f410a-4f7b-4ea2-9fac-bf4ee76aa399	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	62da9976-d532-43a6-aa75-c599007e5aac	982a0879-5e4f-42f4-b58f-5099de3507ce	e026101c-23be-4fa5-81a4-dc8b682084f9	9	1	20 min	\N	f	2026-08-16 17:45:29.641749+00
+ac378969-6fca-44fe-9506-0c6c7ba20f68	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-17 05:31:50.239246+00
+51654387-2083-4930-97d3-9cd3480f70ba	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-17 05:31:50.239246+00
+881e43ea-bdf8-4fbb-9e3c-6a153a7180bf	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-17 05:31:50.239246+00
+ace024cd-5322-44b7-bc5a-c5d6be4ac2b2	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-17 05:31:50.239246+00
+77a3416c-d3da-4d4a-bf79-7ab4642c60b5	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-17 05:31:50.239246+00
+c4d9b8b1-34e8-4ad3-9620-e1cb8daf46ee	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-17 05:31:50.239246+00
+cb11532e-a3f8-4caf-a390-fabc9743c3b3	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-17 05:31:50.239246+00
+07daab0d-a5da-45da-a1b1-533e9234a4f0	7d507113-f400-45ce-9618-2bd079b4445d	1c7a5c5e-d956-45d6-8e6d-eb45748b81be	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-17 05:31:50.239246+00
+8bb6a75f-429f-4720-ad05-86d8d241aecc	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-17 11:22:59.804671+00
+d987eafb-fd70-4aa1-9e26-7399ac379a1e	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-17 11:22:59.804671+00
+550235ec-747d-4ba0-a8fc-82173195d305	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-17 11:22:59.804671+00
+6d10300a-31df-49b0-89f3-2ef575311d01	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-17 11:22:59.804671+00
+fdfe316c-a3bf-4322-a2ed-4f65477fad28	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-17 11:22:59.804671+00
+ed07703c-46db-40ac-8401-e1d35436eb25	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-17 11:22:59.804671+00
+561fe0be-d882-426f-b1cc-7e31bb1b4b24	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-17 11:22:59.804671+00
+b36b7130-e8d7-421c-a7f5-f49918c94bd7	43db9f06-01c9-4d14-9fc6-c01f6b25761f	eecaf369-6467-4c85-888d-a4b51bf0fcac	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-17 11:22:59.804671+00
+fc3fdc21-52ee-4736-bf6f-e9051afedafc	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-17 13:34:11.793188+00
+e343671d-22b7-428e-bb78-b7c764757c63	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-17 13:34:11.793188+00
+c477ca15-bf04-49e8-8890-54b9d34371a9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-17 13:34:11.793188+00
+8dfd2a23-210b-4f8b-ba05-8838ff73c679	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-17 13:34:11.793188+00
+21688eb9-3db3-4d64-bfda-b325308348a7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-17 13:34:11.793188+00
+5bcb07d0-574c-4eec-ac20-eb34fcd72ce3	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-17 13:34:11.793188+00
+2aaf6538-1d15-4bdf-93c7-247640d8dc41	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-17 13:34:11.793188+00
+9c5c5db7-145e-44eb-ae6d-9060ae321596	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	174bbd70-fa7d-44a2-85d3-8e8a169021c8	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-17 13:34:11.793188+00
+513b25c8-9cdb-463a-a2e3-cc0034ad157e	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-17 13:40:15.754597+00
+83cd5820-d0aa-4811-a8cc-25bfe034a3ef	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-17 13:40:15.754597+00
+cd17f538-090e-4fdb-87df-566b882d3291	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-17 13:40:15.754597+00
+98158476-1f27-446a-958c-ee71303e9f21	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-17 13:40:15.754597+00
+0f7761ee-1fe9-47e6-ba86-eeb3c8d3cfeb	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-17 13:40:15.754597+00
+243ef6ee-66cb-4175-8fba-efde43dc9bc3	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-17 13:40:15.754597+00
+bcea6164-52f0-43f2-9fc3-e820f4439d21	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-17 13:40:15.754597+00
+dab0659c-4deb-4477-a32e-e01a7dde7176	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d5cfde0e-80dc-4c28-bff3-c938dee49e95	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-17 13:40:15.754597+00
+5fcb0044-6113-47c3-879a-804f07b4655a	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	cb07506b-1629-425c-858f-092ac50d3132	695a2888-8aef-4d26-b7d5-f1514bbffa8b	1	4	8-10	\N	f	2026-08-17 18:04:17.504509+00
+8d17610f-92c3-433a-a5b5-620b817cca25	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	6db961ec-fe29-4e96-b8e3-e37f36b85cab	729dc8ff-c4d0-4661-bd29-d65402f228a0	2	3	8-12	\N	f	2026-08-17 18:04:17.504509+00
+4e29b83e-01d0-4f7a-b1d0-0474185bb48f	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	b0bface7-5949-43bc-b105-0cb93d7657fc	d2e139ab-efb8-4fe9-b09f-9b66a05fa088	3	4	12-15	\N	f	2026-08-17 18:04:17.504509+00
+c82d1d95-eb16-413a-9180-e6b8d3daac79	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	f21231e0-3b85-4604-9b23-f9d37d399d65	1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4	3	12-15	\N	f	2026-08-17 18:04:17.504509+00
+a98d1405-3da6-4c15-97bb-57eae342263a	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	67c98468-e660-4cd4-be40-e25491a6bdf4	5	3	10-12	\N	f	2026-08-17 18:04:17.504509+00
+7dedc1d7-ccb8-4f60-9135-5038f04dfe7b	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	f624ab98-53ef-4b7c-aecd-73b1c562a640	6	3	12-15	\N	f	2026-08-17 18:04:17.504509+00
+8613aa9c-a703-492a-8e9d-e73db2604484	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	8fa3708c-f14f-4f77-88ce-b3555bbc99af	d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	7	3	10-12 / side	\N	f	2026-08-17 18:04:17.504509+00
+5f5b05a1-e213-48ef-bcbd-50bee2bbcac4	eef54a00-fad7-4e80-b83b-eeff68c3807f	1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	982a0879-5e4f-42f4-b58f-5099de3507ce	384988ea-7135-48b2-8d91-ba1618255a11	8	1	15-20 min	\N	f	2026-08-17 18:04:17.504509+00
+32d8d535-ee5a-417a-a45a-e8d7a07f2417	eef54a00-fad7-4e80-b83b-eeff68c3807f	770e8a5f-9947-43e8-924e-0bcc6f86a739	9851fd78-07da-4a45-ad50-077b1396b1be	9c04e47f-200d-4325-b5fd-c77cbcea1284	1	4	8-10	\N	f	2026-08-17 18:15:22.719215+00
+32792e79-538e-4d1d-925e-edfd21aa9a18	eef54a00-fad7-4e80-b83b-eeff68c3807f	770e8a5f-9947-43e8-924e-0bcc6f86a739	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	9cb1b808-f2f9-49fa-aa63-9f55c91af421	2	4	8-12	\N	f	2026-08-17 18:15:22.719215+00
+4b29379d-7ffa-479b-bbaf-d58540365555	eef54a00-fad7-4e80-b83b-eeff68c3807f	770e8a5f-9947-43e8-924e-0bcc6f86a739	caa90bf6-0e87-4962-8342-0156731af321	a8efbdc5-491e-4843-b6f6-977f03b13e94	3	3	12-15	\N	f	2026-08-17 18:15:22.719215+00
+a1567d8c-e8c1-4600-be9d-c3941cba9da9	eef54a00-fad7-4e80-b83b-eeff68c3807f	770e8a5f-9947-43e8-924e-0bcc6f86a739	64fc2b70-491f-4abf-a231-18c4631f57a8	15001c2e-bc33-464a-b0cb-1aa6dcf2de8b	4	4	12-15	\N	f	2026-08-17 18:15:22.719215+00
+866643ad-1340-473c-b510-295cc3f9fe34	eef54a00-fad7-4e80-b83b-eeff68c3807f	770e8a5f-9947-43e8-924e-0bcc6f86a739	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	e0c71fed-d512-4a0b-b8d2-075808f403cd	5	2	15-20	\N	f	2026-08-17 18:15:22.719215+00
+6b79fd69-cfeb-4062-b062-ef2d2e7aa8e9	eef54a00-fad7-4e80-b83b-eeff68c3807f	770e8a5f-9947-43e8-924e-0bcc6f86a739	4864bcd3-ac45-48fc-b9af-2cc15556bfcc	a789379a-2ce2-439e-8273-df87ed386166	6	3	8-12	\N	f	2026-08-17 18:15:22.719215+00
+9bd3e6ca-47d5-45eb-8d7a-309264d3a2d0	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	51e907b1-b813-4314-ab57-1cf75d43bfe5	1	4	8-10	\N	f	2026-08-17 18:15:48.400911+00
+94877305-ad2b-47dd-af70-d89e9295ff2b	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	4ab9e5f4-ebc6-4902-b4b6-404097741b79	69a60ab8-783a-450d-b21c-fce5eccb71e8	2	4	12-15	\N	f	2026-08-17 18:15:48.400911+00
+352fa56c-184d-447e-acd7-599f48d0f7e3	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	4518aa4b-304f-4cba-a14e-b060f69c8fa8	3b4831b1-e0b5-4615-8a96-d0afb0face26	3	3	15-20	\N	f	2026-08-17 18:15:48.400911+00
+65eafdec-92f0-4694-9d4c-75aa7219107d	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	0132c471-e57c-4d7a-b379-555b0c2ac506	9eba2e11-befe-4f63-bf80-ec628426d7c0	4	3	10-12	\N	f	2026-08-17 18:15:48.400911+00
+c755fed9-5736-441d-bcfa-266555d007dc	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	ce51a877-1fe3-49ca-b7a1-cb4a395db4a9	6b12500a-e56b-4605-b372-dd3d12565a09	5	3	10-12	\N	f	2026-08-17 18:15:48.400911+00
+5e117f44-80e8-416e-bf11-61ab10aba3e8	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	f5cb0129-d458-4dc8-abe4-984ad83ac52d	6	3	12-15	\N	f	2026-08-17 18:15:48.400911+00
+cfe3bee0-797c-496d-bc48-c5cdbf5c3de2	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	e59803b7-57be-4539-ba4e-714220e8a369	40b6c17d-ae42-466b-96e1-c80fe2ecbc56	7	2	10-12	\N	f	2026-08-17 18:15:48.400911+00
+929aa949-fa9f-4e9a-a8a9-b5bc256ba5c8	eef54a00-fad7-4e80-b83b-eeff68c3807f	df9d3eba-9347-4176-b92e-9cf5a1fb391c	b0bface7-5949-43bc-b105-0cb93d7657fc	5e7bcdaa-ba0e-4f92-b414-25fe53df0fe9	8	2	15-20	\N	f	2026-08-17 18:15:48.400911+00
+ad039030-e0f3-422e-bc5c-a671a40e69c1	43db9f06-01c9-4d14-9fc6-c01f6b25761f	0ace62e0-3bed-443e-92ee-aafd0aba5185	e5c60e5c-6494-48a4-9a7e-9b9defc75f3d	55519651-9ede-4f35-b107-74441772d601	1	3	8-10	\N	f	2026-08-17 18:16:53.404078+00
+b9169874-ec4b-4b60-a9b1-1fcf197aab62	43db9f06-01c9-4d14-9fc6-c01f6b25761f	0ace62e0-3bed-443e-92ee-aafd0aba5185	4ab9e5f4-ebc6-4902-b4b6-404097741b79	e0d08e50-dbff-4410-9ec5-dda5dc4fa04b	2	4	12-15	\N	f	2026-08-17 18:16:53.404078+00
+0b2bf07e-a6ac-4640-b6cb-7093031297fe	43db9f06-01c9-4d14-9fc6-c01f6b25761f	0ace62e0-3bed-443e-92ee-aafd0aba5185	b0bface7-5949-43bc-b105-0cb93d7657fc	290e8594-212c-48dc-9673-4354482db37c	3	3	15-20	\N	f	2026-08-17 18:16:53.404078+00
+0eaaebba-2654-4f64-b7e9-057c806004bc	43db9f06-01c9-4d14-9fc6-c01f6b25761f	0ace62e0-3bed-443e-92ee-aafd0aba5185	64fc2b70-491f-4abf-a231-18c4631f57a8	9e6c18e5-0dcf-4672-960d-78983c396111	4	4	15-20	\N	f	2026-08-17 18:16:53.404078+00
+4e8f0619-0005-4c9e-bc13-06dff55434d3	43db9f06-01c9-4d14-9fc6-c01f6b25761f	0ace62e0-3bed-443e-92ee-aafd0aba5185	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	20d1865a-70c3-4b91-9384-8d4e949593fe	5	3	15-20	\N	f	2026-08-17 18:16:53.404078+00
+0d91c4d4-7940-4323-9769-238486fabe31	43db9f06-01c9-4d14-9fc6-c01f6b25761f	0ace62e0-3bed-443e-92ee-aafd0aba5185	982a0879-5e4f-42f4-b58f-5099de3507ce	6391fd85-cae0-4a88-87bd-1b43476bdd04	6	1	15-20 min	\N	f	2026-08-17 18:16:53.404078+00
+732276d9-4caa-4ad9-909d-e5f12a1f0f50	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	9851fd78-07da-4a45-ad50-077b1396b1be	9c04e47f-200d-4325-b5fd-c77cbcea1284	1	4	8-10	\N	f	2026-08-17 18:41:56.629657+00
+b8d003e0-0de5-4abe-80fe-7663d3c822ef	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	9cb1b808-f2f9-49fa-aa63-9f55c91af421	2	4	8-12	\N	f	2026-08-17 18:41:56.629657+00
+6e0f9a42-14d0-4a81-a5f2-8078c5d2b4b6	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	caa90bf6-0e87-4962-8342-0156731af321	a8efbdc5-491e-4843-b6f6-977f03b13e94	3	3	12-15	\N	f	2026-08-17 18:41:56.629657+00
+059be76e-09e1-4173-aad8-5108f450c934	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	64fc2b70-491f-4abf-a231-18c4631f57a8	15001c2e-bc33-464a-b0cb-1aa6dcf2de8b	4	4	12-15	\N	f	2026-08-17 18:41:56.629657+00
+d7dc168a-e19f-4329-9875-63d531ed5e16	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	e0c71fed-d512-4a0b-b8d2-075808f403cd	5	2	15-20	\N	f	2026-08-17 18:41:56.629657+00
+8fa1654b-525f-4ed2-b27b-94a0fc92ca7f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8744dbbd-3386-40f8-a01a-6f1201ff6ff4	4864bcd3-ac45-48fc-b9af-2cc15556bfcc	a789379a-2ce2-439e-8273-df87ed386166	6	3	8-12	\N	f	2026-08-17 18:41:56.629657+00
+45639316-83fc-4528-a5d4-2e7077cecee9	43db9f06-01c9-4d14-9fc6-c01f6b25761f	c02db910-2eb0-47f2-a6f3-4b95dd227c28	9851fd78-07da-4a45-ad50-077b1396b1be	9c04e47f-200d-4325-b5fd-c77cbcea1284	1	4	8-10	\N	f	2026-08-18 05:55:42.924631+00
+5928de6f-157a-404f-9e3d-e8068f80628a	43db9f06-01c9-4d14-9fc6-c01f6b25761f	c02db910-2eb0-47f2-a6f3-4b95dd227c28	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	9cb1b808-f2f9-49fa-aa63-9f55c91af421	2	4	8-12	\N	f	2026-08-18 05:55:42.924631+00
+12e878fd-f00c-4f97-9b0b-1fc65a3de6ee	43db9f06-01c9-4d14-9fc6-c01f6b25761f	c02db910-2eb0-47f2-a6f3-4b95dd227c28	caa90bf6-0e87-4962-8342-0156731af321	a8efbdc5-491e-4843-b6f6-977f03b13e94	3	3	12-15	\N	f	2026-08-18 05:55:42.924631+00
+9a787e33-1062-4eaf-8144-f5f30690a136	43db9f06-01c9-4d14-9fc6-c01f6b25761f	c02db910-2eb0-47f2-a6f3-4b95dd227c28	64fc2b70-491f-4abf-a231-18c4631f57a8	15001c2e-bc33-464a-b0cb-1aa6dcf2de8b	4	4	12-15	\N	f	2026-08-18 05:55:42.924631+00
+aa1228b8-afa0-4611-9ef1-35895f19b3fd	43db9f06-01c9-4d14-9fc6-c01f6b25761f	c02db910-2eb0-47f2-a6f3-4b95dd227c28	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	e0c71fed-d512-4a0b-b8d2-075808f403cd	5	2	15-20	\N	f	2026-08-18 05:55:42.924631+00
+b94a758c-9bc1-41c7-b569-5e4076d61cbb	43db9f06-01c9-4d14-9fc6-c01f6b25761f	c02db910-2eb0-47f2-a6f3-4b95dd227c28	4864bcd3-ac45-48fc-b9af-2cc15556bfcc	a789379a-2ce2-439e-8273-df87ed386166	6	3	8-12	\N	f	2026-08-18 05:55:42.924631+00
+\.
+
+
+--
+-- Data for Name: exercises; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.exercises (id, slug, name, primary_muscle, secondary_muscles, category, equipment, setup, execution, breathing, cues, common_mistakes, should_feel, lower_back_notes, default_rest_seconds, default_rir, default_rep_range, is_compound, created_at) FROM stdin;
+cb07506b-1629-425c-858f-092ac50d3132	incline-smith-press	Incline Smith Machine Press	Upper chest	{"Front delts",Triceps}	push	Smith machine	{"Set the bench to roughly 30 degrees under the bar.","Position yourself so the bar path lands on your upper chest / collarbone.","Grip slightly wider than shoulder width."}	{"Unrack and take a breath.","Lower under control to just above the upper chest over 2-3 seconds.","Press back up without locking out hard."}	Inhale on the way down, exhale as you press.	{"Chest up, shoulder blades pulled down and back.","Elbows around 45-60 degrees from the torso.","Keep constant tension - stop just short of lockout."}	{"Bench angle too steep (turns it into a shoulder press).","Flaring elbows straight out to 90 degrees.","Bouncing the bar off the chest."}	A deep stretch and contraction across the upper chest, not the front delts.	\N	180	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+6db961ec-fe29-4e96-b8e3-e37f36b85cab	flat-machine-chest-press	Flat Machine Chest Press	Chest	{"Front delts",Triceps}	push	Machine	{"Set the seat so the handles line up with mid-chest.","Plant feet, sit tall against the pad."}	{"Press out until arms are nearly straight.","Return slowly until you feel a stretch across the chest."}	Exhale on the press.	{"Shoulder blades stay retracted against the pad.","Squeeze the chest at the end of each press."}	{"Seat set too high or too low.","Shrugging the shoulders forward at lockout."}	Chest working through the full range with no shoulder pinching.	\N	120	1-2	8-12	t	2026-08-13 09:39:32.743585+00
+b0bface7-5949-43bc-b105-0cb93d7657fc	lateral-raise-machine	Lateral Raise Machine	Side delts	{Traps}	pull	Machine	{"Adjust the seat so the pivot lines up with your shoulder joint.","Light-to-moderate load."}	{"Drive the elbows out and up to about shoulder height.","Lower slowly, resisting the whole way."}	Exhale as you raise.	{"Lead with the elbows, not the hands.","Keep the neck relaxed and traps down."}	{"Using momentum or leaning back.","Going far above shoulder height and turning it into traps."}	A burn on the outside of the shoulder.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+f21231e0-3b85-4604-9b23-f9d37d399d65	pec-deck	Pec Deck	Chest	{"Front delts"}	push	Machine	{"Seat height so handles sit at chest level.","Slight bend in the elbows, fixed throughout."}	{"Bring the handles together in a wide arc.","Hold the squeeze briefly, then open slowly into a stretch."}	Exhale as you close.	{"Think about hugging, not pushing.","Control the stretch - never let it yank the shoulder."}	{"Bending and straightening the elbows (turns it into a press).","Letting the weight slam back."}	A strong squeeze in the mid-chest and a stretch at the end range.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	overhead-cable-triceps-extension	Overhead Cable Triceps Extension	Triceps	{}	push	Cable	{"Set the pulley low-to-mid, attach a rope.","Face away, staggered stance, torso leaning slightly forward."}	{"Start with hands behind the head, elbows high.","Extend fully overhead, then lower under control into a deep stretch."}	Exhale as you extend.	{"Keep the elbows pointing forward and pinned.","Full stretch at the bottom is the point of this movement."}	{"Elbows drifting wide.","Cutting the stretch short."}	A long stretch down the back of the arm.	\N	75	0-1	10-12	f	2026-08-13 09:39:32.743585+00
+ec83dc53-1398-4d2c-b90d-2c4610aa7e49	rope-pushdown	Rope Pushdown	Triceps	{}	push	Cable	{"High pulley with a rope.","Stand tall, slight forward lean, elbows tucked."}	{"Push down and spread the rope at the bottom.","Return slowly to about 90 degrees."}	Exhale as you push down.	{"Elbows stay glued to the sides.","Squeeze hard at lockout."}	{"Using bodyweight to drive the rope down.","Elbows travelling forward and back."}	A hard contraction in the triceps at lockout.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+8fa3708c-f14f-4f77-88ce-b3555bbc99af	pallof-press	Pallof Press	Core	{Obliques}	core	Cable	{"Cable set at chest height.","Stand side-on, feet shoulder width, hands at the sternum."}	{"Press the handle straight out and resist the rotation.","Hold 1-2 seconds, return under control."}	Exhale slowly as you press out.	{"Ribs down, glutes lightly braced.","Do not let the torso twist at all."}	{"Leaning away from the cable.","Rushing the reps."}	Deep tension through the obliques and the whole trunk.	Keep a neutral spine - this is an anti-rotation drill, not a twist.	60	1-2	12/side	f	2026-08-13 09:39:32.743585+00
+9851fd78-07da-4a45-ad50-077b1396b1be	wide-grip-lat-pulldown	Wide-Grip Lat Pulldown	Lats	{Biceps,"Rear delts"}	pull	Cable	{"Grip wider than shoulder width, thumbs over the bar.","Thighs locked under the pad, slight backward lean."}	{"Pull the elbows down and slightly back to the upper chest.","Control the bar all the way up into a full stretch."}	Exhale as you pull down.	{"Start each rep by depressing the shoulder blades.","Think elbows to hips, not hands to chest."}	{"Leaning back excessively and rowing.","Yanking with the arms and losing the lat stretch."}	A wide stretch and contraction through the lats.	\N	180	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	chest-supported-row	Chest-Supported Row	Mid back	{Lats,"Rear delts",Biceps}	pull	Machine	{"Chest firmly on the pad, feet planted.","Neutral or pronated grip depending on the machine."}	{"Row the handles toward the lower ribs.","Pause briefly, then let the weight stretch the back."}	Exhale as you row.	{"Chest stays glued to the pad.","Drive with the elbows, squeeze the mid-back."}	{"Peeling off the pad to cheat weight up.","Shrugging at the top."}	Squeeze between the shoulder blades and through the lats.	Chest support keeps the lower back out of it - keep it that way.	120	1-2	8-12	t	2026-08-13 09:39:32.743585+00
+caa90bf6-0e87-4962-8342-0156731af321	straight-arm-pulldown	Straight-Arm Pulldown	Lats	{}	pull	Cable	{"High pulley, straight bar or rope.","Hinge slightly at the hips, soft elbows locked in place."}	{"Sweep the bar down to the thighs in an arc.","Return slowly overhead until the lats stretch."}	Exhale as you sweep down.	{"Elbow angle never changes.","Feel the lats, not the triceps."}	{"Turning it into a pushdown by bending the arms.","Standing too upright."}	A long contraction down the sides of the back.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+64fc2b70-491f-4abf-a231-18c4631f57a8	rear-delt-fly	Rear-Delt Fly	Rear delts	{"Mid back"}	pull	Machine	{"Chest on the pad, handles set for a wide arc.","Slight bend in the elbows."}	{"Sweep the arms out and back.","Return slowly without letting the plates touch."}	Exhale as you open.	{"Lead with the elbows and pinkies.","Keep the traps relaxed."}	{"Using too much weight and rowing.","Shrugging through the movement."}	A burn across the back of the shoulders.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+7f86b3b1-d33e-464c-8c04-86a5f61de0f1	face-pull	Face Pull	Rear delts	{"Upper back","Rotator cuff"}	pull	Cable	{"Rope at upper-chest / face height.","Step back for tension, split stance."}	{"Pull the rope toward the forehead, hands separating.","Externally rotate so knuckles finish facing back."}	Exhale as you pull.	{"High elbows throughout.","Pause for a beat at the peak."}	{"Pulling too heavy and turning it into a row.","Letting the elbows drop."}	Rear delts and upper back, plus shoulder-health work.	\N	60	0-1	15-20	f	2026-08-13 09:39:32.743585+00
+4864bcd3-ac45-48fc-b9af-2cc15556bfcc	incline-dumbbell-curl	Incline Dumbbell Curl	Biceps	{}	pull	Dumbbell	{"Bench at roughly 45-60 degrees.","Arms hanging straight down, shoulders back."}	{"Curl up while keeping the upper arm still.","Lower all the way to a full stretch."}	Exhale as you curl.	{"The stretched position is the whole point - do not shorten it.","Supinate as you curl."}	{"Swinging the elbows forward.","Cutting the bottom of the rep."}	A deep stretch and hard peak contraction in the biceps.	\N	90	0-1	8-12	f	2026-08-13 09:39:32.743585+00
+91da5f94-a91f-4630-a362-0b2555c15e2b	hanging-knee-raise	Hanging Knee Raise	Core	{"Hip flexors"}	core	Bodyweight	{"Hang from a bar with a solid grip.","Let the body settle - no swing."}	{"Raise the knees toward the chest, curling the pelvis up.","Lower slowly with control."}	Exhale as you raise the knees.	{"Curl the pelvis, do not just lift the legs.","Pause at the top if you are swinging."}	{"Using momentum.","Only using the hip flexors with no pelvic tilt."}	Lower abs contracting hard.	Avoid arching the lower back on the way down.	60	0-1	10-15	f	2026-08-13 09:39:32.743585+00
+57c25d2a-01b6-4136-875b-49e62770ea1d	cable-crunch	Cable Crunch	Abs	{}	core	Cable	{"Kneel below a high pulley with a rope at the head.","Hips stay in a fixed position."}	{"Curl the torso down, bringing ribs toward pelvis.","Return slowly under tension."}	Exhale hard as you crunch down.	{"Curl the spine, do not hinge at the hips.","Keep the hips from drifting back."}	{"Pulling the cable down with the arms.","Turning it into a hip hinge."}	Abs shortening under load.	\N	60	0-1	10-15	f	2026-08-13 09:39:32.743585+00
+80e0900f-c21a-40c7-a20f-632769eab30b	leg-press	Leg Press	Quads	{Glutes,Hamstrings}	legs	Machine	{"Feet shoulder width, mid-platform.","Back and hips flat against the pad."}	{"Lower under control to a depth where the pelvis stays neutral.","Press back up without locking the knees hard."}	Inhale down, exhale up.	{"Push through the whole foot.","Stop the descent before the hips tuck."}	{"Chasing depth and letting the pelvis round.","Bouncing at the bottom."}	Quads and glutes loaded, lower back completely uninvolved.	Do not chase depth - if the pelvis begins to round, stop the rep shorter.	180	1-2	8-12	t	2026-08-13 09:39:32.743585+00
+444c4727-1be9-4be6-a9f6-565a18283bf1	smith-hack-squat	Smith Hack Squat	Quads	{Glutes}	legs	Smith machine	{"Feet slightly forward of the bar, shoulder width.","Bar across the upper traps."}	{"Sit down and back under control.","Drive up through the heels and mid-foot."}	Inhale down, exhale up.	{"Keep the pelvis controlled.","Torso stays braced, ribs down."}	{"Going deeper than your hips can control.","Letting the lower back round at the bottom."}	Quads doing the work with a stable, pain-free lower back.	Do not chase depth if your lower back starts rounding.	180	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+c73065c9-cfc2-4b47-b96e-a2ea51271b7a	leg-curl	Seated/Lying Leg Curl	Hamstrings	{Calves}	legs	Machine	{"Align the knee joint with the machine pivot.","Pad just above the heels."}	{"Curl the weight fully.","Lower over 2-3 seconds with control."}	Exhale as you curl.	{"Controlled eccentric on every rep.","Keep the hips down on the seat."}	{"Letting the weight drop back.","Lifting the hips to cheat."}	Hamstrings contracting and stretching hard.	\N	90	0-1	10-12	f	2026-08-13 09:39:32.743585+00
+91e90c0f-9b65-4614-acd1-299bcdc83fc3	bulgarian-split-squat	Bulgarian Split Squat	Quads	{Glutes}	legs	Dumbbell	{"Rear foot on a bench, front foot far enough forward.","Dumbbells at the sides."}	{"Lower straight down until the front thigh is near parallel.","Drive up through the front foot."}	Inhale down, exhale up.	{"Slight forward torso lean is fine.","Front knee tracks over the toes."}	{"Stance too short - knee gets crushed forward.","Pushing off the back foot."}	Front-leg quad and glute working with a balance challenge.	Keep the trunk braced and the spine neutral.	105	1-2	8-10 / leg	t	2026-08-13 09:39:32.743585+00
+8525ccdd-f1ce-4868-921b-1ea953365500	leg-extension	Leg Extension	Quads	{}	legs	Machine	{"Knee pivot aligned with the machine.","Pad on the lower shins."}	{"Extend fully and pause briefly.","Lower slowly."}	Exhale as you extend.	{"Squeeze at the top of every rep.","No jerking out of the bottom."}	{"Slamming into lockout.","Lifting the hips off the seat."}	A hard quad burn.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+8adae13f-fcf8-4de3-9dd3-317e4efa4e88	standing-calf-raise	Standing Calf Raise	Calves	{}	legs	Machine	{"Balls of the feet on the platform, heels free.","Knees mostly straight."}	{"Rise as high as possible onto the toes.","Lower into a deep stretch and pause."}	Exhale as you rise.	{"Pause 1 second at both ends.","No bouncing out of the stretch."}	{"Short, bouncy reps.","Bending the knees to cheat."}	A strong stretch and cramp-like contraction in the calves.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+fb28391f-5ebd-43b1-b3da-dbc5b424c91a	seated-dumbbell-shoulder-press	Seated Dumbbell Shoulder Press	Front delts	{"Side delts",Triceps}	push	Dumbbell	{"Upright bench with back support.","Dumbbells at shoulder height, wrists stacked."}	{"Press up and slightly in without clashing the bells.","Lower to about ear level under control."}	Exhale as you press.	{"Ribs down - do not arch to press.","Keep the elbows slightly in front of the body."}	{"Excessive lower-back arch.","Half-range reps at the top."}	Delts loaded, with triceps finishing the press.	Keep the ribcage down and the lower back on the pad.	180	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+4ab9e5f4-ebc6-4902-b4b6-404097741b79	cable-lateral-raise	Cable Lateral Raise	Side delts	{}	pull	Cable	{"Low pulley behind or across the body, D-handle.","Stand tall, slight lean away."}	{"Raise the arm out to shoulder height.","Lower slowly against constant tension."}	Exhale as you raise.	{"Lead with the elbow.","Keep the traps quiet."}	{"Swinging the torso.","Going too heavy and shrugging."}	Constant tension burn on the side delt.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+4518aa4b-304f-4cba-a14e-b060f69c8fa8	rear-delt-cable-fly	Rear-Delt Cable Fly	Rear delts	{"Upper back"}	pull	Cable	{"Cables set at shoulder height, crossed in front.","Soft elbows, slight forward lean."}	{"Sweep the arms out and back in a wide arc.","Return under control."}	Exhale as you open.	{"Think of pulling the arms apart, not back.","Hold the peak for a beat."}	{"Bending the elbows into a row.",Shrugging.}	Isolated rear-delt burn.	\N	60	0-1	15-20	f	2026-08-13 09:39:32.743585+00
+0132c471-e57c-4d7a-b379-555b0c2ac506	triceps-press-machine	Triceps Press Machine	Triceps	{}	push	Machine	{"Seat set so elbows align with the pivot.","Grip the handles firmly."}	{"Press to full extension.","Return slowly to a stretch."}	Exhale as you press.	{"Elbows stay fixed.","Full lockout squeeze."}	{"Using the shoulders to push.","Partial reps."}	Triceps working through the full range.	\N	75	0-1	10-12	f	2026-08-13 09:39:32.743585+00
+ce51a877-1fe3-49ca-b7a1-cb4a395db4a9	ez-bar-preacher-curl	EZ-Bar / Preacher Curl	Biceps	{Forearms}	pull	EZ bar	{"Armpits over the top of the preacher pad.","Angled EZ grip, comfortable wrists."}	{"Curl up to a hard squeeze.","Lower fully, slowly, into the stretch."}	Exhale as you curl.	{"Never drop the bar at the bottom.","Keep the shoulders down."}	{"Bouncing out of the stretched position.","Lifting the elbows off the pad."}	Biceps under tension the entire set.	\N	90	0-1	10-12	f	2026-08-13 09:39:32.743585+00
+e59803b7-57be-4539-ba4e-714220e8a369	hammer-curl	Hammer Curl	Brachialis	{Biceps,Forearms}	pull	Dumbbell	{"Neutral grip, dumbbells at the sides.","Stand tall, elbows tucked."}	{"Curl up keeping the palms facing in.","Lower under control."}	Exhale as you curl.	{"No swinging - keep the torso still.","Squeeze at the top."}	{"Using the hips to start the rep.","Rotating the wrist."}	Outer arm and forearm working.	\N	75	0-1	10-12	f	2026-08-13 09:39:32.743585+00
+dbe692d8-5484-4d52-9ab2-c23d4999fc19	incline-dumbbell-press	Incline Dumbbell Press	Upper chest	{"Front delts",Triceps}	push	Dumbbell	{"Bench at roughly 30 degrees.","Kick the dumbbells into position at shoulder level."}	{"Lower to a stretch beside the upper chest.","Press up and slightly together."}	Inhale down, exhale up.	{"Shoulder blades pinned back and down.","Wrists stacked over the elbows."}	{"Too steep an incline.","Letting the elbows flare to 90 degrees."}	Upper chest stretch and contraction.	\N	180	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+10933878-e0d9-42d9-9ce1-fae93b2d78b8	neutral-grip-lat-pulldown	Neutral-Grip Lat Pulldown	Lats	{Biceps}	pull	Cable	{"Neutral (palms facing) handle.","Thighs under the pad, torso near upright."}	{"Pull the handles to the upper chest.","Control the full stretch overhead."}	Exhale as you pull.	{"Depress the shoulder blades first.","Elbows drive down toward the hips."}	{"Excessive lean-back.","Cutting the stretch at the top."}	Thick lat contraction with less biceps strain.	\N	150	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+486498b6-0887-4735-a5b9-318d5c448874	cable-chest-fly	Cable Chest Fly	Chest	{"Front delts"}	push	Cable	{"Pulleys set at or slightly above shoulder height.","Split stance, soft elbows."}	{"Bring the hands together in front of the chest.","Open slowly into a controlled stretch."}	Exhale as you close.	{"Fixed elbow angle throughout.","Cross slightly at the finish for extra squeeze."}	{"Pressing instead of flying.","Letting the stretch snap the shoulder."}	A wide chest stretch and squeeze.	\N	75	0-1	12-15	f	2026-08-13 09:39:32.743585+00
+fbf0ad46-e549-4dcf-9b5f-f102b4657ba0	hip-thrust	Hip Thrust	Glutes	{Hamstrings}	legs	Barbell	{"Upper back on a bench just below the shoulder blades.","Feet flat, shins vertical at the top.","Pad the bar across the hips."}	{"Drive the hips up until the torso is parallel to the floor.","Pause and squeeze, then lower under control."}	Exhale as you drive up.	{"Keep the ribs down and chin tucked.","Finish with glutes, not with lower-back extension."}	{"Hyperextending the lower back at the top.","Bouncing the bar off the floor."}	Glutes doing all the work at lockout.	Keep ribs down and avoid excessive lower-back extension - this is your primary hip-extension movement.	120	1-2	8-12	t	2026-08-13 09:39:32.743585+00
+e5c60e5c-6494-48a4-9a7e-9b9defc75f3d	machine-shoulder-press	Machine Shoulder Press	Front delts	{"Side delts",Triceps}	push	Machine	{"Seat height so handles sit near shoulder level.","Back flat against the pad."}	{"Press overhead without hard lockout.","Lower under control to a stretch."}	Exhale as you press.	{"Ribs down, core braced.","Keep the movement smooth."}	{"Arching off the pad.","Half reps."}	Delts loaded through the full press.	\N	150	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+c1f8d4e0-9691-4143-9833-ae1f27b7cc17	pull-ups	Pull-ups / Assisted Pull-ups	Lats	{Biceps,"Mid back"}	pull	Bodyweight	{"Grip slightly wider than shoulder width.","Hang with active shoulders."}	{"Pull the chest toward the bar, elbows down.","Lower to a full hang with control."}	Exhale as you pull up.	{"Start each rep by pulling the shoulder blades down.","Use assistance to keep reps clean."}	{"Kipping or swinging.","Stopping short of a full hang."}	Lats and upper back working hard.	\N	180	1-2	6-10	t	2026-08-13 09:39:32.743585+00
+b2c96b9f-39b7-4f5d-a4b2-abe1702f5fc2	ez-bar-curl	EZ-Bar Curl	Biceps	{Forearms}	pull	EZ bar	{"Shoulder-width angled grip.","Stand tall, elbows at the sides."}	{"Curl up without moving the elbows.","Lower fully under control."}	Exhale as you curl.	{"No hip drive.","Squeeze at the top."}	{"Swinging the bar up.","Cutting the bottom range."}	Full biceps contraction with comfortable wrists.	Keep the torso still - no leaning back.	90	0-1	8-10	f	2026-08-13 09:39:32.743585+00
+42d4c83a-f092-47b8-b0a5-92b1e32d39f7	incline-machine-press	Incline Machine Press	Upper chest	{"Front delts",Triceps}	push	Machine	{"Seat so handles align with the upper chest.","Back and shoulders on the pad."}	{"Press out to near lockout.","Return slowly to a stretch."}	Exhale as you press.	{"Keep the shoulder blades retracted.","Do not shrug at the top."}	{"Seat too low, turning it into a shoulder press.","Bouncing the stack."}	Upper chest loaded with a stable path.	\N	180	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+890b8c33-d79c-4dab-bb29-5d67244eb711	weighted-chest-dips	Weighted Chest Dips	Chest	{Triceps,"Front delts"}	push	Bodyweight	{"Slight forward lean on the bars.","Add weight via belt if available."}	{"Lower until you feel a solid chest stretch.","Press back up without locking out hard."}	Inhale down, exhale up.	{"Lean forward to bias the chest.","Keep depth within a pain-free shoulder range."}	{"Dropping too deep and straining the shoulder.","Staying too upright (all triceps)."}	A deep chest stretch and press.	\N	150	1-2	8-10	t	2026-08-13 09:39:32.743585+00
+6a66925f-b4a5-4fb0-ac77-17d46cbfbb4d	push-ups	Push-ups	Chest	{Triceps,"Front delts"}	push	Bodyweight	{"Hands slightly wider than shoulders.","Body in one straight line."}	{"Lower the chest to just above the floor.","Press up while keeping the trunk rigid."}	Exhale as you press up.	{"Squeeze glutes and abs to keep a plank.","Stop about 1 rep before failure."}	{"Sagging hips.","Flaring elbows to 90 degrees."}	Chest and triceps finishing burn.	Brace the core - no sagging through the lower back.	60	1	To ~1 RIR	f	2026-08-13 09:39:32.743585+00
+982a0879-5e4f-42f4-b58f-5099de3507ce	incline-treadmill-walk	Incline Treadmill Walk	Cardio	{}	cardio	Treadmill	{"Set a moderate incline (8-12%) and a walking pace.","No holding the handrails."}	{"Walk steadily for the prescribed duration.","Adjust speed/incline to stay at a moderate effort."}	Breathe steadily through the nose and mouth.	{"You should be breathing harder but still able to speak in short sentences.","Keep it steady-state - this is recovery-friendly cardio."}	{"Hanging off the handrails.","Pushing intensity so high it hurts recovery."}	Elevated breathing, sustainable effort.	\N	0	\N	\N	f	2026-08-13 09:39:32.743585+00
+9ec3e3a5-e0db-4c6c-8cf2-e07831091dd9	weighted-dead-bug	Weighted Dead Bug	core	{"hip flexors"}	core	dumbbell or plate	{"Lie on your back, knees and hips at 90 degrees.","Press your lower back gently into the floor.","Hold a light weight over your chest, or start unweighted."}	{"Extend one leg and the opposite arm slowly.","Stop before your lower back lifts off the floor.","Return under control and switch sides."}	Exhale as the limbs extend, inhale on the return.	{"Ribs down, pelvis tucked.","Move slowly — position beats range of motion."}	{"Letting the lower back arch off the floor.","Rushing reps."}	Deep tension across the front of the abdominal wall.	Keep the lumbar spine flat; reduce range before allowing extension.	60	1-2	8-10 / side	f	2026-08-14 06:46:11.508803+00
+\.
+
+
+--
+-- Data for Name: personal_records; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.personal_records (id, user_id, exercise_id, session_id, record_type, weight_kg, reps, estimated_1rm, volume_kg, achieved_on, created_at) FROM stdin;
+15c99cc1-12df-4299-86f8-4bf76b16347f	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	cb07506b-1629-425c-858f-092ac50d3132	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	60	10	80	2160	2026-08-13	2026-08-17 13:34:00.43213+00
+35234696-4d17-4477-a642-71897ccb1339	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	6db961ec-fe29-4e96-b8e3-e37f36b85cab	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	75	10	100	1875	2026-08-13	2026-08-17 13:34:00.43213+00
+ab34e34c-c222-407e-a744-88824cae8c2c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	b0bface7-5949-43bc-b105-0cb93d7657fc	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	59	15	88.5	3363	2026-08-13	2026-08-17 13:34:00.43213+00
+ade605cd-62f2-49db-b289-234523917459	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	f21231e0-3b85-4604-9b23-f9d37d399d65	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	62.5	14	91.7	2375	2026-08-13	2026-08-17 13:34:00.43213+00
+1fb7104f-1d80-446f-9903-0fabbbe8298a	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	45	12	63	1485	2026-08-13	2026-08-17 13:34:00.43213+00
+b46ca95b-a88e-4546-9311-67c9a59e3bdd	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	37.5	15	56.3	1500	2026-08-13	2026-08-17 13:34:00.43213+00
+5d94aed0-73df-43cf-bf25-307272040005	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	8fa3708c-f14f-4f77-88ce-b3555bbc99af	296bc519-76a0-48eb-88cb-e5718682513c	estimated_1rm	5	8	6.3	110	2026-08-13	2026-08-17 13:34:00.43213+00
+14f83332-81ad-479b-8b3c-989ce6590f2d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	cb07506b-1629-425c-858f-092ac50d3132	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	60	8	76	1920	2026-08-14	2026-08-17 13:38:01.396551+00
+33345673-e0c8-4f89-9c5c-e23f80ebbf01	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	6db961ec-fe29-4e96-b8e3-e37f36b85cab	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	50	8	63.3	1150	2026-08-14	2026-08-17 13:38:01.396551+00
+cc13ddcd-77cc-4647-bcac-ddc32ae5336b	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	b0bface7-5949-43bc-b105-0cb93d7657fc	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	10	15	15	540	2026-08-14	2026-08-17 13:38:01.396551+00
+1b00680a-9422-45c9-9075-cf6e95ac7358	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	f21231e0-3b85-4604-9b23-f9d37d399d65	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	60	12	84	2040	2026-08-14	2026-08-17 13:38:01.396551+00
+f67a0382-cbb8-46e0-8999-f4e8ab9596dc	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	30	10	40	900	2026-08-14	2026-08-17 13:38:01.396551+00
+c07daa1a-deab-4e9c-ae9c-594aa6962549	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	30	12	42	960	2026-08-14	2026-08-17 13:38:01.396551+00
+aa6a9db3-2177-42ff-8cda-3e81b611d4f0	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	8fa3708c-f14f-4f77-88ce-b3555bbc99af	c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	estimated_1rm	15	12	21	540	2026-08-14	2026-08-17 13:38:01.396551+00
+6155441e-f49e-48d3-b06b-ecb19264e03d	43db9f06-01c9-4d14-9fc6-c01f6b25761f	cb07506b-1629-425c-858f-092ac50d3132	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	40	10	53.3	1360	2026-08-17	2026-08-17 13:40:07.942245+00
+d354dcf1-8181-4369-8765-08f555dd30df	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6db961ec-fe29-4e96-b8e3-e37f36b85cab	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	43	10	57.3	1247	2026-08-17	2026-08-17 13:40:07.942245+00
+4e264aee-224c-459e-8633-f8531d44cf14	43db9f06-01c9-4d14-9fc6-c01f6b25761f	b0bface7-5949-43bc-b105-0cb93d7657fc	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	36	15	54	1944	2026-08-17	2026-08-17 13:40:07.942245+00
+4c2314db-d390-4552-8f7c-36400f451591	43db9f06-01c9-4d14-9fc6-c01f6b25761f	f21231e0-3b85-4604-9b23-f9d37d399d65	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	47.5	13	68.1	1757.5	2026-08-17	2026-08-17 13:40:07.942245+00
+155c951c-507f-4a05-8d3d-6ac6933764e2	43db9f06-01c9-4d14-9fc6-c01f6b25761f	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	30	12	42	1020	2026-08-17	2026-08-17 13:40:07.942245+00
+94232a03-503c-478b-8833-ee0782094161	43db9f06-01c9-4d14-9fc6-c01f6b25761f	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	30	12	42	1080	2026-08-17	2026-08-17 13:40:07.942245+00
+b7152d73-818b-49a5-8ff9-7f0de8a9f9f9	43db9f06-01c9-4d14-9fc6-c01f6b25761f	8fa3708c-f14f-4f77-88ce-b3555bbc99af	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	5	6	6	75	2026-08-17	2026-08-17 13:40:07.942245+00
+b1cb68cc-250d-4fef-b453-70c6e28f9d70	43db9f06-01c9-4d14-9fc6-c01f6b25761f	cb07506b-1629-425c-858f-092ac50d3132	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	40	10	53.3	1360	2026-08-17	2026-08-17 13:40:09.817881+00
+b887f8fe-4401-47e7-b8f3-5359ffadb9b6	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6db961ec-fe29-4e96-b8e3-e37f36b85cab	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	43	10	57.3	1247	2026-08-17	2026-08-17 13:40:09.817881+00
+14a624bd-69ea-432a-9049-f842face783e	43db9f06-01c9-4d14-9fc6-c01f6b25761f	cb07506b-1629-425c-858f-092ac50d3132	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	40	10	53.3	1360	2026-08-17	2026-08-17 13:40:10.152022+00
+479ec938-06ab-48e4-9a71-dfa677504c0c	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6db961ec-fe29-4e96-b8e3-e37f36b85cab	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	43	10	57.3	1247	2026-08-17	2026-08-17 13:40:10.152022+00
+f7f6b230-3d06-4214-a754-3f6f02cd0fcc	43db9f06-01c9-4d14-9fc6-c01f6b25761f	cb07506b-1629-425c-858f-092ac50d3132	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	40	10	53.3	1360	2026-08-17	2026-08-17 13:40:10.407342+00
+e283e2d8-e2ed-40d9-9f51-ce39014bd646	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6db961ec-fe29-4e96-b8e3-e37f36b85cab	eecaf369-6467-4c85-888d-a4b51bf0fcac	estimated_1rm	43	10	57.3	1247	2026-08-17	2026-08-17 13:40:10.407342+00
+\.
+
+
+--
+-- Data for Name: profiles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.profiles (id, name, height_cm, current_weight_kg, starting_weight_kg, date_of_birth, training_experience, primary_goal, target_weight_kg, target_body_fat, weight_unit, length_unit, preferred_cardio, rest_timer_seconds, theme, reminders_enabled, onboarding_completed, plan_start_date, created_at, updated_at) FROM stdin;
+b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	Tushar verma	\N	\N	\N	\N	\N	\N	\N	\N	kg	cm	\N	120	dark	f	f	\N	2026-08-14 07:12:48.755339+00	2026-08-14 07:12:48.755339+00
+43db9f06-01c9-4d14-9fc6-c01f6b25761f	Dharshit	\N	\N	\N	\N	\N	\N	\N	\N	kg	cm	\N	120	dark	f	f	\N	2026-08-14 11:57:39.765495+00	2026-08-14 11:57:39.765495+00
+3d9b618f-0054-461e-aa5d-f6551bbcea96	Tyagi	\N	\N	\N	\N	\N	\N	\N	\N	kg	cm	\N	120	dark	f	f	\N	2026-08-16 17:44:42.012016+00	2026-08-16 17:44:42.012016+00
+7d507113-f400-45ce-9618-2bd079b4445d	Hemraj Verma	\N	\N	\N	\N	\N	\N	\N	\N	kg	cm	\N	120	dark	f	f	\N	2026-08-17 05:31:05.075229+00	2026-08-17 05:31:05.075229+00
+cb1df7de-189c-41f5-a1b7-0483a54c9ff5	Sky	\N	\N	\N	\N	Advanced	Muscle gain	\N	\N	kg	cm	\N	120	dark	f	f	\N	2026-08-13 09:55:48.905249+00	2026-08-17 05:57:07.737525+00
+eef54a00-fad7-4e80-b83b-eeff68c3807f	Sehaj	\N	\N	\N	\N	Intermediate	Muscle gain	\N	\N	kg	cm	\N	120	dark	f	f	\N	2026-08-17 18:03:53.390425+00	2026-08-17 18:14:34.354262+00
+\.
+
+
+--
+-- Data for Name: sets; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.sets (id, user_id, exercise_session_id, exercise_id, set_number, weight_kg, reps, rir, is_warmup, completed, note, performed_at, created_at, updated_at) FROM stdin;
+edbca645-68d0-48eb-8410-fb64dee96693	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bb6fbac0-ac05-4e7a-83b5-bf1d82ffc5f9	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	1	35	7	\N	f	t	\N	2026-08-13 09:57:08.409901+00	2026-08-13 09:57:08.409901+00	2026-08-13 09:57:08.409901+00
+415cebbd-e635-4bfb-87cf-47959f5783fe	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bb6fbac0-ac05-4e7a-83b5-bf1d82ffc5f9	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	2	35	6	\N	f	t	\N	2026-08-13 09:57:26.463354+00	2026-08-13 09:57:26.463354+00	2026-08-13 09:57:26.463354+00
+7620d282-a03b-4732-b456-6487b94ad01d	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bb6fbac0-ac05-4e7a-83b5-bf1d82ffc5f9	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	3	35	5	\N	f	t	\N	2026-08-13 09:57:34.632889+00	2026-08-13 09:57:34.632889+00	2026-08-13 09:57:34.632889+00
+242b8ee8-b1ce-4bef-9d01-ee8b354b7243	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	bb6fbac0-ac05-4e7a-83b5-bf1d82ffc5f9	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	4	35	9	\N	f	t	\N	2026-08-13 09:58:01.40611+00	2026-08-13 09:58:01.40611+00	2026-08-13 09:58:01.40611+00
+30fde9d5-1c5f-4ec4-ac7b-eec85d5d0a0a	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	b5e21eaa-cbc0-4220-838d-69873d308315	4ab9e5f4-ebc6-4902-b4b6-404097741b79	1	59	13	\N	f	t	\N	2026-08-13 10:13:18.112704+00	2026-08-13 10:13:18.112704+00	2026-08-13 10:13:18.112704+00
+6b369d99-9fc4-4466-b4ae-74337db8f762	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	b5e21eaa-cbc0-4220-838d-69873d308315	4ab9e5f4-ebc6-4902-b4b6-404097741b79	2	59	12	\N	f	t	\N	2026-08-13 11:21:47.259278+00	2026-08-13 11:21:47.259278+00	2026-08-13 11:21:47.259278+00
+98cfd4f6-f8f2-479c-bdd3-a7a34efe9f14	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	b5e21eaa-cbc0-4220-838d-69873d308315	4ab9e5f4-ebc6-4902-b4b6-404097741b79	3	59	12	\N	f	t	\N	2026-08-13 11:21:54.192185+00	2026-08-13 11:21:54.192185+00	2026-08-13 11:21:54.192185+00
+d7aa316e-9de3-4c8b-b672-f9e030b3e950	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	b5e21eaa-cbc0-4220-838d-69873d308315	4ab9e5f4-ebc6-4902-b4b6-404097741b79	4	59	15	\N	f	t	\N	2026-08-13 11:22:00.437253+00	2026-08-13 11:22:00.437253+00	2026-08-13 11:22:00.437253+00
+60b2cb0f-94cc-4eef-9d4b-d12c8b7e6aea	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	eaa1ad36-ab9d-4b33-a8e8-ba6c3a8c1525	dbe692d8-5484-4d52-9ab2-c23d4999fc19	1	35	8	\N	f	t	\N	2026-08-14 06:44:15.726954+00	2026-08-14 06:44:15.726954+00	2026-08-14 06:44:15.726954+00
+0daacd45-fb0a-447d-b161-feb9129bdd49	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	c021f850-ff49-431d-9d36-b173d08b1e9f	dbe692d8-5484-4d52-9ab2-c23d4999fc19	2	35	7	\N	f	t	\N	2026-08-14 06:53:48.092764+00	2026-08-14 06:53:48.092764+00	2026-08-14 06:53:48.092764+00
+0eb81cb8-b11d-48f5-bccc-462db6a4bf3e	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	c021f850-ff49-431d-9d36-b173d08b1e9f	dbe692d8-5484-4d52-9ab2-c23d4999fc19	3	35	6	\N	f	t	\N	2026-08-14 06:53:53.145804+00	2026-08-14 06:53:53.145804+00	2026-08-14 06:53:53.145804+00
+66ec399b-9f64-4ce6-8806-d128f0457e90	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	c021f850-ff49-431d-9d36-b173d08b1e9f	dbe692d8-5484-4d52-9ab2-c23d4999fc19	1	35	8	\N	f	t	\N	2026-08-14 06:53:42.102155+00	2026-08-14 06:53:42.102155+00	2026-08-14 06:55:46.859486+00
+cd57bcc0-bd44-4e09-a414-d6410164ded6	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	fca2a6bf-f100-49c8-9946-59df80a95b8b	b0bface7-5949-43bc-b105-0cb93d7657fc	1	59	14	\N	f	t	\N	2026-08-14 12:34:39.311342+00	2026-08-14 12:34:39.311342+00	2026-08-14 12:34:39.311342+00
+cdc2041d-6073-4d61-bc80-719eb4bc6cd0	7d507113-f400-45ce-9618-2bd079b4445d	ac378969-6fca-44fe-9506-0c6c7ba20f68	cb07506b-1629-425c-858f-092ac50d3132	1	25	6	\N	f	t	\N	2026-08-17 05:32:34.896918+00	2026-08-17 05:32:34.896918+00	2026-08-17 05:32:34.896918+00
+1fc9a743-1c0c-404f-84aa-7c67bb8039a2	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	048a6e29-165b-41d5-89b9-7bd35d4db324	b0bface7-5949-43bc-b105-0cb93d7657fc	3	59	14	\N	f	t	\N	2026-08-17 12:40:47.194914+00	2026-08-17 12:40:47.194914+00	2026-08-17 12:40:47.194914+00
+c6b24df9-8f03-4934-893d-c254333629b3	43db9f06-01c9-4d14-9fc6-c01f6b25761f	8bb6a75f-429f-4720-ad05-86d8d241aecc	cb07506b-1629-425c-858f-092ac50d3132	1	40	10	\N	f	t	\N	2026-08-17 11:52:37.702282+00	2026-08-17 11:52:37.702282+00	2026-08-17 11:52:37.702282+00
+43494425-604f-4557-8d98-9cd476de9351	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	40263634-6d21-4c81-be8e-77b42739a640	cb07506b-1629-425c-858f-092ac50d3132	1	60	10	\N	f	t	\N	2026-08-17 11:54:12.544724+00	2026-08-17 11:54:12.544724+00	2026-08-17 11:54:12.544724+00
+f5f496d1-5f3c-4a93-b009-6bf98cdc202c	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	8b53ed05-3ed2-4f58-a464-378f174ad513	cb07506b-1629-425c-858f-092ac50d3132	2	60	8	\N	f	t	\N	2026-08-17 11:57:12.056918+00	2026-08-17 11:57:12.056918+00	2026-08-17 11:57:52.208218+00
+d33478f0-46af-455b-b798-44e466717044	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	8b53ed05-3ed2-4f58-a464-378f174ad513	cb07506b-1629-425c-858f-092ac50d3132	3	60	8	\N	f	t	\N	2026-08-17 11:58:05.408558+00	2026-08-17 11:58:05.408558+00	2026-08-17 11:58:05.408558+00
+cea6f877-590b-4831-84e4-7dc58bc42839	43db9f06-01c9-4d14-9fc6-c01f6b25761f	8bb6a75f-429f-4720-ad05-86d8d241aecc	cb07506b-1629-425c-858f-092ac50d3132	2	40	9	\N	f	t	\N	2026-08-17 11:58:31.143861+00	2026-08-17 11:58:31.143861+00	2026-08-17 11:58:31.143861+00
+d2e9d4c6-d451-46b7-b7f8-5f5f11bc2c3c	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	8b53ed05-3ed2-4f58-a464-378f174ad513	cb07506b-1629-425c-858f-092ac50d3132	1	60	8	\N	f	t	\N	2026-08-14 14:49:22.077636+00	2026-08-14 14:49:22.077636+00	2026-08-17 12:00:14.414315+00
+b1fbafea-551f-4063-b7e8-610a05e14e36	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	40263634-6d21-4c81-be8e-77b42739a640	cb07506b-1629-425c-858f-092ac50d3132	2	60	9	\N	f	t	\N	2026-08-17 12:01:59.551524+00	2026-08-17 12:01:59.551524+00	2026-08-17 12:01:59.551524+00
+69443d3d-3917-47ad-bce0-e9f08d6f7447	43db9f06-01c9-4d14-9fc6-c01f6b25761f	8bb6a75f-429f-4720-ad05-86d8d241aecc	cb07506b-1629-425c-858f-092ac50d3132	3	40	8	\N	f	t	\N	2026-08-17 12:06:19.153981+00	2026-08-17 12:06:19.153981+00	2026-08-17 12:06:19.153981+00
+dd7678fd-e7ba-4943-9910-047e31560a2d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	8b53ed05-3ed2-4f58-a464-378f174ad513	cb07506b-1629-425c-858f-092ac50d3132	4	60	8	\N	f	t	\N	2026-08-17 12:07:14.821144+00	2026-08-17 12:07:14.821144+00	2026-08-17 12:07:14.821144+00
+cc99d00a-40ef-43a3-bdf6-bf6eaa86a0f9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	40263634-6d21-4c81-be8e-77b42739a640	cb07506b-1629-425c-858f-092ac50d3132	3	60	9	\N	f	t	\N	2026-08-17 12:08:22.663368+00	2026-08-17 12:08:22.663368+00	2026-08-17 12:08:22.663368+00
+d37f9b6b-9d30-4e64-94d0-bdafbbb8f47b	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	cc946853-1e1a-479d-afb0-49fd9f6b2d33	6db961ec-fe29-4e96-b8e3-e37f36b85cab	1	50	8	\N	f	t	\N	2026-08-17 12:09:21.673705+00	2026-08-17 12:09:21.673705+00	2026-08-17 12:11:58.933202+00
+8a0ac1e7-9440-469f-8b98-53e93464a18e	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	cc946853-1e1a-479d-afb0-49fd9f6b2d33	6db961ec-fe29-4e96-b8e3-e37f36b85cab	2	50	8	\N	f	t	\N	2026-08-17 12:12:00.65864+00	2026-08-17 12:12:00.65864+00	2026-08-17 12:12:00.65864+00
+7710406c-dcdc-489b-b8e7-d75eaaf3073d	43db9f06-01c9-4d14-9fc6-c01f6b25761f	8bb6a75f-429f-4720-ad05-86d8d241aecc	cb07506b-1629-425c-858f-092ac50d3132	4	40	7	\N	f	t	\N	2026-08-17 12:12:52.608541+00	2026-08-17 12:12:52.608541+00	2026-08-17 12:12:52.608541+00
+96d5c2e2-0825-48d2-8eb6-f8f357f5565a	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	40263634-6d21-4c81-be8e-77b42739a640	cb07506b-1629-425c-858f-092ac50d3132	4	60	8	\N	f	t	\N	2026-08-17 12:15:25.8465+00	2026-08-17 12:15:25.8465+00	2026-08-17 12:15:25.8465+00
+56c51c73-0b59-4f26-9340-21d5feee67c9	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	cc946853-1e1a-479d-afb0-49fd9f6b2d33	6db961ec-fe29-4e96-b8e3-e37f36b85cab	3	50	7	\N	f	t	\N	2026-08-17 12:17:28.897933+00	2026-08-17 12:17:28.897933+00	2026-08-17 12:17:28.897933+00
+2272c260-c708-4ccc-935d-1957e332ce92	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d987eafb-fd70-4aa1-9e26-7399ac379a1e	6db961ec-fe29-4e96-b8e3-e37f36b85cab	1	43	10	\N	f	t	\N	2026-08-17 12:18:57.010093+00	2026-08-17 12:18:57.010093+00	2026-08-17 12:18:57.010093+00
+0438568a-5f8d-4208-af31-2e7249e11d22	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	743f94c0-5c0d-4072-b868-96cfb7ed6843	b0bface7-5949-43bc-b105-0cb93d7657fc	1	10	12	\N	f	t	\N	2026-08-17 12:21:08.581056+00	2026-08-17 12:21:08.581056+00	2026-08-17 12:21:08.581056+00
+1481ebe5-b8f4-44cf-b475-7687f6afd178	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	7029b904-d3b1-4415-8be7-9a87fd674824	6db961ec-fe29-4e96-b8e3-e37f36b85cab	1	75	10	\N	f	t	\N	2026-08-17 12:21:41.068945+00	2026-08-17 12:21:41.068945+00	2026-08-17 12:21:41.068945+00
+8b965775-46c7-41cb-b7d5-568ce36a5f07	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	743f94c0-5c0d-4072-b868-96cfb7ed6843	b0bface7-5949-43bc-b105-0cb93d7657fc	2	10	12	\N	f	t	\N	2026-08-17 12:22:14.266209+00	2026-08-17 12:22:14.266209+00	2026-08-17 12:22:14.266209+00
+901ad552-da84-4d34-a5f8-3cf5ef59544c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	7029b904-d3b1-4415-8be7-9a87fd674824	6db961ec-fe29-4e96-b8e3-e37f36b85cab	2	75	8	\N	f	t	\N	2026-08-17 12:23:37.614204+00	2026-08-17 12:23:37.614204+00	2026-08-17 12:23:37.614204+00
+83f5bdc7-f30b-41ae-b824-c252f3e6539b	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	743f94c0-5c0d-4072-b868-96cfb7ed6843	b0bface7-5949-43bc-b105-0cb93d7657fc	3	10	15	\N	f	t	\N	2026-08-17 12:24:47.824727+00	2026-08-17 12:24:47.824727+00	2026-08-17 12:24:47.824727+00
+5c41804e-75d4-492b-b0c4-2fa6d6780063	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d987eafb-fd70-4aa1-9e26-7399ac379a1e	6db961ec-fe29-4e96-b8e3-e37f36b85cab	2	43	10	\N	f	t	\N	2026-08-17 12:22:09.455201+00	2026-08-17 12:22:09.455201+00	2026-08-17 12:26:58.595841+00
+0b47241e-0275-4251-944a-69f686515576	43db9f06-01c9-4d14-9fc6-c01f6b25761f	d987eafb-fd70-4aa1-9e26-7399ac379a1e	6db961ec-fe29-4e96-b8e3-e37f36b85cab	3	43	9	\N	f	t	\N	2026-08-17 12:27:03.332116+00	2026-08-17 12:27:03.332116+00	2026-08-17 12:27:03.332116+00
+ff3c2c58-371e-4847-bf0a-8343edfb555c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	7029b904-d3b1-4415-8be7-9a87fd674824	6db961ec-fe29-4e96-b8e3-e37f36b85cab	3	75	7	\N	f	t	\N	2026-08-17 12:28:41.260859+00	2026-08-17 12:28:41.260859+00	2026-08-17 12:28:41.260859+00
+06987c39-b77f-43bf-b950-5b8f31bede1c	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	743f94c0-5c0d-4072-b868-96cfb7ed6843	b0bface7-5949-43bc-b105-0cb93d7657fc	4	10	15	\N	f	t	\N	2026-08-17 12:30:00.769281+00	2026-08-17 12:30:00.769281+00	2026-08-17 12:30:00.769281+00
+b52d64dc-4d01-4844-82b1-ba71702f31fb	43db9f06-01c9-4d14-9fc6-c01f6b25761f	550235ec-747d-4ba0-a8fc-82173195d305	b0bface7-5949-43bc-b105-0cb93d7657fc	1	36	15	\N	f	t	\N	2026-08-17 12:31:39.809211+00	2026-08-17 12:31:39.809211+00	2026-08-17 12:31:39.809211+00
+f188e8dd-00eb-4161-bc41-9dc63d0df862	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	048a6e29-165b-41d5-89b9-7bd35d4db324	b0bface7-5949-43bc-b105-0cb93d7657fc	1	59	15	\N	f	t	\N	2026-08-17 12:32:50.17941+00	2026-08-17 12:32:50.17941+00	2026-08-17 12:32:50.17941+00
+e4b264fe-7c01-40f2-9f46-4028e627c682	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	79a15481-af10-4542-9dce-c6ecef52646c	f21231e0-3b85-4604-9b23-f9d37d399d65	2	60	12	\N	f	t	\N	2026-08-17 12:34:49.315497+00	2026-08-17 12:34:49.315497+00	2026-08-17 12:34:49.315497+00
+d767b17e-437d-47a2-90f3-becf98a9d6d9	43db9f06-01c9-4d14-9fc6-c01f6b25761f	550235ec-747d-4ba0-a8fc-82173195d305	b0bface7-5949-43bc-b105-0cb93d7657fc	2	36	14	\N	f	t	\N	2026-08-17 12:35:14.343817+00	2026-08-17 12:35:14.343817+00	2026-08-17 12:35:14.343817+00
+fd585f97-49cb-47d3-bec3-2f37379001d3	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	048a6e29-165b-41d5-89b9-7bd35d4db324	b0bface7-5949-43bc-b105-0cb93d7657fc	2	59	14	\N	f	t	\N	2026-08-17 12:36:17.942757+00	2026-08-17 12:36:17.942757+00	2026-08-17 12:36:17.942757+00
+cd6cb372-0ed0-46d7-b6ab-5712da506b16	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	79a15481-af10-4542-9dce-c6ecef52646c	f21231e0-3b85-4604-9b23-f9d37d399d65	1	60	12	\N	f	t	\N	2026-08-17 12:32:35.99726+00	2026-08-17 12:32:35.99726+00	2026-08-17 12:37:36.333959+00
+97027fdd-8879-4de4-9ed3-35affcd2d5b3	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	79a15481-af10-4542-9dce-c6ecef52646c	f21231e0-3b85-4604-9b23-f9d37d399d65	3	60	10	\N	f	t	\N	2026-08-17 12:37:42.311686+00	2026-08-17 12:37:42.311686+00	2026-08-17 12:37:42.311686+00
+5897a6ba-4dd1-4eef-a985-e37d866d00d8	43db9f06-01c9-4d14-9fc6-c01f6b25761f	550235ec-747d-4ba0-a8fc-82173195d305	b0bface7-5949-43bc-b105-0cb93d7657fc	3	36	12	\N	f	t	\N	2026-08-17 12:39:13.717778+00	2026-08-17 12:39:13.717778+00	2026-08-17 12:39:13.717778+00
+6c9d4a39-3972-4389-aa04-36c9614d946d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	438c34ae-1fd6-4473-9713-58f7cf3dbb53	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	1	30	10	\N	f	t	\N	2026-08-17 12:39:58.04231+00	2026-08-17 12:39:58.04231+00	2026-08-17 12:39:58.04231+00
+12fe514d-d951-441c-8edd-6e0d67745093	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	438c34ae-1fd6-4473-9713-58f7cf3dbb53	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	2	30	10	\N	f	t	\N	2026-08-17 12:41:18.052695+00	2026-08-17 12:41:18.052695+00	2026-08-17 12:41:18.052695+00
+1ac6797b-04e3-470a-9bce-1db8fb4f0985	43db9f06-01c9-4d14-9fc6-c01f6b25761f	550235ec-747d-4ba0-a8fc-82173195d305	b0bface7-5949-43bc-b105-0cb93d7657fc	4	36	13	\N	f	t	\N	2026-08-17 12:43:37.434148+00	2026-08-17 12:43:37.434148+00	2026-08-17 12:43:37.434148+00
+43091e94-6986-4e12-8f8c-d0df857a69a2	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	438c34ae-1fd6-4473-9713-58f7cf3dbb53	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	3	30	10	\N	f	t	\N	2026-08-17 12:44:33.615826+00	2026-08-17 12:44:33.615826+00	2026-08-17 12:44:33.615826+00
+0cc90dc2-4756-4d27-bab9-14fcc6c5c2d5	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	048a6e29-165b-41d5-89b9-7bd35d4db324	b0bface7-5949-43bc-b105-0cb93d7657fc	4	59	14	\N	f	t	\N	2026-08-17 12:44:47.295588+00	2026-08-17 12:44:47.295588+00	2026-08-17 12:44:47.295588+00
+cbd8ebf8-eed6-438e-8403-7d6711c3d7b6	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	11af7eb3-03c5-4314-8c43-372805cb794a	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	1	30	12	\N	f	t	\N	2026-08-17 12:46:56.200456+00	2026-08-17 12:46:56.200456+00	2026-08-17 12:46:56.200456+00
+833e1bf4-7320-4814-abe8-7c2d51a8f5c9	43db9f06-01c9-4d14-9fc6-c01f6b25761f	fdfe316c-a3bf-4322-a2ed-4f65477fad28	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	1	30	12	\N	f	t	\N	2026-08-17 12:48:23.817638+00	2026-08-17 12:48:23.817638+00	2026-08-17 12:48:23.817638+00
+70a63b36-6c89-4086-a4e3-241193d13c6d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	11af7eb3-03c5-4314-8c43-372805cb794a	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	2	30	10	\N	f	t	\N	2026-08-17 12:49:11.976224+00	2026-08-17 12:49:11.976224+00	2026-08-17 12:49:11.976224+00
+7106b9e2-7640-4287-9172-d614b83c5e2b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	241d403d-a3ec-479d-b2b5-df9080a0b8f1	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	1	45	12	\N	f	t	\N	2026-08-17 12:50:03.723017+00	2026-08-17 12:50:03.723017+00	2026-08-17 12:50:03.723017+00
+56896220-2b7f-42db-901c-13ae83978c58	43db9f06-01c9-4d14-9fc6-c01f6b25761f	fdfe316c-a3bf-4322-a2ed-4f65477fad28	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	2	30	12	\N	f	t	\N	2026-08-17 12:51:31.39599+00	2026-08-17 12:51:31.39599+00	2026-08-17 12:51:31.39599+00
+91e991cc-9ebb-486c-ae2a-870735670b13	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	11af7eb3-03c5-4314-8c43-372805cb794a	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	3	30	10	\N	f	t	\N	2026-08-17 12:52:28.098596+00	2026-08-17 12:52:28.098596+00	2026-08-17 12:52:28.098596+00
+8794a44b-b1e3-4b1d-9574-e75eb7edd35e	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	241d403d-a3ec-479d-b2b5-df9080a0b8f1	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	2	45	11	\N	f	t	\N	2026-08-17 12:52:41.106957+00	2026-08-17 12:52:41.106957+00	2026-08-17 12:52:41.106957+00
+4596886d-132f-4298-a156-959b6c3e72b6	43db9f06-01c9-4d14-9fc6-c01f6b25761f	fdfe316c-a3bf-4322-a2ed-4f65477fad28	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	3	30	10	\N	f	t	\N	2026-08-17 12:54:55.928928+00	2026-08-17 12:54:55.928928+00	2026-08-17 12:54:55.928928+00
+fa8af08c-d5a4-410e-8e8a-cbb8268b5575	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	241d403d-a3ec-479d-b2b5-df9080a0b8f1	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	3	45	10	\N	f	t	\N	2026-08-17 12:59:19.422307+00	2026-08-17 12:59:19.422307+00	2026-08-17 12:59:19.422307+00
+e6a583ef-5b6e-4b29-ab06-710aa0d71a50	43db9f06-01c9-4d14-9fc6-c01f6b25761f	ed07703c-46db-40ac-8401-e1d35436eb25	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	1	30	12	\N	f	t	\N	2026-08-17 12:59:43.443854+00	2026-08-17 12:59:43.443854+00	2026-08-17 12:59:43.443854+00
+745c25c7-6490-4cf2-b9af-da8f7b5ea6b7	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	813069d2-7cbc-4ad0-a220-a2d20eacc237	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	1	37.5	15	\N	f	t	\N	2026-08-17 13:00:42.140511+00	2026-08-17 13:00:42.140511+00	2026-08-17 13:00:42.140511+00
+64a7e903-e8ec-409d-9b90-23b1a15352b8	43db9f06-01c9-4d14-9fc6-c01f6b25761f	ed07703c-46db-40ac-8401-e1d35436eb25	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	2	30	12	\N	f	t	\N	2026-08-17 13:02:21.216914+00	2026-08-17 13:02:21.216914+00	2026-08-17 13:02:21.216914+00
+fc4f8c1d-7219-4c4e-a914-e2a425208c83	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	813069d2-7cbc-4ad0-a220-a2d20eacc237	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	2	37.5	12	\N	f	t	\N	2026-08-17 13:03:25.567738+00	2026-08-17 13:03:25.567738+00	2026-08-17 13:03:25.567738+00
+c02ae76d-0e14-412b-8e7c-886ee9c2174b	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	896c0d26-4ed9-4846-94e5-8c62fc87d19f	8fa3708c-f14f-4f77-88ce-b3555bbc99af	1	15	12	\N	f	t	\N	2026-08-17 13:05:12.944249+00	2026-08-17 13:05:12.944249+00	2026-08-17 13:05:12.944249+00
+2e518356-9c4a-452f-a548-806bfd7c11e2	43db9f06-01c9-4d14-9fc6-c01f6b25761f	ed07703c-46db-40ac-8401-e1d35436eb25	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	3	30	12	\N	f	t	\N	2026-08-17 13:05:13.768889+00	2026-08-17 13:05:13.768889+00	2026-08-17 13:05:13.768889+00
+1c70321e-65ff-4ad9-9053-37fad5c8c198	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	896c0d26-4ed9-4846-94e5-8c62fc87d19f	8fa3708c-f14f-4f77-88ce-b3555bbc99af	2	15	12	\N	f	t	\N	2026-08-17 13:05:18.038909+00	2026-08-17 13:05:18.038909+00	2026-08-17 13:05:18.038909+00
+5714d0d1-836a-4a73-b61c-bbc798d3b30d	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	896c0d26-4ed9-4846-94e5-8c62fc87d19f	8fa3708c-f14f-4f77-88ce-b3555bbc99af	3	15	12	\N	f	t	\N	2026-08-17 13:05:21.573828+00	2026-08-17 13:05:21.573828+00	2026-08-17 13:05:21.573828+00
+6ac24e3d-e014-4638-96b3-9bc89af3ab2c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	813069d2-7cbc-4ad0-a220-a2d20eacc237	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	3	37.5	13	\N	f	t	\N	2026-08-17 13:07:19.28762+00	2026-08-17 13:07:19.28762+00	2026-08-17 13:07:19.28762+00
+32924638-120b-441f-b163-2c737e78cef0	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6d10300a-31df-49b0-89f3-2ef575311d01	f21231e0-3b85-4604-9b23-f9d37d399d65	1	47.5	13	\N	f	t	\N	2026-08-17 13:10:15.026069+00	2026-08-17 13:10:15.026069+00	2026-08-17 13:10:15.026069+00
+32b7a15f-b270-49a0-9663-e1c5d072ce95	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	afe0dc72-cbee-4768-89ea-731849ee551d	f21231e0-3b85-4604-9b23-f9d37d399d65	1	62.5	14	\N	f	t	\N	2026-08-17 13:12:16.706193+00	2026-08-17 13:12:16.706193+00	2026-08-17 13:12:16.706193+00
+afdfb75c-9cf7-446e-b401-9cfa7648dca9	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6d10300a-31df-49b0-89f3-2ef575311d01	f21231e0-3b85-4604-9b23-f9d37d399d65	2	47.5	12	\N	f	t	\N	2026-08-17 13:13:13.362633+00	2026-08-17 13:13:13.362633+00	2026-08-17 13:13:13.362633+00
+042a0153-edfb-4a9e-b84a-5b411c70fa93	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	afe0dc72-cbee-4768-89ea-731849ee551d	f21231e0-3b85-4604-9b23-f9d37d399d65	2	62.5	12	\N	f	t	\N	2026-08-17 13:15:51.906432+00	2026-08-17 13:15:51.906432+00	2026-08-17 13:15:51.906432+00
+b34007a6-0112-409c-a026-c9c782d4d290	43db9f06-01c9-4d14-9fc6-c01f6b25761f	6d10300a-31df-49b0-89f3-2ef575311d01	f21231e0-3b85-4604-9b23-f9d37d399d65	3	47.5	12	\N	f	t	\N	2026-08-17 13:17:29.274398+00	2026-08-17 13:17:29.274398+00	2026-08-17 13:17:29.274398+00
+7d509868-2737-4050-ab3b-7a65fa94b08b	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	afe0dc72-cbee-4768-89ea-731849ee551d	f21231e0-3b85-4604-9b23-f9d37d399d65	3	62.5	12	\N	f	t	\N	2026-08-17 13:18:59.537553+00	2026-08-17 13:18:59.537553+00	2026-08-17 13:18:59.537553+00
+9a5210da-2923-48f7-bbeb-c9cfcdb4e072	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	a3be4c05-c432-4857-8ca8-9957e192fb81	982a0879-5e4f-42f4-b58f-5099de3507ce	1	\N	15	\N	f	t	\N	2026-08-17 13:23:33.427843+00	2026-08-17 13:23:33.427843+00	2026-08-17 13:23:33.427843+00
+bbfbd822-e591-4db5-acc0-175d1349ce04	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	e17b4b30-fed9-4cb6-8a0e-f5329d1ebf13	8fa3708c-f14f-4f77-88ce-b3555bbc99af	1	5	7	\N	f	t	\N	2026-08-17 13:24:49.015967+00	2026-08-17 13:24:49.015967+00	2026-08-17 13:24:49.015967+00
+739d2645-462d-46b3-9052-4c41f4aeaf9e	43db9f06-01c9-4d14-9fc6-c01f6b25761f	561fe0be-d882-426f-b1cc-7e31bb1b4b24	8fa3708c-f14f-4f77-88ce-b3555bbc99af	1	5	6	\N	f	t	\N	2026-08-17 13:25:53.600985+00	2026-08-17 13:25:53.600985+00	2026-08-17 13:25:53.600985+00
+6ac73268-48bc-4144-8c51-af8bf0278aa9	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	e17b4b30-fed9-4cb6-8a0e-f5329d1ebf13	8fa3708c-f14f-4f77-88ce-b3555bbc99af	2	5	7	\N	f	t	\N	2026-08-17 13:27:27.618556+00	2026-08-17 13:27:27.618556+00	2026-08-17 13:27:27.618556+00
+5d0ff53f-0e39-462f-9055-934a63b23c97	43db9f06-01c9-4d14-9fc6-c01f6b25761f	561fe0be-d882-426f-b1cc-7e31bb1b4b24	8fa3708c-f14f-4f77-88ce-b3555bbc99af	2	5	5	\N	f	t	\N	2026-08-17 13:28:55.55236+00	2026-08-17 13:28:55.55236+00	2026-08-17 13:28:55.55236+00
+b569d926-bfee-48d3-85a5-d925ec767511	43db9f06-01c9-4d14-9fc6-c01f6b25761f	561fe0be-d882-426f-b1cc-7e31bb1b4b24	8fa3708c-f14f-4f77-88ce-b3555bbc99af	3	5	4	\N	f	t	\N	2026-08-17 13:31:02.219566+00	2026-08-17 13:31:02.219566+00	2026-08-17 13:31:02.219566+00
+0d24c78f-80d1-4cb5-8eb6-29620c2ab69a	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	e17b4b30-fed9-4cb6-8a0e-f5329d1ebf13	8fa3708c-f14f-4f77-88ce-b3555bbc99af	3	5	8	\N	f	t	\N	2026-08-17 13:33:01.527355+00	2026-08-17 13:33:01.527355+00	2026-08-17 13:33:01.527355+00
+3d426212-f6f5-42a3-b37e-1664fff61fbe	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	38d82ed4-351c-4f42-9c6f-33946df2036c	982a0879-5e4f-42f4-b58f-5099de3507ce	1	\N	10	\N	f	t	\N	2026-08-17 13:33:53.505194+00	2026-08-17 13:33:53.505194+00	2026-08-17 13:33:53.505194+00
+3436fa33-27b3-48b5-adda-6a9c8ae880b8	43db9f06-01c9-4d14-9fc6-c01f6b25761f	b36b7130-e8d7-421c-a7f5-f49918c94bd7	982a0879-5e4f-42f4-b58f-5099de3507ce	1	\N	10	\N	f	t	\N	2026-08-17 13:39:57.977059+00	2026-08-17 13:39:57.977059+00	2026-08-17 13:39:57.977059+00
+4eed8c5c-3268-47b3-a617-70e980c98a06	eef54a00-fad7-4e80-b83b-eeff68c3807f	cfe3bee0-797c-496d-bc48-c5cdbf5c3de2	e59803b7-57be-4539-ba4e-714220e8a369	1	7.5	10	\N	f	t	\N	2026-08-17 18:16:03.782272+00	2026-08-17 18:16:03.782272+00	2026-08-17 18:16:03.782272+00
+\.
+
+
+--
+-- Data for Name: workout_days; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.workout_days (id, template_id, slug, day_of_week, name, focus, is_optional, is_rest, specialization, estimated_minutes_min, estimated_minutes_max, cardio_note, notes, sort_order) FROM stdin;
+4dcbaf8b-f296-4a15-ae4e-a97441646067	b79deff5-bb09-43b6-af01-63f46b806cda	monday	1	Monday	Chest + Side Delts + Triceps	f	f	\N	60	75	Incline treadmill walk 15-20 min	\N	1
+a978c9e1-416f-4464-a207-51c526287348	b79deff5-bb09-43b6-af01-63f46b806cda	tuesday	2	Tuesday	Back Width + Rear Delts + Biceps	f	f	\N	60	75	\N	\N	2
+b12f6719-e361-4ba5-9098-83041ef7eb0b	b79deff5-bb09-43b6-af01-63f46b806cda	thursday	4	Thursday	Shoulders + Arms	f	f	\N	55	70	\N	Final lateral raise set can be a controlled drop set.	4
+5df4b661-92a2-48e2-a2d0-14c770235c8b	b79deff5-bb09-43b6-af01-63f46b806cda	saturday-shoulders	6	Saturday - Shoulders	Optional Specialization: Shoulders	t	f	shoulders	40	55	15-20 min incline walk	Weeks 1, 4 and 7 of the rotation.	6
+d7ce929c-06a9-42a6-a385-5715f453668d	b79deff5-bb09-43b6-af01-63f46b806cda	saturday-back	6	Saturday - Back	Optional Specialization: Back	t	f	back	40	55	15-20 min incline walk	Weeks 2, 5 and 8 of the rotation.	7
+fea30e10-1b4a-48f7-9146-7f3f6130e1cd	b79deff5-bb09-43b6-af01-63f46b806cda	saturday-arms	6	Saturday - Arms	Optional Specialization: Arms	t	f	arms	40	55	15-20 min incline walk	Week 3 of the rotation.	8
+609ec1b9-5ea1-4f4f-b088-62fc56082a4f	b79deff5-bb09-43b6-af01-63f46b806cda	saturday-chest	6	Saturday - Chest	Optional Specialization: Chest	t	f	chest	40	55	15-20 min incline walk	Week 6 of the rotation.	9
+78bab72b-7326-40b2-b929-04d191f106d0	b79deff5-bb09-43b6-af01-63f46b806cda	sunday	0	Sunday	Complete Rest	f	t	\N	0	0	Easy walking only	Easy walking, light mobility, stretching if desired. No hard training, no HIIT.	10
+d3a70388-5f01-4df9-9d62-9fd23d2836ed	b79deff5-bb09-43b6-af01-63f46b806cda	wednesday	3	Wednesday	Legs + Core + Cardio	f	f	\N	65	80	Incline treadmill walk 20 min	\N	3
+da2c48b5-fc0e-45ff-9857-61211888f6f1	b79deff5-bb09-43b6-af01-63f46b806cda	friday	5	Friday	Upper + Posterior Chain + Core + Cardio	f	f	\N	70	85	Incline treadmill walk 20 min	\N	5
+\.
+
+
+--
+-- Data for Name: workout_exercises; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.workout_exercises (id, day_id, exercise_id, "position", sets, rep_range, rep_min, rep_max, rir_target, rest_note, rest_seconds, block, notes) FROM stdin;
+384988ea-7135-48b2-8d91-ba1618255a11	4dcbaf8b-f296-4a15-ae4e-a97441646067	982a0879-5e4f-42f4-b58f-5099de3507ce	8	1	15-20 min	\N	\N	\N	\N	0	\N	Moderate intensity. Breathing harder but still able to speak in short sentences.
+d455a40e-2312-4d50-aefc-d6eb5b7dcf1b	4dcbaf8b-f296-4a15-ae4e-a97441646067	8fa3708c-f14f-4f77-88ce-b3555bbc99af	7	3	10-12 / side	10	12	1-2	60 sec	60	\N	\N
+f624ab98-53ef-4b7c-aecd-73b1c562a640	4dcbaf8b-f296-4a15-ae4e-a97441646067	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	6	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+67c98468-e660-4cd4-be40-e25491a6bdf4	4dcbaf8b-f296-4a15-ae4e-a97441646067	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	5	3	10-12	10	12	0-1	60-90 sec	75	\N	\N
+1b7a8fb1-9a57-486f-b922-7ae52a8585cd	4dcbaf8b-f296-4a15-ae4e-a97441646067	f21231e0-3b85-4604-9b23-f9d37d399d65	4	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+d2e139ab-efb8-4fe9-b09f-9b66a05fa088	4dcbaf8b-f296-4a15-ae4e-a97441646067	b0bface7-5949-43bc-b105-0cb93d7657fc	3	4	12-15	12	15	0-1	60-90 sec	75	\N	\N
+729dc8ff-c4d0-4661-bd29-d65402f228a0	4dcbaf8b-f296-4a15-ae4e-a97441646067	6db961ec-fe29-4e96-b8e3-e37f36b85cab	2	3	8-12	8	12	1-2	2 min	120	\N	Starting weight: ~75 kg
+695a2888-8aef-4d26-b7d5-f1514bbffa8b	4dcbaf8b-f296-4a15-ae4e-a97441646067	cb07506b-1629-425c-858f-092ac50d3132	1	4	8-10	8	10	1-2	2-3 min	180	\N	Starting weight: ~60 kg
+a789379a-2ce2-439e-8273-df87ed386166	a978c9e1-416f-4464-a207-51c526287348	4864bcd3-ac45-48fc-b9af-2cc15556bfcc	6	3	8-12	8	12	0-1	90 sec	90	\N	Starting weight: ~15 kg
+e0c71fed-d512-4a0b-b8d2-075808f403cd	a978c9e1-416f-4464-a207-51c526287348	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	5	2	15-20	15	20	0-1	60 sec	60	\N	\N
+15001c2e-bc33-464a-b0cb-1aa6dcf2de8b	a978c9e1-416f-4464-a207-51c526287348	64fc2b70-491f-4abf-a231-18c4631f57a8	4	4	12-15	12	15	0-1	60-90 sec	75	\N	Starting weight: ~55 kg
+a8efbdc5-491e-4843-b6f6-977f03b13e94	a978c9e1-416f-4464-a207-51c526287348	caa90bf6-0e87-4962-8342-0156731af321	3	3	12-15	12	15	0-1	60-90 sec	75	\N	Starting weight: ~45 kg
+9cb1b808-f2f9-49fa-aa63-9f55c91af421	a978c9e1-416f-4464-a207-51c526287348	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	2	4	8-12	8	12	1-2	2 min	120	\N	Starting weight: ~40 kg
+9c04e47f-200d-4325-b5fd-c77cbcea1284	a978c9e1-416f-4464-a207-51c526287348	9851fd78-07da-4a45-ad50-077b1396b1be	1	4	8-10	8	10	1-2	2-3 min	180	\N	Use a weight appropriate for the machine
+40b6c17d-ae42-466b-96e1-c80fe2ecbc56	b12f6719-e361-4ba5-9098-83041ef7eb0b	e59803b7-57be-4539-ba4e-714220e8a369	7	2	10-12	10	12	0-1	60-90 sec	75	\N	\N
+6b12500a-e56b-4605-b372-dd3d12565a09	b12f6719-e361-4ba5-9098-83041ef7eb0b	ce51a877-1fe3-49ca-b7a1-cb4a395db4a9	5	3	10-12	10	12	0-1	60-90 sec	75	\N	Starting point: ~12.5 kg EZ-bar load or equivalent
+9eba2e11-befe-4f63-bf80-ec628426d7c0	b12f6719-e361-4ba5-9098-83041ef7eb0b	0132c471-e57c-4d7a-b379-555b0c2ac506	4	3	10-12	10	12	0-1	60-90 sec	75	\N	\N
+3b4831b1-e0b5-4615-8a96-d0afb0face26	b12f6719-e361-4ba5-9098-83041ef7eb0b	4518aa4b-304f-4cba-a14e-b060f69c8fa8	3	3	15-20	15	20	0-1	60-90 sec	75	\N	\N
+69a60ab8-783a-450d-b21c-fce5eccb71e8	b12f6719-e361-4ba5-9098-83041ef7eb0b	4ab9e5f4-ebc6-4902-b4b6-404097741b79	2	4	12-15	12	15	0-1	60-90 sec	75	\N	\N
+51e907b1-b813-4314-ab57-1cf75d43bfe5	b12f6719-e361-4ba5-9098-83041ef7eb0b	fb28391f-5ebd-43b1-b3da-dbc5b424c91a	1	4	8-10	8	10	1-2	2-3 min	180	\N	Starting weight: ~35 kg
+f5cb0129-d458-4dc8-abe4-984ad83ac52d	b12f6719-e361-4ba5-9098-83041ef7eb0b	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	6	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+5e7bcdaa-ba0e-4f92-b414-25fe53df0fe9	b12f6719-e361-4ba5-9098-83041ef7eb0b	b0bface7-5949-43bc-b105-0cb93d7657fc	8	2	15-20	15	20	0-1	60 sec	60	\N	Finisher — final set can be a controlled drop set.
+6391fd85-cae0-4a88-87bd-1b43476bdd04	5df4b661-92a2-48e2-a2d0-14c770235c8b	982a0879-5e4f-42f4-b58f-5099de3507ce	6	1	15-20 min	\N	\N	\N	\N	0	\N	\N
+55519651-9ede-4f35-b107-74441772d601	5df4b661-92a2-48e2-a2d0-14c770235c8b	e5c60e5c-6494-48a4-9a7e-9b9defc75f3d	1	3	8-10	8	10	1-2	2-3 min	180	\N	\N
+e0d08e50-dbff-4410-9ec5-dda5dc4fa04b	5df4b661-92a2-48e2-a2d0-14c770235c8b	4ab9e5f4-ebc6-4902-b4b6-404097741b79	2	4	12-15	12	15	0-1	60-90 sec	75	\N	\N
+20d1865a-70c3-4b91-9384-8d4e949593fe	5df4b661-92a2-48e2-a2d0-14c770235c8b	7f86b3b1-d33e-464c-8c04-86a5f61de0f1	5	3	15-20	15	20	0-1	60 sec	60	\N	\N
+9e6c18e5-0dcf-4672-960d-78983c396111	5df4b661-92a2-48e2-a2d0-14c770235c8b	64fc2b70-491f-4abf-a231-18c4631f57a8	4	4	15-20	15	20	0-1	60-90 sec	75	\N	\N
+290e8594-212c-48dc-9673-4354482db37c	5df4b661-92a2-48e2-a2d0-14c770235c8b	b0bface7-5949-43bc-b105-0cb93d7657fc	3	3	15-20	15	20	0-1	60-90 sec	75	\N	\N
+ed4b65c0-d7af-44db-afbb-c2cb517ada46	d7ce929c-06a9-42a6-a385-5715f453668d	982a0879-5e4f-42f4-b58f-5099de3507ce	6	1	15-20 min	\N	\N	\N	\N	0	\N	\N
+6799b22d-6a8e-41db-a46a-b4851a329677	d7ce929c-06a9-42a6-a385-5715f453668d	c1f8d4e0-9691-4143-9833-ae1f27b7cc17	1	4	6-10	6	10	1-2	2-3 min	180	\N	\N
+07fc1bc2-7e3a-457a-a8aa-c226edcabb07	d7ce929c-06a9-42a6-a385-5715f453668d	10933878-e0d9-42d9-9ce1-fae93b2d78b8	2	4	8-12	8	12	1-2	2 min	120	\N	\N
+ed12a734-78a9-4359-93d9-0e2ab18f9065	d7ce929c-06a9-42a6-a385-5715f453668d	64fc2b70-491f-4abf-a231-18c4631f57a8	5	3	15-20	15	20	0-1	60-90 sec	75	\N	\N
+2193f405-1241-4dac-af2e-cbd5f9ab9bde	d7ce929c-06a9-42a6-a385-5715f453668d	caa90bf6-0e87-4962-8342-0156731af321	4	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+10124b06-e08c-45d3-80fc-e12b7c061c56	d7ce929c-06a9-42a6-a385-5715f453668d	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	3	3	8-12	8	12	1-2	2 min	120	\N	\N
+64e4150f-f61b-421e-8e50-0c01ba856e85	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	982a0879-5e4f-42f4-b58f-5099de3507ce	7	1	15-20 min	\N	\N	\N	\N	0	\N	\N
+ac4be20f-b377-4abe-859a-984a893d7ea4	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	b2c96b9f-39b7-4f5d-a4b2-abe1702f5fc2	1	3	8-10	8	10	1-2	90 sec	90	\N	\N
+95a90736-db0c-4b2c-858e-339a3dd47b29	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	e59803b7-57be-4539-ba4e-714220e8a369	3	3	10-12	10	12	0-1	60-90 sec	75	\N	\N
+7b77c99d-8aa5-40be-81ae-615fbb472e6e	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	0132c471-e57c-4d7a-b379-555b0c2ac506	4	3	8-10	8	10	1-2	90 sec	90	\N	\N
+0f6b41b0-d548-402e-bf7d-0d434c87be23	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	4864bcd3-ac45-48fc-b9af-2cc15556bfcc	2	3	10-12	10	12	0-1	90 sec	90	\N	\N
+d1288e9c-bb4f-4fcf-96f0-58d604bd493d	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	ec83dc53-1398-4d2c-b90d-2c4610aa7e49	5	3	10-15	10	15	0-1	60-90 sec	75	\N	\N
+7ccfdcc7-8ef8-409e-9702-a40ad47e544d	fea30e10-1b4a-48f7-9146-7f3f6130e1cd	a99a8d4e-507f-4e69-919c-4d2b6f1ad86e	6	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+01e3f4f3-275b-4898-9b6c-516271bbe980	609ec1b9-5ea1-4f4f-b088-62fc56082a4f	982a0879-5e4f-42f4-b58f-5099de3507ce	6	1	15-20 min	\N	\N	\N	\N	0	\N	\N
+9d79e253-c088-4c9a-a2b6-b1e3d35ba7a7	609ec1b9-5ea1-4f4f-b088-62fc56082a4f	6a66925f-b4a5-4fb0-ac77-17d46cbfbb4d	5	2	Stop ~1 rep before failure	\N	\N	1	60-90 sec	75	\N	\N
+3fc5f3dc-605f-472c-add8-a04a53ba835d	609ec1b9-5ea1-4f4f-b088-62fc56082a4f	890b8c33-d79c-4dab-bb29-5d67244eb711	4	3	8-10	8	10	1-2	2 min	120	\N	\N
+ca69973c-2280-417d-9caf-3eea177c1b71	609ec1b9-5ea1-4f4f-b088-62fc56082a4f	42d4c83a-f092-47b8-b0a5-92b1e32d39f7	1	4	8-10	8	10	1-2	2-3 min	180	\N	\N
+c05553c1-f355-45af-9a87-8220b4caa938	609ec1b9-5ea1-4f4f-b088-62fc56082a4f	486498b6-0887-4735-a5b9-318d5c448874	3	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+dfe848e5-082b-4b76-b983-7fd82ae0652c	609ec1b9-5ea1-4f4f-b088-62fc56082a4f	f21231e0-3b85-4604-9b23-f9d37d399d65	2	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+20e7ef92-f621-4a10-ab13-d43d36941a66	d3a70388-5f01-4df9-9d62-9fd23d2836ed	9ec3e3a5-e0db-4c6c-8cf2-e07831091dd9	7	3	8-10 / side	8	10	1-2	60 sec	60	\N	Start unweighted if necessary. Focus on a controlled trunk position while moving the limbs.
+62ab592d-4c68-4601-a376-4cb8d7c4862e	d3a70388-5f01-4df9-9d62-9fd23d2836ed	982a0879-5e4f-42f4-b58f-5099de3507ce	8	1	20 min	\N	\N	\N	\N	0	\N	\N
+2a431573-f489-4a2a-87c3-da9fc41cb33e	d3a70388-5f01-4df9-9d62-9fd23d2836ed	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	6	4	12-15	12	15	0-1	60-90 sec	75	\N	\N
+5432b490-6ea9-4423-ab62-148ac9095f8c	d3a70388-5f01-4df9-9d62-9fd23d2836ed	8525ccdd-f1ce-4868-921b-1ea953365500	5	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+2b0382ea-5d7c-4ab3-b43e-16b18197ec17	d3a70388-5f01-4df9-9d62-9fd23d2836ed	91e90c0f-9b65-4614-acd1-299bcdc83fc3	4	3	8-10 / leg	8	10	1-2	90-120 sec	105	\N	Starting weight: ~15 kg
+ef799a9e-98fc-47c6-a7a6-5f17ff63a90c	d3a70388-5f01-4df9-9d62-9fd23d2836ed	c73065c9-cfc2-4b47-b96e-a2ea51271b7a	3	4	10-12	10	12	0-1	90 sec	90	\N	Controlled eccentric
+b3b175f9-e456-4410-9f40-4338b0c18dce	d3a70388-5f01-4df9-9d62-9fd23d2836ed	444c4727-1be9-4be6-a9f6-565a18283bf1	2	3	8-10	8	10	1-2	2-3 min	180	\N	Starting weight: ~50 kg. Keep the pelvis controlled. Do not chase depth if your lower back starts rounding.
+cdc7b925-c9eb-48b6-b29c-f3dbdf0e404c	d3a70388-5f01-4df9-9d62-9fd23d2836ed	80e0900f-c21a-40c7-a20f-632769eab30b	1	4	8-12	8	12	1-2	2-3 min	180	\N	Starting weight: ~150 kg
+e026101c-23be-4fa5-81a4-dc8b682084f9	da2c48b5-fc0e-45ff-9857-61211888f6f1	982a0879-5e4f-42f4-b58f-5099de3507ce	9	1	20 min	\N	\N	\N	\N	0	\N	\N
+5869dcb2-8244-4026-b560-ff42d0244a24	da2c48b5-fc0e-45ff-9857-61211888f6f1	fbf0ad46-e549-4dcf-9b5f-f102b4657ba0	5	3	8-12	8	12	1-2	2 min	120	\N	Controlled reps. Keep ribs down and avoid excessive lower-back extension.
+9d4e85a6-ce05-4696-9c6d-3ec39d795dc3	da2c48b5-fc0e-45ff-9857-61211888f6f1	486498b6-0887-4735-a5b9-318d5c448874	3	3	12-15	12	15	0-1	60-90 sec	75	\N	\N
+65ac9b00-8cbd-4a90-840b-50ccfd727f07	da2c48b5-fc0e-45ff-9857-61211888f6f1	10933878-e0d9-42d9-9ce1-fae93b2d78b8	2	4	8-10	8	10	1-2	2 min	120	\N	\N
+00752111-7307-4c09-982a-2b45831fd95a	da2c48b5-fc0e-45ff-9857-61211888f6f1	dbe692d8-5484-4d52-9ab2-c23d4999fc19	1	3	8-10	8	10	1-2	2-3 min	180	\N	Starting weight: ~35 kg
+8dca3ca3-89c6-46b1-bc87-bd57073c7452	da2c48b5-fc0e-45ff-9857-61211888f6f1	8adae13f-fcf8-4de3-9dd3-317e4efa4e88	7	4	12-15	12	15	0-1	60-90 sec	75	\N	\N
+131fefbe-cb8d-484b-a653-82a71e5fc674	da2c48b5-fc0e-45ff-9857-61211888f6f1	5bcb35df-7c2d-4628-b6dc-7ce883a5ad53	4	3	8-12	8	12	1-2	2 min	120	\N	\N
+55115245-e2af-4bd0-b1dd-e26fa60a67d1	da2c48b5-fc0e-45ff-9857-61211888f6f1	8fa3708c-f14f-4f77-88ce-b3555bbc99af	8	3	10-12 / side	10	12	1-2	60 sec	60	\N	\N
+af327ae2-aae9-4c87-8893-4ffbf5f229ff	da2c48b5-fc0e-45ff-9857-61211888f6f1	b0bface7-5949-43bc-b105-0cb93d7657fc	6	3	15-20	15	20	0-1	60-90 sec	75	\N	Use a lighter weight than Monday
+\.
+
+
+--
+-- Data for Name: workout_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.workout_sessions (id, user_id, day_id, title, session_date, status, started_at, finished_at, duration_seconds, paused_seconds, mood, energy, difficulty, notes, is_deload, created_at, updated_at) FROM stdin;
+3f632d04-ac4b-43f8-a97d-b90b81d40027	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	b12f6719-e361-4ba5-9098-83041ef7eb0b	Thursday — Shoulders + Arms	2026-08-13	in_progress	2026-08-13 09:56:56.834363+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-13 09:56:56.834363+00	2026-08-13 09:56:56.834363+00
+bce8d4c5-bb15-43b1-be10-1eb3f68d63eb	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	5df4b661-92a2-48e2-a2d0-14c770235c8b	Saturday - Shoulders — Optional Specialization: Shoulders	2026-08-13	in_progress	2026-08-13 10:11:41.082303+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-13 10:11:41.082303+00	2026-08-13 10:11:41.082303+00
+8744dbbd-3386-40f8-a01a-6f1201ff6ff4	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	a978c9e1-416f-4464-a207-51c526287348	Tuesday — Back Width + Rear Delts + Biceps	2026-08-14	in_progress	2026-08-14 06:37:05.151584+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-14 06:37:05.151584+00	2026-08-14 06:37:05.151584+00
+1418eee3-3de8-4572-b865-61984be64607	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	d3a70388-5f01-4df9-9d62-9fd23d2836ed	Wednesday — Legs + Abs + Cardio	2026-08-14	in_progress	2026-08-14 06:37:37.437932+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-14 06:37:37.437932+00	2026-08-14 06:37:37.437932+00
+67ae5c1c-1e53-466d-ae1c-7dbe2161a679	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	da2c48b5-fc0e-45ff-9857-61211888f6f1	Friday — Upper + Posterior Chain + Abs + Cardio	2026-08-14	in_progress	2026-08-14 06:38:50.113607+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-14 06:38:50.113607+00	2026-08-14 06:38:50.113607+00
+93891774-32cc-47a6-bb5f-86e74ea39346	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	d3a70388-5f01-4df9-9d62-9fd23d2836ed	Wednesday — Legs + Core + Cardio	2026-08-14	in_progress	2026-08-14 14:52:00.881145+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-14 14:52:00.881145+00	2026-08-14 14:52:00.881145+00
+b6bcc3bd-5a62-4ff5-9dd4-9a43a33f694e	3d9b618f-0054-461e-aa5d-f6551bbcea96	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-16	in_progress	2026-08-16 17:45:17.201111+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-16 17:45:17.201111+00	2026-08-16 17:45:17.201111+00
+62da9976-d532-43a6-aa75-c599007e5aac	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	da2c48b5-fc0e-45ff-9857-61211888f6f1	Friday — Upper + Posterior Chain + Core + Cardio	2026-08-16	in_progress	2026-08-16 17:45:29.22273+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-16 17:45:29.22273+00	2026-08-16 17:45:29.22273+00
+1c7a5c5e-d956-45d6-8e6d-eb45748b81be	7d507113-f400-45ce-9618-2bd079b4445d	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-17	in_progress	2026-08-17 05:31:49.676214+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 05:31:49.676214+00	2026-08-17 05:31:49.676214+00
+eecaf369-6467-4c85-888d-a4b51bf0fcac	43db9f06-01c9-4d14-9fc6-c01f6b25761f	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-17	completed	2026-08-17 11:22:59.379872+00	2026-08-17 13:40:08.25+00	683	0	\N	\N	\N	\N	f	2026-08-17 11:22:59.379872+00	2026-08-17 13:40:08.927523+00
+d5cfde0e-80dc-4c28-bff3-c938dee49e95	43db9f06-01c9-4d14-9fc6-c01f6b25761f	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-17	in_progress	2026-08-17 13:40:15.225819+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 13:40:15.225819+00	2026-08-17 13:40:15.225819+00
+1f03a77b-1fa5-41e7-bb4b-4f2b41362d8a	eef54a00-fad7-4e80-b83b-eeff68c3807f	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-17	in_progress	2026-08-17 18:04:17.097308+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 18:04:17.097308+00	2026-08-17 18:04:17.097308+00
+770e8a5f-9947-43e8-924e-0bcc6f86a739	eef54a00-fad7-4e80-b83b-eeff68c3807f	a978c9e1-416f-4464-a207-51c526287348	Tuesday — Back Width + Rear Delts + Biceps	2026-08-17	in_progress	2026-08-17 18:15:22.303849+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 18:15:22.303849+00	2026-08-17 18:15:22.303849+00
+df9d3eba-9347-4176-b92e-9cf5a1fb391c	eef54a00-fad7-4e80-b83b-eeff68c3807f	b12f6719-e361-4ba5-9098-83041ef7eb0b	Thursday — Shoulders + Arms	2026-08-17	in_progress	2026-08-17 18:15:47.989339+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 18:15:47.989339+00	2026-08-17 18:15:47.989339+00
+0ace62e0-3bed-443e-92ee-aafd0aba5185	43db9f06-01c9-4d14-9fc6-c01f6b25761f	5df4b661-92a2-48e2-a2d0-14c770235c8b	Saturday - Shoulders — Optional Specialization: Shoulders	2026-08-17	in_progress	2026-08-17 18:16:52.974446+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 18:16:52.974446+00	2026-08-17 18:16:52.974446+00
+c02db910-2eb0-47f2-a6f3-4b95dd227c28	43db9f06-01c9-4d14-9fc6-c01f6b25761f	a978c9e1-416f-4464-a207-51c526287348	Tuesday — Back Width + Rear Delts + Biceps	2026-08-18	in_progress	2026-08-18 05:55:42.507845+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-18 05:55:42.507845+00	2026-08-18 05:55:42.507845+00
+296bc519-76a0-48eb-88cb-e5718682513c	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-17	completed	2026-08-13 10:09:36.895923+00	2026-08-17 13:33:59.175+00	65	0	\N	\N	\N	\N	f	2026-08-13 10:09:36.895923+00	2026-08-18 06:16:07.386699+00
+c0e167e8-ccb3-44b6-aa5b-a82a8a40fede	b49ebb2a-6d6e-40fc-9caa-7d51cfe52d2f	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-17	completed	2026-08-14 14:49:02.645902+00	2026-08-17 13:37:59.605+00	4	0	\N	\N	\N	\N	f	2026-08-14 14:49:02.645902+00	2026-08-18 06:16:07.386699+00
+174bbd70-fa7d-44a2-85d3-8e8a169021c8	cb1df7de-189c-41f5-a1b7-0483a54c9ff5	4dcbaf8b-f296-4a15-ae4e-a97441646067	Monday — Chest + Side Delts + Triceps	2026-08-18	in_progress	2026-08-18 06:24:43.268+00	\N	\N	0	\N	\N	\N	\N	f	2026-08-17 13:34:11.38605+00	2026-08-18 06:24:43.489971+00
+\.
+
+
+--
+-- Data for Name: workout_templates; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.workout_templates (id, slug, name, description, notes, created_at) FROM stdin;
+b79deff5-bb09-43b6-af01-63f46b806cda	v-taper-fat-loss	V-Taper + Fat-Loss Phase	Monday-Friday mandatory training with an optional Saturday specialization day. Priorities: upper chest, lats, side delts, rear delts, arms.	Compounds: ~1-2 RIR, rest 2-3 min. Isolation: ~0-1 RIR on the final set, rest 60-90 sec. Double progression - work to the top of the rep range across all sets, then add weight and restart near the bottom. During a cut, maintaining strength is success. Lower-back-safe: no conventional deadlifts, no barbell back squats, no loaded RDLs.	2026-08-13 09:39:32.743585+00
+\.
+
+
+--
+-- Data for Name: buckets; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.buckets (id, name, owner, created_at, updated_at, public, avif_autodetection, file_size_limit, allowed_mime_types, owner_id, type) FROM stdin;
+user-profile-picture	user-profile-picture	\N	2026-08-18 07:52:52.985913+00	2026-08-18 07:52:52.985913+00	f	f	\N	\N	\N	STANDARD
+database_export_18_08_26	database_export_18_08_26	\N	2026-08-18 08:06:21.882429+00	2026-08-18 08:06:21.882429+00	f	f	\N	\N	\N	STANDARD
+\.
+
+
+--
+-- Data for Name: buckets_analytics; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.buckets_analytics (name, type, format, created_at, updated_at, id, deleted_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: buckets_vectors; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.buckets_vectors (id, type, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: migrations; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.migrations (id, name, hash, executed_at) FROM stdin;
+0	create-migrations-table	e18db593bcde2aca2a408c4d1100f6abba2195df	2026-08-13 08:18:43.496208
+1	initialmigration	6ab16121fbaa08bbd11b712d05f358f9b555d777	2026-08-13 08:18:43.535999
+2	storage-schema	f6a1fa2c93cbcd16d4e487b362e45fca157a8dbd	2026-08-13 08:18:43.538793
+3	pathtoken-column	2cb1b0004b817b29d5b0a971af16bafeede4b70d	2026-08-13 08:18:43.557697
+4	add-migrations-rls	427c5b63fe1c5937495d9c635c263ee7a5905058	2026-08-13 08:18:43.568978
+5	add-size-functions	79e081a1455b63666c1294a440f8ad4b1e6a7f84	2026-08-13 08:18:43.571622
+6	change-column-name-in-get-size	ded78e2f1b5d7e616117897e6443a925965b30d2	2026-08-13 08:18:43.574794
+7	add-rls-to-buckets	e7e7f86adbc51049f341dfe8d30256c1abca17aa	2026-08-13 08:18:43.578465
+8	add-public-to-buckets	fd670db39ed65f9d08b01db09d6202503ca2bab3	2026-08-13 08:18:43.581293
+9	fix-search-function	af597a1b590c70519b464a4ab3be54490712796b	2026-08-13 08:18:43.584097
+10	search-files-search-function	b595f05e92f7e91211af1bbfe9c6a13bb3391e16	2026-08-13 08:18:43.58671
+11	add-trigger-to-auto-update-updated_at-column	7425bdb14366d1739fa8a18c83100636d74dcaa2	2026-08-13 08:18:43.589551
+12	add-automatic-avif-detection-flag	8e92e1266eb29518b6a4c5313ab8f29dd0d08df9	2026-08-13 08:18:43.593054
+13	add-bucket-custom-limits	cce962054138135cd9a8c4bcd531598684b25e7d	2026-08-13 08:18:43.595794
+14	use-bytes-for-max-size	941c41b346f9802b411f06f30e972ad4744dad27	2026-08-13 08:18:43.598704
+15	add-can-insert-object-function	934146bc38ead475f4ef4b555c524ee5d66799e5	2026-08-13 08:18:43.622693
+16	add-version	76debf38d3fd07dcfc747ca49096457d95b1221b	2026-08-13 08:18:43.625803
+17	drop-owner-foreign-key	f1cbb288f1b7a4c1eb8c38504b80ae2a0153d101	2026-08-13 08:18:43.628456
+18	add_owner_id_column_deprecate_owner	e7a511b379110b08e2f214be852c35414749fe66	2026-08-13 08:18:43.631311
+19	alter-default-value-objects-id	02e5e22a78626187e00d173dc45f58fa66a4f043	2026-08-13 08:18:43.636397
+20	list-objects-with-delimiter	cd694ae708e51ba82bf012bba00caf4f3b6393b7	2026-08-13 08:18:43.639679
+21	s3-multipart-uploads	8c804d4a566c40cd1e4cc5b3725a664a9303657f	2026-08-13 08:18:43.6445
+22	s3-multipart-uploads-big-ints	9737dc258d2397953c9953d9b86920b8be0cdb73	2026-08-13 08:18:43.656104
+23	optimize-search-function	9d7e604cddc4b56a5422dc68c9313f4a1b6f132c	2026-08-13 08:18:43.664561
+24	operation-function	8312e37c2bf9e76bbe841aa5fda889206d2bf8aa	2026-08-13 08:18:43.667772
+25	custom-metadata	d974c6057c3db1c1f847afa0e291e6165693b990	2026-08-13 08:18:43.670794
+26	objects-prefixes	215cabcb7f78121892a5a2037a09fedf9a1ae322	2026-08-13 08:18:43.673682
+27	search-v2	859ba38092ac96eb3964d83bf53ccc0b141663a6	2026-08-13 08:18:43.676128
+28	object-bucket-name-sorting	c73a2b5b5d4041e39705814fd3a1b95502d38ce4	2026-08-13 08:18:43.678426
+29	create-prefixes	ad2c1207f76703d11a9f9007f821620017a66c21	2026-08-13 08:18:43.680823
+30	update-object-levels	2be814ff05c8252fdfdc7cfb4b7f5c7e17f0bed6	2026-08-13 08:18:43.683044
+31	objects-level-index	b40367c14c3440ec75f19bbce2d71e914ddd3da0	2026-08-13 08:18:43.685431
+32	backward-compatible-index-on-objects	e0c37182b0f7aee3efd823298fb3c76f1042c0f7	2026-08-13 08:18:43.687729
+33	backward-compatible-index-on-prefixes	b480e99ed951e0900f033ec4eb34b5bdcb4e3d49	2026-08-13 08:18:43.690011
+34	optimize-search-function-v1	ca80a3dc7bfef894df17108785ce29a7fc8ee456	2026-08-13 08:18:43.692165
+35	add-insert-trigger-prefixes	458fe0ffd07ec53f5e3ce9df51bfdf4861929ccc	2026-08-13 08:18:43.694503
+36	optimise-existing-functions	6ae5fca6af5c55abe95369cd4f93985d1814ca8f	2026-08-13 08:18:43.696804
+37	add-bucket-name-length-trigger	3944135b4e3e8b22d6d4cbb568fe3b0b51df15c1	2026-08-13 08:18:43.699016
+38	iceberg-catalog-flag-on-buckets	02716b81ceec9705aed84aa1501657095b32e5c5	2026-08-13 08:18:43.702954
+39	add-search-v2-sort-support	6706c5f2928846abee18461279799ad12b279b78	2026-08-13 08:18:43.712507
+40	fix-prefix-race-conditions-optimized	7ad69982ae2d372b21f48fc4829ae9752c518f6b	2026-08-13 08:18:43.714879
+41	add-object-level-update-trigger	07fcf1a22165849b7a029deed059ffcde08d1ae0	2026-08-13 08:18:43.717624
+42	rollback-prefix-triggers	771479077764adc09e2ea2043eb627503c034cd4	2026-08-13 08:18:43.721006
+43	fix-object-level	84b35d6caca9d937478ad8a797491f38b8c2979f	2026-08-13 08:18:43.72499
+44	vector-bucket-type	99c20c0ffd52bb1ff1f32fb992f3b351e3ef8fb3	2026-08-13 08:18:43.727334
+45	vector-buckets	049e27196d77a7cb76497a85afae669d8b230953	2026-08-13 08:18:43.731375
+46	buckets-objects-grants	fedeb96d60fefd8e02ab3ded9fbde05632f84aed	2026-08-13 08:18:43.743481
+47	iceberg-table-metadata	649df56855c24d8b36dd4cc1aeb8251aa9ad42c2	2026-08-13 08:18:43.746895
+48	iceberg-catalog-ids	e0e8b460c609b9999ccd0df9ad14294613eed939	2026-08-13 08:18:43.750505
+49	buckets-objects-grants-postgres	072b1195d0d5a2f888af6b2302a1938dd94b8b3d	2026-08-13 08:18:43.76439
+50	search-v2-optimised	6323ac4f850aa14e7387eb32102869578b5bd478	2026-08-13 08:18:43.767687
+51	index-backward-compatible-search	2ee395d433f76e38bcd3856debaf6e0e5b674011	2026-08-13 08:18:44.295499
+52	drop-not-used-indexes-and-functions	5cc44c8696749ac11dd0dc37f2a3802075f3a171	2026-08-13 08:18:44.296722
+53	drop-index-lower-name	d0cb18777d9e2a98ebe0bc5cc7a42e57ebe41854	2026-08-13 08:18:44.306336
+54	drop-index-object-level	6289e048b1472da17c31a7eba1ded625a6457e67	2026-08-13 08:18:44.308193
+55	prevent-direct-deletes	262a4798d5e0f2e7c8970232e03ce8be695d5819	2026-08-13 08:18:44.309318
+56	fix-optimized-search-function	b823ed1e418101032fa01374edc9a436e54e3ed4	2026-08-13 08:18:44.312934
+57	s3-multipart-uploads-metadata	f127886e00d1b374fadbc7c6b31e09336aad5287	2026-08-13 08:18:44.316916
+58	operation-ergonomics	00ca5d483b3fe0d522133d9002ccc5df98365120	2026-08-13 08:18:44.319767
+59	drop-unused-functions	38456f13e39691c2bbb4b5151d0d1cdbabd4a8c4	2026-08-13 08:18:44.323536
+60	optimize-existing-functions-again	db35e1c91a9201e59f4fef8d972c2f277d68b157	2026-08-13 08:18:44.326579
+61	mark-filename-immutable	fe0096517ae9d60aaec1d110172ba9036dc66bb7	2026-08-13 08:18:44.329778
+\.
+
+
+--
+-- Data for Name: objects; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.objects (id, bucket_id, name, owner, created_at, updated_at, last_accessed_at, metadata, version, owner_id, user_metadata) FROM stdin;
+\.
+
+
+--
+-- Data for Name: s3_multipart_uploads; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.s3_multipart_uploads (id, in_progress_size, upload_signature, bucket_id, key, version, owner_id, created_at, user_metadata, metadata) FROM stdin;
+\.
+
+
+--
+-- Data for Name: s3_multipart_uploads_parts; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.s3_multipart_uploads_parts (id, upload_id, size, part_number, bucket_id, key, etag, owner_id, version, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: vector_indexes; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY storage.vector_indexes (id, name, bucket_id, data_type, dimension, distance_metric, metadata_configuration, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: supabase_migrations; Owner: postgres
+--
+
+COPY supabase_migrations.schema_migrations (version, statements, name, created_by, idempotency_key, rollback) FROM stdin;
+20260813093202	{"-- updated_at helper\nCREATE OR REPLACE FUNCTION public.update_updated_at_column()\nRETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now(); RETURN NEW; END; $$\nLANGUAGE plpgsql SET search_path = public;\n\n-- PROFILES\nCREATE TABLE public.profiles (\n  id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,\n  name TEXT,\n  height_cm NUMERIC,\n  current_weight_kg NUMERIC,\n  starting_weight_kg NUMERIC,\n  date_of_birth DATE,\n  training_experience TEXT,\n  primary_goal TEXT,\n  target_weight_kg NUMERIC,\n  target_body_fat NUMERIC,\n  weight_unit TEXT NOT NULL DEFAULT 'kg',\n  length_unit TEXT NOT NULL DEFAULT 'cm',\n  preferred_cardio TEXT,\n  rest_timer_seconds INTEGER NOT NULL DEFAULT 120,\n  theme TEXT NOT NULL DEFAULT 'dark',\n  reminders_enabled BOOLEAN NOT NULL DEFAULT false,\n  onboarding_completed BOOLEAN NOT NULL DEFAULT false,\n  plan_start_date DATE,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;\nGRANT ALL ON public.profiles TO service_role;\nALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own profile\\" ON public.profiles FOR ALL TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);\nCREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();\n\nCREATE OR REPLACE FUNCTION public.handle_new_user()\nRETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$\nBEGIN\n  INSERT INTO public.profiles (id, name)\n  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'full_name'))\n  ON CONFLICT (id) DO NOTHING;\n  RETURN NEW;\nEND; $$;\nCREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();\n\n-- SHARED LIBRARY: EXERCISES\nCREATE TABLE public.exercises (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  slug TEXT NOT NULL UNIQUE,\n  name TEXT NOT NULL,\n  primary_muscle TEXT,\n  secondary_muscles TEXT[] NOT NULL DEFAULT '{}',\n  category TEXT,\n  equipment TEXT,\n  setup TEXT[] NOT NULL DEFAULT '{}',\n  execution TEXT[] NOT NULL DEFAULT '{}',\n  breathing TEXT,\n  cues TEXT[] NOT NULL DEFAULT '{}',\n  common_mistakes TEXT[] NOT NULL DEFAULT '{}',\n  should_feel TEXT,\n  lower_back_notes TEXT,\n  default_rest_seconds INTEGER,\n  default_rir TEXT,\n  default_rep_range TEXT,\n  is_compound BOOLEAN NOT NULL DEFAULT false,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT ON public.exercises TO authenticated, anon;\nGRANT ALL ON public.exercises TO service_role;\nALTER TABLE public.exercises ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"exercises readable\\" ON public.exercises FOR SELECT TO authenticated, anon USING (true);\n\n-- WORKOUT TEMPLATES\nCREATE TABLE public.workout_templates (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  slug TEXT NOT NULL UNIQUE,\n  name TEXT NOT NULL,\n  description TEXT,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT ON public.workout_templates TO authenticated, anon;\nGRANT ALL ON public.workout_templates TO service_role;\nALTER TABLE public.workout_templates ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"templates readable\\" ON public.workout_templates FOR SELECT TO authenticated, anon USING (true);\n\nCREATE TABLE public.workout_days (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  template_id UUID NOT NULL REFERENCES public.workout_templates(id) ON DELETE CASCADE,\n  slug TEXT NOT NULL UNIQUE,\n  day_of_week SMALLINT,\n  name TEXT NOT NULL,\n  focus TEXT,\n  is_optional BOOLEAN NOT NULL DEFAULT false,\n  is_rest BOOLEAN NOT NULL DEFAULT false,\n  specialization TEXT,\n  estimated_minutes_min INTEGER,\n  estimated_minutes_max INTEGER,\n  cardio_note TEXT,\n  notes TEXT,\n  sort_order INTEGER NOT NULL DEFAULT 0\n);\nGRANT SELECT ON public.workout_days TO authenticated, anon;\nGRANT ALL ON public.workout_days TO service_role;\nALTER TABLE public.workout_days ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"days readable\\" ON public.workout_days FOR SELECT TO authenticated, anon USING (true);\n\nCREATE TABLE public.workout_exercises (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  day_id UUID NOT NULL REFERENCES public.workout_days(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,\n  position INTEGER NOT NULL,\n  sets INTEGER NOT NULL,\n  rep_range TEXT NOT NULL,\n  rep_min INTEGER,\n  rep_max INTEGER,\n  rir_target TEXT,\n  rest_note TEXT,\n  rest_seconds INTEGER,\n  block TEXT,\n  notes TEXT\n);\nGRANT SELECT ON public.workout_exercises TO authenticated, anon;\nGRANT ALL ON public.workout_exercises TO service_role;\nALTER TABLE public.workout_exercises ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"workout exercises readable\\" ON public.workout_exercises FOR SELECT TO authenticated, anon USING (true);\n\n-- USER DATA: SESSIONS\nCREATE TABLE public.workout_sessions (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  day_id UUID REFERENCES public.workout_days(id) ON DELETE SET NULL,\n  title TEXT NOT NULL,\n  session_date DATE NOT NULL DEFAULT CURRENT_DATE,\n  status TEXT NOT NULL DEFAULT 'in_progress',\n  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  finished_at TIMESTAMPTZ,\n  duration_seconds INTEGER,\n  paused_seconds INTEGER NOT NULL DEFAULT 0,\n  mood TEXT,\n  energy SMALLINT,\n  difficulty SMALLINT,\n  notes TEXT,\n  is_deload BOOLEAN NOT NULL DEFAULT false,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.workout_sessions TO authenticated;\nGRANT ALL ON public.workout_sessions TO service_role;\nALTER TABLE public.workout_sessions ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own sessions\\" ON public.workout_sessions FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE TRIGGER trg_sessions_updated BEFORE UPDATE ON public.workout_sessions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();\nCREATE INDEX idx_sessions_user_date ON public.workout_sessions(user_id, session_date DESC);\n\nCREATE TABLE public.exercise_sessions (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  session_id UUID NOT NULL REFERENCES public.workout_sessions(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,\n  workout_exercise_id UUID REFERENCES public.workout_exercises(id) ON DELETE SET NULL,\n  position INTEGER NOT NULL DEFAULT 0,\n  target_sets INTEGER,\n  target_rep_range TEXT,\n  notes TEXT,\n  completed BOOLEAN NOT NULL DEFAULT false,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.exercise_sessions TO authenticated;\nGRANT ALL ON public.exercise_sessions TO service_role;\nALTER TABLE public.exercise_sessions ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own exercise sessions\\" ON public.exercise_sessions FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE INDEX idx_exsess_user_ex ON public.exercise_sessions(user_id, exercise_id);\n\nCREATE TABLE public.sets (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  exercise_session_id UUID NOT NULL REFERENCES public.exercise_sessions(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,\n  set_number INTEGER NOT NULL,\n  weight_kg NUMERIC,\n  reps INTEGER,\n  rir NUMERIC,\n  is_warmup BOOLEAN NOT NULL DEFAULT false,\n  completed BOOLEAN NOT NULL DEFAULT false,\n  note TEXT,\n  performed_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.sets TO authenticated;\nGRANT ALL ON public.sets TO service_role;\nALTER TABLE public.sets ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own sets\\" ON public.sets FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE TRIGGER trg_sets_updated BEFORE UPDATE ON public.sets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();\nCREATE INDEX idx_sets_user_ex ON public.sets(user_id, exercise_id, performed_at DESC);\n\n-- BODY METRICS\nCREATE TABLE public.body_metrics (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  measured_on DATE NOT NULL DEFAULT CURRENT_DATE,\n  weight_kg NUMERIC,\n  waist_cm NUMERIC,\n  body_fat_percent NUMERIC,\n  height_cm NUMERIC,\n  chest_cm NUMERIC,\n  arm_cm NUMERIC,\n  thigh_cm NUMERIC,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.body_metrics TO authenticated;\nGRANT ALL ON public.body_metrics TO service_role;\nALTER TABLE public.body_metrics ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own body metrics\\" ON public.body_metrics FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE TRIGGER trg_metrics_updated BEFORE UPDATE ON public.body_metrics FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();\nCREATE INDEX idx_metrics_user_date ON public.body_metrics(user_id, measured_on DESC);\n\n-- CARDIO\nCREATE TABLE public.cardio_sessions (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  session_id UUID REFERENCES public.workout_sessions(id) ON DELETE SET NULL,\n  performed_on DATE NOT NULL DEFAULT CURRENT_DATE,\n  cardio_type TEXT NOT NULL,\n  duration_minutes NUMERIC,\n  distance_km NUMERIC,\n  incline_percent NUMERIC,\n  speed_kph NUMERIC,\n  rounds INTEGER,\n  avg_heart_rate INTEGER,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.cardio_sessions TO authenticated;\nGRANT ALL ON public.cardio_sessions TO service_role;\nALTER TABLE public.cardio_sessions ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own cardio\\" ON public.cardio_sessions FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE INDEX idx_cardio_user_date ON public.cardio_sessions(user_id, performed_on DESC);\n\n-- PERSONAL RECORDS\nCREATE TABLE public.personal_records (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  exercise_id UUID REFERENCES public.exercises(id) ON DELETE CASCADE,\n  session_id UUID REFERENCES public.workout_sessions(id) ON DELETE CASCADE,\n  record_type TEXT NOT NULL,\n  weight_kg NUMERIC,\n  reps INTEGER,\n  estimated_1rm NUMERIC,\n  volume_kg NUMERIC,\n  achieved_on DATE NOT NULL DEFAULT CURRENT_DATE,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.personal_records TO authenticated;\nGRANT ALL ON public.personal_records TO service_role;\nALTER TABLE public.personal_records ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own prs\\" ON public.personal_records FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE INDEX idx_prs_user_ex ON public.personal_records(user_id, exercise_id, achieved_on DESC);\n\n-- EXERCISE NOTES\nCREATE TABLE public.exercise_notes (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE CASCADE,\n  note TEXT NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  UNIQUE (user_id, exercise_id)\n);\nGRANT SELECT, INSERT, UPDATE, DELETE ON public.exercise_notes TO authenticated;\nGRANT ALL ON public.exercise_notes TO service_role;\nALTER TABLE public.exercise_notes ENABLE ROW LEVEL SECURITY;\nCREATE POLICY \\"own exercise notes\\" ON public.exercise_notes FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);\nCREATE TRIGGER trg_exnotes_updated BEFORE UPDATE ON public.exercise_notes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();"}	5eb99520-c9bf-494f-b0e3-dd263cd5ca40	apikey@lovable.dev	8453e0bc-0dc5-4749-8ec7-649fb6434b57	\N
+20260813093221	{"REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;\nREVOKE EXECUTE ON FUNCTION public.update_updated_at_column() FROM PUBLIC, anon, authenticated;"}	09ae01e4-adb0-4b4e-a2e2-b481335feffe	apikey@lovable.dev	4bbf5518-9fc2-4aea-a3af-6dd8a7217234	\N
+20260813093932	{"\nDELETE FROM public.workout_exercises;\nDELETE FROM public.workout_days;\nDELETE FROM public.workout_templates;\nDELETE FROM public.exercises;\n\nINSERT INTO public.exercises (slug, name, category, primary_muscle, secondary_muscles, equipment, is_compound, default_rep_range, default_rest_seconds, default_rir, setup, execution, cues, common_mistakes, should_feel, breathing, lower_back_notes) VALUES\n('incline-smith-press','Incline Smith Machine Press','push','Upper chest',ARRAY['Front delts','Triceps'],'Smith machine',true,'8-10',180,'1-2',\n ARRAY['Set the bench to roughly 30 degrees under the bar.','Position yourself so the bar path lands on your upper chest / collarbone.','Grip slightly wider than shoulder width.'],\n ARRAY['Unrack and take a breath.','Lower under control to just above the upper chest over 2-3 seconds.','Press back up without locking out hard.'],\n ARRAY['Chest up, shoulder blades pulled down and back.','Elbows around 45-60 degrees from the torso.','Keep constant tension - stop just short of lockout.'],\n ARRAY['Bench angle too steep (turns it into a shoulder press).','Flaring elbows straight out to 90 degrees.','Bouncing the bar off the chest.'],\n 'A deep stretch and contraction across the upper chest, not the front delts.','Inhale on the way down, exhale as you press.',null),\n('flat-machine-chest-press','Flat Machine Chest Press','push','Chest',ARRAY['Front delts','Triceps'],'Machine',true,'8-12',120,'1-2',\n ARRAY['Set the seat so the handles line up with mid-chest.','Plant feet, sit tall against the pad.'],\n ARRAY['Press out until arms are nearly straight.','Return slowly until you feel a stretch across the chest.'],\n ARRAY['Shoulder blades stay retracted against the pad.','Squeeze the chest at the end of each press.'],\n ARRAY['Seat set too high or too low.','Shrugging the shoulders forward at lockout.'],\n 'Chest working through the full range with no shoulder pinching.','Exhale on the press.',null),\n('lateral-raise-machine','Lateral Raise Machine','pull','Side delts',ARRAY['Traps'],'Machine',false,'12-15',75,'0-1',\n ARRAY['Adjust the seat so the pivot lines up with your shoulder joint.','Light-to-moderate load.'],\n ARRAY['Drive the elbows out and up to about shoulder height.','Lower slowly, resisting the whole way.'],\n ARRAY['Lead with the elbows, not the hands.','Keep the neck relaxed and traps down.'],\n ARRAY['Using momentum or leaning back.','Going far above shoulder height and turning it into traps.'],\n 'A burn on the outside of the shoulder.','Exhale as you raise.',null),\n('pec-deck','Pec Deck','push','Chest',ARRAY['Front delts'],'Machine',false,'12-15',75,'0-1',\n ARRAY['Seat height so handles sit at chest level.','Slight bend in the elbows, fixed throughout.'],\n ARRAY['Bring the handles together in a wide arc.','Hold the squeeze briefly, then open slowly into a stretch.'],\n ARRAY['Think about hugging, not pushing.','Control the stretch - never let it yank the shoulder.'],\n ARRAY['Bending and straightening the elbows (turns it into a press).','Letting the weight slam back.'],\n 'A strong squeeze in the mid-chest and a stretch at the end range.','Exhale as you close.',null),\n('overhead-cable-triceps-extension','Overhead Cable Triceps Extension','push','Triceps',ARRAY[]::text[],'Cable',false,'10-12',75,'0-1',\n ARRAY['Set the pulley low-to-mid, attach a rope.','Face away, staggered stance, torso leaning slightly forward.'],\n ARRAY['Start with hands behind the head, elbows high.','Extend fully overhead, then lower under control into a deep stretch.'],\n ARRAY['Keep the elbows pointing forward and pinned.','Full stretch at the bottom is the point of this movement.'],\n ARRAY['Elbows drifting wide.','Cutting the stretch short.'],\n 'A long stretch down the back of the arm.','Exhale as you extend.',null),\n('rope-pushdown','Rope Pushdown','push','Triceps',ARRAY[]::text[],'Cable',false,'12-15',75,'0-1',\n ARRAY['High pulley with a rope.','Stand tall, slight forward lean, elbows tucked.'],\n ARRAY['Push down and spread the rope at the bottom.','Return slowly to about 90 degrees.'],\n ARRAY['Elbows stay glued to the sides.','Squeeze hard at lockout.'],\n ARRAY['Using bodyweight to drive the rope down.','Elbows travelling forward and back.'],\n 'A hard contraction in the triceps at lockout.','Exhale as you push down.',null),\n('pallof-press','Pallof Press','core','Core',ARRAY['Obliques'],'Cable',false,'12/side',60,'1-2',\n ARRAY['Cable set at chest height.','Stand side-on, feet shoulder width, hands at the sternum.'],\n ARRAY['Press the handle straight out and resist the rotation.','Hold 1-2 seconds, return under control.'],\n ARRAY['Ribs down, glutes lightly braced.','Do not let the torso twist at all.'],\n ARRAY['Leaning away from the cable.','Rushing the reps.'],\n 'Deep tension through the obliques and the whole trunk.','Exhale slowly as you press out.','Keep a neutral spine - this is an anti-rotation drill, not a twist.'),\n('wide-grip-lat-pulldown','Wide-Grip Lat Pulldown','pull','Lats',ARRAY['Biceps','Rear delts'],'Cable',true,'8-10',180,'1-2',\n ARRAY['Grip wider than shoulder width, thumbs over the bar.','Thighs locked under the pad, slight backward lean.'],\n ARRAY['Pull the elbows down and slightly back to the upper chest.','Control the bar all the way up into a full stretch.'],\n ARRAY['Start each rep by depressing the shoulder blades.','Think elbows to hips, not hands to chest.'],\n ARRAY['Leaning back excessively and rowing.','Yanking with the arms and losing the lat stretch.'],\n 'A wide stretch and contraction through the lats.','Exhale as you pull down.',null),\n('chest-supported-row','Chest-Supported Row','pull','Mid back',ARRAY['Lats','Rear delts','Biceps'],'Machine',true,'8-12',120,'1-2',\n ARRAY['Chest firmly on the pad, feet planted.','Neutral or pronated grip depending on the machine.'],\n ARRAY['Row the handles toward the lower ribs.','Pause briefly, then let the weight stretch the back.'],\n ARRAY['Chest stays glued to the pad.','Drive with the elbows, squeeze the mid-back.'],\n ARRAY['Peeling off the pad to cheat weight up.','Shrugging at the top.'],\n 'Squeeze between the shoulder blades and through the lats.','Exhale as you row.','Chest support keeps the lower back out of it - keep it that way.'),\n('straight-arm-pulldown','Straight-Arm Pulldown','pull','Lats',ARRAY[]::text[],'Cable',false,'12-15',75,'0-1',\n ARRAY['High pulley, straight bar or rope.','Hinge slightly at the hips, soft elbows locked in place.'],\n ARRAY['Sweep the bar down to the thighs in an arc.','Return slowly overhead until the lats stretch.'],\n ARRAY['Elbow angle never changes.','Feel the lats, not the triceps.'],\n ARRAY['Turning it into a pushdown by bending the arms.','Standing too upright.'],\n 'A long contraction down the sides of the back.','Exhale as you sweep down.',null),\n('rear-delt-fly','Rear-Delt Fly','pull','Rear delts',ARRAY['Mid back'],'Machine',false,'12-15',75,'0-1',\n ARRAY['Chest on the pad, handles set for a wide arc.','Slight bend in the elbows.'],\n ARRAY['Sweep the arms out and back.','Return slowly without letting the plates touch.'],\n ARRAY['Lead with the elbows and pinkies.','Keep the traps relaxed.'],\n ARRAY['Using too much weight and rowing.','Shrugging through the movement.'],\n 'A burn across the back of the shoulders.','Exhale as you open.',null),\n('face-pull','Face Pull','pull','Rear delts',ARRAY['Upper back','Rotator cuff'],'Cable',false,'15-20',60,'0-1',\n ARRAY['Rope at upper-chest / face height.','Step back for tension, split stance.'],\n ARRAY['Pull the rope toward the forehead, hands separating.','Externally rotate so knuckles finish facing back.'],\n ARRAY['High elbows throughout.','Pause for a beat at the peak.'],\n ARRAY['Pulling too heavy and turning it into a row.','Letting the elbows drop.'],\n 'Rear delts and upper back, plus shoulder-health work.','Exhale as you pull.',null),\n('incline-dumbbell-curl','Incline Dumbbell Curl','pull','Biceps',ARRAY[]::text[],'Dumbbell',false,'8-12',90,'0-1',\n ARRAY['Bench at roughly 45-60 degrees.','Arms hanging straight down, shoulders back.'],\n ARRAY['Curl up while keeping the upper arm still.','Lower all the way to a full stretch.'],\n ARRAY['The stretched position is the whole point - do not shorten it.','Supinate as you curl.'],\n ARRAY['Swinging the elbows forward.','Cutting the bottom of the rep.'],\n 'A deep stretch and hard peak contraction in the biceps.','Exhale as you curl.',null),\n('hanging-knee-raise','Hanging Knee Raise','core','Core',ARRAY['Hip flexors'],'Bodyweight',false,'10-15',60,'0-1',\n ARRAY['Hang from a bar with a solid grip.','Let the body settle - no swing.'],\n ARRAY['Raise the knees toward the chest, curling the pelvis up.','Lower slowly with control.'],\n ARRAY['Curl the pelvis, do not just lift the legs.','Pause at the top if you are swinging.'],\n ARRAY['Using momentum.','Only using the hip flexors with no pelvic tilt.'],\n 'Lower abs contracting hard.','Exhale as you raise the knees.','Avoid arching the lower back on the way down.'),\n('cable-crunch','Cable Crunch','core','Abs',ARRAY[]::text[],'Cable',false,'10-15',60,'0-1',\n ARRAY['Kneel below a high pulley with a rope at the head.','Hips stay in a fixed position.'],\n ARRAY['Curl the torso down, bringing ribs toward pelvis.','Return slowly under tension.'],\n ARRAY['Curl the spine, do not hinge at the hips.','Keep the hips from drifting back.'],\n ARRAY['Pulling the cable down with the arms.','Turning it into a hip hinge.'],\n 'Abs shortening under load.','Exhale hard as you crunch down.',null),\n('leg-press','Leg Press','legs','Quads',ARRAY['Glutes','Hamstrings'],'Machine',true,'8-12',180,'1-2',\n ARRAY['Feet shoulder width, mid-platform.','Back and hips flat against the pad.'],\n ARRAY['Lower under control to a depth where the pelvis stays neutral.','Press back up without locking the knees hard.'],\n ARRAY['Push through the whole foot.','Stop the descent before the hips tuck.'],\n ARRAY['Chasing depth and letting the pelvis round.','Bouncing at the bottom.'],\n 'Quads and glutes loaded, lower back completely uninvolved.','Inhale down, exhale up.','Do not chase depth - if the pelvis begins to round, stop the rep shorter.'),\n('smith-hack-squat','Smith Hack Squat','legs','Quads',ARRAY['Glutes'],'Smith machine',true,'8-10',180,'1-2',\n ARRAY['Feet slightly forward of the bar, shoulder width.','Bar across the upper traps.'],\n ARRAY['Sit down and back under control.','Drive up through the heels and mid-foot.'],\n ARRAY['Keep the pelvis controlled.','Torso stays braced, ribs down.'],\n ARRAY['Going deeper than your hips can control.','Letting the lower back round at the bottom.'],\n 'Quads doing the work with a stable, pain-free lower back.','Inhale down, exhale up.','Do not chase depth if your lower back starts rounding.'),\n('leg-curl','Seated/Lying Leg Curl','legs','Hamstrings',ARRAY['Calves'],'Machine',false,'10-12',90,'0-1',\n ARRAY['Align the knee joint with the machine pivot.','Pad just above the heels.'],\n ARRAY['Curl the weight fully.','Lower over 2-3 seconds with control.'],\n ARRAY['Controlled eccentric on every rep.','Keep the hips down on the seat.'],\n ARRAY['Letting the weight drop back.','Lifting the hips to cheat.'],\n 'Hamstrings contracting and stretching hard.','Exhale as you curl.',null),\n('bulgarian-split-squat','Bulgarian Split Squat','legs','Quads',ARRAY['Glutes'],'Dumbbell',true,'8-10 / leg',105,'1-2',\n ARRAY['Rear foot on a bench, front foot far enough forward.','Dumbbells at the sides.'],\n ARRAY['Lower straight down until the front thigh is near parallel.','Drive up through the front foot.'],\n ARRAY['Slight forward torso lean is fine.','Front knee tracks over the toes.'],\n ARRAY['Stance too short - knee gets crushed forward.','Pushing off the back foot.'],\n 'Front-leg quad and glute working with a balance challenge.','Inhale down, exhale up.','Keep the trunk braced and the spine neutral.'),\n('leg-extension','Leg Extension','legs','Quads',ARRAY[]::text[],'Machine',false,'12-15',75,'0-1',\n ARRAY['Knee pivot aligned with the machine.','Pad on the lower shins.'],\n ARRAY['Extend fully and pause briefly.','Lower slowly.'],\n ARRAY['Squeeze at the top of every rep.','No jerking out of the bottom.'],\n ARRAY['Slamming into lockout.','Lifting the hips off the seat.'],\n 'A hard quad burn.','Exhale as you extend.',null),\n('standing-calf-raise','Standing Calf Raise','legs','Calves',ARRAY[]::text[],'Machine',false,'12-15',75,'0-1',\n ARRAY['Balls of the feet on the platform, heels free.','Knees mostly straight.'],\n ARRAY['Rise as high as possible onto the toes.','Lower into a deep stretch and pause.'],\n ARRAY['Pause 1 second at both ends.','No bouncing out of the stretch.'],\n ARRAY['Short, bouncy reps.','Bending the knees to cheat.'],\n 'A strong stretch and cramp-like contraction in the calves.','Exhale as you rise.',null),\n('seated-dumbbell-shoulder-press','Seated Dumbbell Shoulder Press','push','Front delts',ARRAY['Side delts','Triceps'],'Dumbbell',true,'8-10',180,'1-2',\n ARRAY['Upright bench with back support.','Dumbbells at shoulder height, wrists stacked.'],\n ARRAY['Press up and slightly in without clashing the bells.','Lower to about ear level under control.'],\n ARRAY['Ribs down - do not arch to press.','Keep the elbows slightly in front of the body.'],\n ARRAY['Excessive lower-back arch.','Half-range reps at the top.'],\n 'Delts loaded, with triceps finishing the press.','Exhale as you press.','Keep the ribcage down and the lower back on the pad.'),\n('cable-lateral-raise','Cable Lateral Raise','pull','Side delts',ARRAY[]::text[],'Cable',false,'12-15',75,'0-1',\n ARRAY['Low pulley behind or across the body, D-handle.','Stand tall, slight lean away.'],\n ARRAY['Raise the arm out to shoulder height.','Lower slowly against constant tension.'],\n ARRAY['Lead with the elbow.','Keep the traps quiet.'],\n ARRAY['Swinging the torso.','Going too heavy and shrugging.'],\n 'Constant tension burn on the side delt.','Exhale as you raise.',null),\n('rear-delt-cable-fly','Rear-Delt Cable Fly','pull','Rear delts',ARRAY['Upper back'],'Cable',false,'15-20',60,'0-1',\n ARRAY['Cables set at shoulder height, crossed in front.','Soft elbows, slight forward lean.'],\n ARRAY['Sweep the arms out and back in a wide arc.','Return under control.'],\n ARRAY['Think of pulling the arms apart, not back.','Hold the peak for a beat.'],\n ARRAY['Bending the elbows into a row.','Shrugging.'],\n 'Isolated rear-delt burn.','Exhale as you open.',null),\n('triceps-press-machine','Triceps Press Machine','push','Triceps',ARRAY[]::text[],'Machine',false,'10-12',75,'0-1',\n ARRAY['Seat set so elbows align with the pivot.','Grip the handles firmly.'],\n ARRAY['Press to full extension.','Return slowly to a stretch.'],\n ARRAY['Elbows stay fixed.','Full lockout squeeze.'],\n ARRAY['Using the shoulders to push.','Partial reps.'],\n 'Triceps working through the full range.','Exhale as you press.',null),\n('ez-bar-preacher-curl','EZ-Bar / Preacher Curl','pull','Biceps',ARRAY['Forearms'],'EZ bar',false,'10-12',90,'0-1',\n ARRAY['Armpits over the top of the preacher pad.','Angled EZ grip, comfortable wrists.'],\n ARRAY['Curl up to a hard squeeze.','Lower fully, slowly, into the stretch.'],\n ARRAY['Never drop the bar at the bottom.','Keep the shoulders down.'],\n ARRAY['Bouncing out of the stretched position.','Lifting the elbows off the pad.'],\n 'Biceps under tension the entire set.','Exhale as you curl.',null),\n('hammer-curl','Hammer Curl','pull','Brachialis',ARRAY['Biceps','Forearms'],'Dumbbell',false,'10-12',75,'0-1',\n ARRAY['Neutral grip, dumbbells at the sides.','Stand tall, elbows tucked.'],\n ARRAY['Curl up keeping the palms facing in.','Lower under control.'],\n ARRAY['No swinging - keep the torso still.','Squeeze at the top.'],\n ARRAY['Using the hips to start the rep.','Rotating the wrist.'],\n 'Outer arm and forearm working.','Exhale as you curl.',null),\n('incline-dumbbell-press','Incline Dumbbell Press','push','Upper chest',ARRAY['Front delts','Triceps'],'Dumbbell',true,'8-10',180,'1-2',\n ARRAY['Bench at roughly 30 degrees.','Kick the dumbbells into position at shoulder level.'],\n ARRAY['Lower to a stretch beside the upper chest.','Press up and slightly together.'],\n ARRAY['Shoulder blades pinned back and down.','Wrists stacked over the elbows.'],\n ARRAY['Too steep an incline.','Letting the elbows flare to 90 degrees.'],\n 'Upper chest stretch and contraction.','Inhale down, exhale up.',null),\n('neutral-grip-lat-pulldown','Neutral-Grip Lat Pulldown','pull','Lats',ARRAY['Biceps'],'Cable',true,'8-10',150,'1-2',\n ARRAY['Neutral (palms facing) handle.','Thighs under the pad, torso near upright.'],\n ARRAY['Pull the handles to the upper chest.','Control the full stretch overhead.'],\n ARRAY['Depress the shoulder blades first.','Elbows drive down toward the hips.'],\n ARRAY['Excessive lean-back.','Cutting the stretch at the top.'],\n 'Thick lat contraction with less biceps strain.','Exhale as you pull.',null),\n('cable-chest-fly','Cable Chest Fly','push','Chest',ARRAY['Front delts'],'Cable',false,'12-15',75,'0-1',\n ARRAY['Pulleys set at or slightly above shoulder height.','Split stance, soft elbows.'],\n ARRAY['Bring the hands together in front of the chest.','Open slowly into a controlled stretch.'],\n ARRAY['Fixed elbow angle throughout.','Cross slightly at the finish for extra squeeze.'],\n ARRAY['Pressing instead of flying.','Letting the stretch snap the shoulder.'],\n 'A wide chest stretch and squeeze.','Exhale as you close.',null),\n('hip-thrust','Hip Thrust','legs','Glutes',ARRAY['Hamstrings'],'Barbell',true,'8-12',120,'1-2',\n ARRAY['Upper back on a bench just below the shoulder blades.','Feet flat, shins vertical at the top.','Pad the bar across the hips.'],\n ARRAY['Drive the hips up until the torso is parallel to the floor.','Pause and squeeze, then lower under control.'],\n ARRAY['Keep the ribs down and chin tucked.','Finish with glutes, not with lower-back extension.'],\n ARRAY['Hyperextending the lower back at the top.','Bouncing the bar off the floor.'],\n 'Glutes doing all the work at lockout.','Exhale as you drive up.','Keep ribs down and avoid excessive lower-back extension - this is your primary hip-extension movement.'),\n('machine-shoulder-press','Machine Shoulder Press','push','Front delts',ARRAY['Side delts','Triceps'],'Machine',true,'8-10',150,'1-2',\n ARRAY['Seat height so handles sit near shoulder level.','Back flat against the pad.'],\n ARRAY['Press overhead without hard lockout.','Lower under control to a stretch.'],\n ARRAY['Ribs down, core braced.','Keep the movement smooth.'],\n ARRAY['Arching off the pad.','Half reps.'],\n 'Delts loaded through the full press.','Exhale as you press.',null),\n('pull-ups','Pull-ups / Assisted Pull-ups','pull','Lats',ARRAY['Biceps','Mid back'],'Bodyweight',true,'6-10',180,'1-2',\n ARRAY['Grip slightly wider than shoulder width.','Hang with active shoulders.'],\n ARRAY['Pull the chest toward the bar, elbows down.','Lower to a full hang with control.'],\n ARRAY['Start each rep by pulling the shoulder blades down.','Use assistance to keep reps clean.'],\n ARRAY['Kipping or swinging.','Stopping short of a full hang.'],\n 'Lats and upper back working hard.','Exhale as you pull up.',null),\n('ez-bar-curl','EZ-Bar Curl','pull','Biceps',ARRAY['Forearms'],'EZ bar',false,'8-10',90,'0-1',\n ARRAY['Shoulder-width angled grip.','Stand tall, elbows at the sides.'],\n ARRAY['Curl up without moving the elbows.','Lower fully under control.'],\n ARRAY['No hip drive.','Squeeze at the top.'],\n ARRAY['Swinging the bar up.','Cutting the bottom range.'],\n 'Full biceps contraction with comfortable wrists.','Exhale as you curl.','Keep the torso still - no leaning back.'),\n('incline-machine-press','Incline Machine Press','push','Upper chest',ARRAY['Front delts','Triceps'],'Machine',true,'8-10',180,'1-2',\n ARRAY['Seat so handles align with the upper chest.','Back and shoulders on the pad.'],\n ARRAY['Press out to near lockout.','Return slowly to a stretch.'],\n ARRAY['Keep the shoulder blades retracted.','Do not shrug at the top.'],\n ARRAY['Seat too low, turning it into a shoulder press.','Bouncing the stack.'],\n 'Upper chest loaded with a stable path.','Exhale as you press.',null),\n('weighted-chest-dips','Weighted Chest Dips','push','Chest',ARRAY['Triceps','Front delts'],'Bodyweight',true,'8-10',150,'1-2',\n ARRAY['Slight forward lean on the bars.','Add weight via belt if available.'],\n ARRAY['Lower until you feel a solid chest stretch.','Press back up without locking out hard.'],\n ARRAY['Lean forward to bias the chest.','Keep depth within a pain-free shoulder range.'],\n ARRAY['Dropping too deep and straining the shoulder.','Staying too upright (all triceps).'],\n 'A deep chest stretch and press.','Inhale down, exhale up.',null),\n('push-ups','Push-ups','push','Chest',ARRAY['Triceps','Front delts'],'Bodyweight',false,'To ~1 RIR',60,'1',\n ARRAY['Hands slightly wider than shoulders.','Body in one straight line.'],\n ARRAY['Lower the chest to just above the floor.','Press up while keeping the trunk rigid.'],\n ARRAY['Squeeze glutes and abs to keep a plank.','Stop about 1 rep before failure.'],\n ARRAY['Sagging hips.','Flaring elbows to 90 degrees.'],\n 'Chest and triceps finishing burn.','Exhale as you press up.','Brace the core - no sagging through the lower back.'),\n('incline-treadmill-walk','Incline Treadmill Walk','cardio','Cardio',ARRAY[]::text[],'Treadmill',false,null,0,null,\n ARRAY['Set a moderate incline (8-12%) and a walking pace.','No holding the handrails.'],\n ARRAY['Walk steadily for the prescribed duration.','Adjust speed/incline to stay at a moderate effort.'],\n ARRAY['You should be breathing harder but still able to speak in short sentences.','Keep it steady-state - this is recovery-friendly cardio.'],\n ARRAY['Hanging off the handrails.','Pushing intensity so high it hurts recovery.'],\n 'Elevated breathing, sustainable effort.','Breathe steadily through the nose and mouth.',null);\n\nINSERT INTO public.workout_templates (slug, name, description, notes) VALUES\n('v-taper-fat-loss','V-Taper + Fat-Loss Phase',\n 'Monday-Friday mandatory training with an optional Saturday specialization day. Priorities: upper chest, lats, side delts, rear delts, arms.',\n 'Compounds: ~1-2 RIR, rest 2-3 min. Isolation: ~0-1 RIR on the final set, rest 60-90 sec. Double progression - work to the top of the rep range across all sets, then add weight and restart near the bottom. During a cut, maintaining strength is success. Lower-back-safe: no conventional deadlifts, no barbell back squats, no loaded RDLs.');\n\nINSERT INTO public.workout_days (template_id, slug, name, focus, day_of_week, sort_order, is_optional, is_rest, specialization, cardio_note, estimated_minutes_min, estimated_minutes_max, notes)\nSELECT t.id, d.slug, d.name, d.focus, d.dow, d.sort_order, d.is_optional, d.is_rest, d.spec, d.cardio, d.mn, d.mx, d.notes\nFROM public.workout_templates t, (VALUES\n ('monday','Monday','Chest + Side Delts + Triceps',1,1,false,false,null,'Incline treadmill walk 15-20 min',60,75,null),\n ('tuesday','Tuesday','Back Width + Rear Delts + Biceps',2,2,false,false,null,null,60,75,null),\n ('wednesday','Wednesday','Legs + Abs + Cardio',3,3,false,false,null,'Incline treadmill walk 20 min',65,80,null),\n ('thursday','Thursday','Shoulders + Arms',4,4,false,false,null,null,55,70,'Final lateral raise set can be a controlled drop set.'),\n ('friday','Friday','Upper + Posterior Chain + Abs + Cardio',5,5,false,false,null,'Incline treadmill walk 20 min',70,85,null),\n ('saturday-shoulders','Saturday - Shoulders','Optional Specialization: Shoulders',6,6,true,false,'shoulders','15-20 min incline walk',40,55,'Weeks 1, 4 and 7 of the rotation.'),\n ('saturday-back','Saturday - Back','Optional Specialization: Back',6,7,true,false,'back','15-20 min incline walk',40,55,'Weeks 2, 5 and 8 of the rotation.'),\n ('saturday-arms','Saturday - Arms','Optional Specialization: Arms',6,8,true,false,'arms','15-20 min incline walk',40,55,'Week 3 of the rotation.'),\n ('saturday-chest','Saturday - Chest','Optional Specialization: Chest',6,9,true,false,'chest','15-20 min incline walk',40,55,'Week 6 of the rotation.'),\n ('sunday','Sunday','Complete Rest',0,10,false,true,null,'Easy walking only',0,0,'Easy walking, light mobility, stretching if desired. No hard training, no HIIT.')\n) AS d(slug,name,focus,dow,sort_order,is_optional,is_rest,spec,cardio,mn,mx,notes)\nWHERE t.slug = 'v-taper-fat-loss';\n\nINSERT INTO public.workout_exercises (day_id, exercise_id, position, sets, rep_range, rep_min, rep_max, rir_target, rest_seconds, rest_note, block, notes)\nSELECT wd.id, ex.id, v.position, v.sets, v.rep_range, v.rep_min, v.rep_max, v.rir, v.rest_seconds, v.rest_note, v.block, v.notes\nFROM (VALUES\n ('monday','incline-smith-press',1,4,'8-10',8,10,'1-2',180,'2-3 min','main','Starting weight: ~60 kg'),\n ('monday','flat-machine-chest-press',2,3,'8-12',8,12,'1-2',120,'2 min','main','Starting weight: ~75 kg'),\n ('monday','lateral-raise-machine',3,4,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('monday','pec-deck',4,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('monday','overhead-cable-triceps-extension',5,3,'10-12',10,12,'0-1',75,'60-90 sec','accessory',null),\n ('monday','rope-pushdown',6,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('monday','pallof-press',7,3,'12/side',12,12,'1-2',60,'60 sec','core',null),\n ('monday','incline-treadmill-walk',8,1,'15-20 min',null,null,null,0,null,'cardio','Moderate intensity. Breathing harder but still able to speak in short sentences.'),\n\n ('tuesday','wide-grip-lat-pulldown',1,4,'8-10',8,10,'1-2',180,'2-3 min','main','Starting weight: ~79-86 kg depending on machine'),\n ('tuesday','chest-supported-row',2,4,'8-12',8,12,'1-2',120,'2 min','main','Starting weight: ~40 kg'),\n ('tuesday','straight-arm-pulldown',3,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory','Starting weight: ~45 kg'),\n ('tuesday','rear-delt-fly',4,4,'12-15',12,15,'0-1',75,'60-90 sec','accessory','Starting weight: ~55 kg'),\n ('tuesday','face-pull',5,2,'15-20',15,20,'0-1',60,'60 sec','accessory',null),\n ('tuesday','incline-dumbbell-curl',6,3,'8-12',8,12,'0-1',90,'90 sec','accessory','Starting weight: ~15 kg'),\n ('tuesday','hanging-knee-raise',7,3,'10-15',10,15,'0-1',60,'60 sec','core',null),\n ('tuesday','cable-crunch',8,3,'10-15',10,15,'0-1',60,'60 sec','core',null),\n\n ('wednesday','leg-press',1,4,'8-12',8,12,'1-2',180,'2-3 min','main','Starting weight: ~150 kg'),\n ('wednesday','smith-hack-squat',2,3,'8-10',8,10,'1-2',180,'2-3 min','main','Starting weight: ~50 kg. Keep the pelvis controlled. Do not chase depth if your lower back starts rounding.'),\n ('wednesday','leg-curl',3,4,'10-12',10,12,'0-1',90,'90 sec','accessory','Controlled eccentric'),\n ('wednesday','bulgarian-split-squat',4,3,'8-10 / leg',8,10,'1-2',105,'90-120 sec','accessory','Starting weight: ~15 kg'),\n ('wednesday','leg-extension',5,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('wednesday','standing-calf-raise',6,4,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('wednesday','hanging-knee-raise',7,3,'10-15',10,15,'0-1',60,'60 sec','core','Controlled. No swinging.'),\n ('wednesday','cable-crunch',8,3,'10-15',10,15,'0-1',60,'60 sec','core','Focus on curling the torso rather than simply pulling the cable down.'),\n ('wednesday','incline-treadmill-walk',9,1,'20 min',null,null,null,0,null,'cardio','Incline treadmill walk - 20 min'),\n\n ('thursday','seated-dumbbell-shoulder-press',1,4,'8-10',8,10,'1-2',180,'2-3 min','main','Starting weight: ~35 kg'),\n ('thursday','cable-lateral-raise',2,4,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('thursday','rear-delt-cable-fly',3,3,'15-20',15,20,'0-1',60,'60-90 sec','accessory',null),\n ('thursday','triceps-press-machine',4,3,'10-12',10,12,'0-1',75,'60-90 sec','accessory',null),\n ('thursday','ez-bar-preacher-curl',5,3,'10-12',10,12,'0-1',90,'90 sec','accessory','Starting point: ~12.5 kg EZ-bar load or equivalent'),\n ('thursday','overhead-cable-triceps-extension',6,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('thursday','hammer-curl',7,2,'10-12',10,12,'0-1',75,'60-90 sec','accessory',null),\n ('thursday','lateral-raise-machine',8,2,'15-20',15,20,'0',60,'60 sec','finisher','Lateral raise finisher. Final set can be a controlled drop set.'),\n\n ('friday','incline-dumbbell-press',1,3,'8-10',8,10,'1-2',180,'2-3 min','main','Starting weight: ~35 kg'),\n ('friday','neutral-grip-lat-pulldown',2,4,'8-10',8,10,'1-2',150,'2-3 min','main',null),\n ('friday','cable-chest-fly',3,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('friday','chest-supported-row',4,3,'8-12',8,12,'1-2',120,'2 min','accessory',null),\n ('friday','hip-thrust',5,3,'8-12',8,12,'1-2',120,'2 min','accessory','Controlled reps. Keep ribs down. Avoid excessive lower-back extension.'),\n ('friday','lateral-raise-machine',6,3,'15-20',15,20,'0-1',60,'60-90 sec','accessory','Use a lighter weight than Monday.'),\n ('friday','standing-calf-raise',7,4,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('friday','hanging-knee-raise',8,3,'10-15',10,15,'0-1',60,'60 sec','core',null),\n ('friday','pallof-press',9,3,'12/side',12,12,'1-2',60,'60 sec','core',null),\n ('friday','incline-treadmill-walk',10,1,'20 min',null,null,null,0,null,'cardio','Incline treadmill walk - 20 min'),\n\n ('saturday-shoulders','machine-shoulder-press',1,3,'8-10',8,10,'1-2',150,'2-3 min','main',null),\n ('saturday-shoulders','cable-lateral-raise',2,4,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-shoulders','lateral-raise-machine',3,3,'15-20',15,20,'0-1',60,'60-90 sec','accessory',null),\n ('saturday-shoulders','rear-delt-fly',4,4,'15-20',15,20,'0-1',60,'60-90 sec','accessory',null),\n ('saturday-shoulders','face-pull',5,3,'15-20',15,20,'0-1',60,'60 sec','accessory',null),\n ('saturday-shoulders','incline-treadmill-walk',6,1,'15-20 min',null,null,null,0,null,'cardio','15-20 min incline walk'),\n\n ('saturday-back','pull-ups',1,4,'6-10',6,10,'1-2',180,'2-3 min','main',null),\n ('saturday-back','neutral-grip-lat-pulldown',2,4,'8-12',8,12,'1-2',150,'2-3 min','main',null),\n ('saturday-back','chest-supported-row',3,3,'8-12',8,12,'1-2',120,'2 min','accessory',null),\n ('saturday-back','straight-arm-pulldown',4,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-back','rear-delt-fly',5,3,'15-20',15,20,'0-1',60,'60-90 sec','accessory',null),\n ('saturday-back','incline-treadmill-walk',6,1,'15-20 min',null,null,null,0,null,'cardio','15-20 min incline walk'),\n\n ('saturday-arms','ez-bar-curl',1,3,'8-10',8,10,'1-2',90,'90 sec','main',null),\n ('saturday-arms','incline-dumbbell-curl',2,3,'10-12',10,12,'0-1',90,'90 sec','accessory',null),\n ('saturday-arms','hammer-curl',3,3,'10-12',10,12,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-arms','triceps-press-machine',4,3,'8-10',8,10,'1-2',90,'90 sec','accessory',null),\n ('saturday-arms','rope-pushdown',5,3,'10-15',10,15,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-arms','overhead-cable-triceps-extension',6,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-arms','incline-treadmill-walk',7,1,'15-20 min',null,null,null,0,null,'cardio','15-20 min incline walk'),\n\n ('saturday-chest','incline-machine-press',1,4,'8-10',8,10,'1-2',180,'2-3 min','main',null),\n ('saturday-chest','pec-deck',2,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-chest','cable-chest-fly',3,3,'12-15',12,15,'0-1',75,'60-90 sec','accessory',null),\n ('saturday-chest','weighted-chest-dips',4,3,'8-10',8,10,'1-2',150,'2-3 min','accessory',null),\n ('saturday-chest','push-ups',5,2,'To ~1 RIR',null,null,'1',60,'60 sec','finisher','Stop about 1 rep before failure.'),\n ('saturday-chest','incline-treadmill-walk',6,1,'15-20 min',null,null,null,0,null,'cardio','15-20 min incline walk')\n) AS v(day_slug, ex_slug, position, sets, rep_range, rep_min, rep_max, rir, rest_seconds, rest_note, block, notes)\nJOIN public.workout_days wd ON wd.slug = v.day_slug\nJOIN public.exercises ex ON ex.slug = v.ex_slug;\n"}	ba1fea81-6ba0-4e5a-a758-1509455490a5	apikey@lovable.dev	60ff1c6e-e352-42b0-9e52-70f6340d97ae	\N
+20260814064611	{"\nINSERT INTO public.exercises (slug, name, primary_muscle, secondary_muscles, category, equipment, setup, execution, breathing, cues, common_mistakes, should_feel, lower_back_notes, default_rest_seconds, default_rir, default_rep_range, is_compound)\nVALUES (\n  'weighted-dead-bug', 'Weighted Dead Bug', 'core', ARRAY['hip flexors']::text[], 'core', 'dumbbell or plate',\n  ARRAY['Lie on your back, knees and hips at 90 degrees.','Press your lower back gently into the floor.','Hold a light weight over your chest, or start unweighted.']::text[],\n  ARRAY['Extend one leg and the opposite arm slowly.','Stop before your lower back lifts off the floor.','Return under control and switch sides.']::text[],\n  'Exhale as the limbs extend, inhale on the return.',\n  ARRAY['Ribs down, pelvis tucked.','Move slowly — position beats range of motion.']::text[],\n  ARRAY['Letting the lower back arch off the floor.','Rushing reps.']::text[],\n  'Deep tension across the front of the abdominal wall.',\n  'Keep the lumbar spine flat; reduce range before allowing extension.',\n  60, '1-2', '8-10 / side', false\n) ON CONFLICT (slug) DO NOTHING;\n\nUPDATE public.workout_days SET focus='Legs + Core + Cardio', cardio_note='Incline treadmill walk 20 min' WHERE slug='wednesday';\nUPDATE public.workout_days SET focus='Upper + Posterior Chain + Core + Cardio' WHERE slug='friday';\n\nUPDATE public.exercise_sessions SET workout_exercise_id = NULL;\nDELETE FROM public.workout_exercises;\n\nINSERT INTO public.workout_exercises (day_id, exercise_id, position, sets, rep_range, rep_min, rep_max, rir_target, rest_note, rest_seconds, notes)\nSELECT d.id, e.id, v.position, v.sets, v.rep_range, v.rep_min, v.rep_max, v.rir_target, v.rest_note, v.rest_seconds, v.notes\nFROM (VALUES\n  ('monday','incline-smith-press',1,4,'8-10',8,10,'1-2','2-3 min',180,'Starting weight: ~60 kg'),\n  ('monday','flat-machine-chest-press',2,3,'8-12',8,12,'1-2','2 min',120,'Starting weight: ~75 kg'),\n  ('monday','lateral-raise-machine',3,4,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('monday','pec-deck',4,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('monday','overhead-cable-triceps-extension',5,3,'10-12',10,12,'0-1','60-90 sec',75,NULL),\n  ('monday','rope-pushdown',6,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('monday','pallof-press',7,3,'10-12 / side',10,12,'1-2','60 sec',60,NULL),\n  ('monday','incline-treadmill-walk',8,1,'15-20 min',NULL,NULL,NULL,NULL,0,'Moderate intensity. Breathing harder but still able to speak in short sentences.'),\n\n  ('tuesday','wide-grip-lat-pulldown',1,4,'8-10',8,10,'1-2','2-3 min',180,'Use a weight appropriate for the machine'),\n  ('tuesday','chest-supported-row',2,4,'8-12',8,12,'1-2','2 min',120,'Starting weight: ~40 kg'),\n  ('tuesday','straight-arm-pulldown',3,3,'12-15',12,15,'0-1','60-90 sec',75,'Starting weight: ~45 kg'),\n  ('tuesday','rear-delt-fly',4,4,'12-15',12,15,'0-1','60-90 sec',75,'Starting weight: ~55 kg'),\n  ('tuesday','face-pull',5,2,'15-20',15,20,'0-1','60 sec',60,NULL),\n  ('tuesday','incline-dumbbell-curl',6,3,'8-12',8,12,'0-1','90 sec',90,'Starting weight: ~15 kg'),\n\n  ('wednesday','leg-press',1,4,'8-12',8,12,'1-2','2-3 min',180,'Starting weight: ~150 kg'),\n  ('wednesday','smith-hack-squat',2,3,'8-10',8,10,'1-2','2-3 min',180,'Starting weight: ~50 kg. Keep the pelvis controlled. Do not chase depth if your lower back starts rounding.'),\n  ('wednesday','leg-curl',3,4,'10-12',10,12,'0-1','90 sec',90,'Controlled eccentric'),\n  ('wednesday','bulgarian-split-squat',4,3,'8-10 / leg',8,10,'1-2','90-120 sec',105,'Starting weight: ~15 kg'),\n  ('wednesday','leg-extension',5,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('wednesday','standing-calf-raise',6,4,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('wednesday','weighted-dead-bug',7,3,'8-10 / side',8,10,'1-2','60 sec',60,'Start unweighted if necessary. Focus on a controlled trunk position while moving the limbs.'),\n  ('wednesday','incline-treadmill-walk',8,1,'20 min',NULL,NULL,NULL,NULL,0,NULL),\n\n  ('thursday','seated-dumbbell-shoulder-press',1,4,'8-10',8,10,'1-2','2-3 min',180,'Starting weight: ~35 kg'),\n  ('thursday','cable-lateral-raise',2,4,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('thursday','rear-delt-cable-fly',3,3,'15-20',15,20,'0-1','60-90 sec',75,NULL),\n  ('thursday','triceps-press-machine',4,3,'10-12',10,12,'0-1','60-90 sec',75,NULL),\n  ('thursday','ez-bar-preacher-curl',5,3,'10-12',10,12,'0-1','60-90 sec',75,'Starting point: ~12.5 kg EZ-bar load or equivalent'),\n  ('thursday','overhead-cable-triceps-extension',6,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('thursday','hammer-curl',7,2,'10-12',10,12,'0-1','60-90 sec',75,NULL),\n  ('thursday','lateral-raise-machine',8,2,'15-20',15,20,'0-1','60 sec',60,'Finisher — final set can be a controlled drop set.'),\n\n  ('friday','incline-dumbbell-press',1,3,'8-10',8,10,'1-2','2-3 min',180,'Starting weight: ~35 kg'),\n  ('friday','neutral-grip-lat-pulldown',2,4,'8-10',8,10,'1-2','2 min',120,NULL),\n  ('friday','cable-chest-fly',3,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('friday','chest-supported-row',4,3,'8-12',8,12,'1-2','2 min',120,NULL),\n  ('friday','hip-thrust',5,3,'8-12',8,12,'1-2','2 min',120,'Controlled reps. Keep ribs down and avoid excessive lower-back extension.'),\n  ('friday','lateral-raise-machine',6,3,'15-20',15,20,'0-1','60-90 sec',75,'Use a lighter weight than Monday'),\n  ('friday','standing-calf-raise',7,4,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('friday','pallof-press',8,3,'10-12 / side',10,12,'1-2','60 sec',60,NULL),\n  ('friday','incline-treadmill-walk',9,1,'20 min',NULL,NULL,NULL,NULL,0,NULL),\n\n  ('saturday-shoulders','machine-shoulder-press',1,3,'8-10',8,10,'1-2','2-3 min',180,NULL),\n  ('saturday-shoulders','cable-lateral-raise',2,4,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('saturday-shoulders','lateral-raise-machine',3,3,'15-20',15,20,'0-1','60-90 sec',75,NULL),\n  ('saturday-shoulders','rear-delt-fly',4,4,'15-20',15,20,'0-1','60-90 sec',75,NULL),\n  ('saturday-shoulders','face-pull',5,3,'15-20',15,20,'0-1','60 sec',60,NULL),\n  ('saturday-shoulders','incline-treadmill-walk',6,1,'15-20 min',NULL,NULL,NULL,NULL,0,NULL),\n\n  ('saturday-back','pull-ups',1,4,'6-10',6,10,'1-2','2-3 min',180,NULL),\n  ('saturday-back','neutral-grip-lat-pulldown',2,4,'8-12',8,12,'1-2','2 min',120,NULL),\n  ('saturday-back','chest-supported-row',3,3,'8-12',8,12,'1-2','2 min',120,NULL),\n  ('saturday-back','straight-arm-pulldown',4,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('saturday-back','rear-delt-fly',5,3,'15-20',15,20,'0-1','60-90 sec',75,NULL),\n  ('saturday-back','incline-treadmill-walk',6,1,'15-20 min',NULL,NULL,NULL,NULL,0,NULL),\n\n  ('saturday-arms','ez-bar-curl',1,3,'8-10',8,10,'1-2','90 sec',90,NULL),\n  ('saturday-arms','incline-dumbbell-curl',2,3,'10-12',10,12,'0-1','90 sec',90,NULL),\n  ('saturday-arms','hammer-curl',3,3,'10-12',10,12,'0-1','60-90 sec',75,NULL),\n  ('saturday-arms','triceps-press-machine',4,3,'8-10',8,10,'1-2','90 sec',90,NULL),\n  ('saturday-arms','rope-pushdown',5,3,'10-15',10,15,'0-1','60-90 sec',75,NULL),\n  ('saturday-arms','overhead-cable-triceps-extension',6,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('saturday-arms','incline-treadmill-walk',7,1,'15-20 min',NULL,NULL,NULL,NULL,0,NULL),\n\n  ('saturday-chest','incline-machine-press',1,4,'8-10',8,10,'1-2','2-3 min',180,NULL),\n  ('saturday-chest','pec-deck',2,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('saturday-chest','cable-chest-fly',3,3,'12-15',12,15,'0-1','60-90 sec',75,NULL),\n  ('saturday-chest','weighted-chest-dips',4,3,'8-10',8,10,'1-2','2 min',120,NULL),\n  ('saturday-chest','push-ups',5,2,'Stop ~1 rep before failure',NULL,NULL,'1','60-90 sec',75,NULL),\n  ('saturday-chest','incline-treadmill-walk',6,1,'15-20 min',NULL,NULL,NULL,NULL,0,NULL)\n) AS v(day_slug, ex_slug, position, sets, rep_range, rep_min, rep_max, rir_target, rest_note, rest_seconds, notes)\nJOIN public.workout_days d ON d.slug = v.day_slug\nJOIN public.exercises e ON e.slug = v.ex_slug;\n"}	e4cf5351-67d1-45b8-a439-59fa8fbde9f1	apikey@lovable.dev	c6e28bb5-159a-49c4-9e87-93df8a84a631	\N
+20260815044722	{"ALTER TABLE public.body_metrics ADD COLUMN IF NOT EXISTS target_calories NUMERIC;"}	e8af081a-3559-415c-b16b-53e078d4bacb	apikey@lovable.dev	f00b10bc-66e6-4f12-ac75-66a369c2513c	\N
+20260816093936	{"create or replace function public.get_leaderboard(period_days integer default 30)\nreturns table (\n  user_id uuid,\n  display_name text,\n  sessions integer,\n  sets_count integer,\n  total_volume numeric,\n  last_session date,\n  active_weeks integer\n)\nlanguage sql\nstable\nsecurity definer\nset search_path = public\nas $$\n  select\n    p.id,\n    coalesce(nullif(trim(p.name), ''), 'Athlete ' || left(p.id::text, 4)) as display_name,\n    (\n      select count(*) from public.workout_sessions ws\n      where ws.user_id = p.id and ws.status = 'completed'\n        and ws.session_date >= current_date - period_days\n    )::int,\n    (\n      select count(*) from public.sets s\n      where s.user_id = p.id and s.completed and not s.is_warmup\n        and s.performed_at >= now() - make_interval(days => period_days)\n    )::int,\n    coalesce((\n      select sum(coalesce(s.weight_kg, 0) * coalesce(s.reps, 0)) from public.sets s\n      where s.user_id = p.id and s.completed and not s.is_warmup\n        and s.performed_at >= now() - make_interval(days => period_days)\n    ), 0)::numeric,\n    (\n      select max(ws.session_date) from public.workout_sessions ws\n      where ws.user_id = p.id and ws.status = 'completed'\n    ),\n    (\n      select count(distinct date_trunc('week', ws.session_date)) from public.workout_sessions ws\n      where ws.user_id = p.id and ws.status = 'completed'\n        and ws.session_date >= current_date - period_days\n    )::int\n  from public.profiles p\n$$;\n\nrevoke all on function public.get_leaderboard(integer) from public, anon;\ngrant execute on function public.get_leaderboard(integer) to authenticated;\ngrant execute on function public.get_leaderboard(integer) to service_role;"}	340007cb-f4ef-41f8-adbf-50c1a3f50191	apikey@lovable.dev	8a72610c-98a5-46b9-a85e-2989456a29cd	\N
+20260817055708	{"-- Internal trigger-only function: no app role should be able to call it directly\nREVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;\n\n-- Leaderboard: aggregate, non-sensitive stats. Signed-in users only.\nREVOKE ALL ON FUNCTION public.get_leaderboard(integer) FROM PUBLIC, anon;\nGRANT EXECUTE ON FUNCTION public.get_leaderboard(integer) TO authenticated;"}	127f32b1-00e9-4378-900e-e5355844eab5	apikey@lovable.dev	758dfe30-7aa3-4808-8cf9-14c9f57aea60	\N
+20260817055743	{"CREATE SCHEMA IF NOT EXISTS private;\nREVOKE ALL ON SCHEMA private FROM PUBLIC, anon, authenticated;\n\nDROP FUNCTION IF EXISTS public.get_leaderboard(integer);\n\nCREATE OR REPLACE FUNCTION private.leaderboard(period_days integer DEFAULT 30)\nRETURNS TABLE(user_id uuid, display_name text, sessions integer, sets_count integer, total_volume numeric, last_session date, active_weeks integer)\nLANGUAGE sql\nSTABLE SECURITY DEFINER\nSET search_path TO 'public'\nAS $function$\n  select\n    p.id,\n    coalesce(nullif(trim(p.name), ''), 'Athlete ' || left(p.id::text, 4)) as display_name,\n    (\n      select count(*) from public.workout_sessions ws\n      where ws.user_id = p.id and ws.status = 'completed'\n        and ws.session_date >= current_date - period_days\n    )::int,\n    (\n      select count(*) from public.sets s\n      where s.user_id = p.id and s.completed and not s.is_warmup\n        and s.performed_at >= now() - make_interval(days => period_days)\n    )::int,\n    coalesce((\n      select sum(coalesce(s.weight_kg, 0) * coalesce(s.reps, 0)) from public.sets s\n      where s.user_id = p.id and s.completed and not s.is_warmup\n        and s.performed_at >= now() - make_interval(days => period_days)\n    ), 0)::numeric,\n    (\n      select max(ws.session_date) from public.workout_sessions ws\n      where ws.user_id = p.id and ws.status = 'completed'\n    ),\n    (\n      select count(distinct date_trunc('week', ws.session_date)) from public.workout_sessions ws\n      where ws.user_id = p.id and ws.status = 'completed'\n        and ws.session_date >= current_date - period_days\n    )::int\n  from public.profiles p\n$function$;\n\nREVOKE ALL ON FUNCTION private.leaderboard(integer) FROM PUBLIC, anon, authenticated;\n\n-- Public, non-privileged wrapper: only signed-in users, and only aggregate stats.\nCREATE OR REPLACE FUNCTION public.get_leaderboard(period_days integer DEFAULT 30)\nRETURNS TABLE(user_id uuid, display_name text, sessions integer, sets_count integer, total_volume numeric, last_session date, active_weeks integer)\nLANGUAGE sql\nSTABLE SECURITY INVOKER\nSET search_path TO 'public'\nAS $function$\n  select * from private.leaderboard(period_days)\n$function$;\n\nREVOKE ALL ON FUNCTION public.get_leaderboard(integer) FROM PUBLIC, anon;\nGRANT USAGE ON SCHEMA private TO authenticated;\nGRANT EXECUTE ON FUNCTION private.leaderboard(integer) TO authenticated;\nGRANT EXECUTE ON FUNCTION public.get_leaderboard(integer) TO authenticated;"}	229a626a-471f-433d-8548-a5dc1f8918fb	apikey@lovable.dev	385ca1f8-8289-413f-9f05-9281a2cc120a	\N
+20260818061607	{"UPDATE public.workout_sessions ws\nSET session_date = sub.last_day, updated_at = now()\nFROM (\n  SELECT es.session_id, max((s.performed_at AT TIME ZONE 'UTC')::date) AS last_day\n  FROM public.sets s\n  JOIN public.exercise_sessions es ON es.id = s.exercise_session_id\n  GROUP BY es.session_id\n) sub\nWHERE ws.id = sub.session_id\n  AND ws.status = 'completed'\n  AND ws.session_date <> sub.last_day;"}	c5a23e41-e9c0-47ca-af90-f3e7c8b887fb	apikey@lovable.dev	a02ac225-dec1-4f33-a135-ccfa37a43930	\N
+\.
+
+
+--
+-- Data for Name: secrets; Type: TABLE DATA; Schema: vault; Owner: supabase_admin
+--
+
+COPY vault.secrets (id, name, description, secret, key_id, nonce, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
+--
+
+SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 80, true);
+
+
+--
+-- Name: mfa_amr_claims amr_id_pk; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_amr_claims
+    ADD CONSTRAINT amr_id_pk PRIMARY KEY (id);
+
+
+--
+-- Name: audit_log_entries audit_log_entries_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.audit_log_entries
+    ADD CONSTRAINT audit_log_entries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_oauth_providers custom_oauth_providers_identifier_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.custom_oauth_providers
+    ADD CONSTRAINT custom_oauth_providers_identifier_key UNIQUE (identifier);
+
+
+--
+-- Name: custom_oauth_providers custom_oauth_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.custom_oauth_providers
+    ADD CONSTRAINT custom_oauth_providers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flow_state flow_state_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.flow_state
+    ADD CONSTRAINT flow_state_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: identities identities_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.identities
+    ADD CONSTRAINT identities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: identities identities_provider_id_provider_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.identities
+    ADD CONSTRAINT identities_provider_id_provider_unique UNIQUE (provider_id, provider);
+
+
+--
+-- Name: instances instances_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.instances
+    ADD CONSTRAINT instances_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mfa_amr_claims mfa_amr_claims_session_id_authentication_method_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_amr_claims
+    ADD CONSTRAINT mfa_amr_claims_session_id_authentication_method_pkey UNIQUE (session_id, authentication_method);
+
+
+--
+-- Name: mfa_challenges mfa_challenges_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_challenges
+    ADD CONSTRAINT mfa_challenges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mfa_factors mfa_factors_last_challenged_at_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_factors
+    ADD CONSTRAINT mfa_factors_last_challenged_at_key UNIQUE (last_challenged_at);
+
+
+--
+-- Name: mfa_factors mfa_factors_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_factors
+    ADD CONSTRAINT mfa_factors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_authorization_code_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_authorization_code_key UNIQUE (authorization_code);
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_authorization_id_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_authorization_id_key UNIQUE (authorization_id);
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_client_states oauth_client_states_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_client_states
+    ADD CONSTRAINT oauth_client_states_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_clients oauth_clients_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_clients
+    ADD CONSTRAINT oauth_clients_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_consents oauth_consents_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_consents
+    ADD CONSTRAINT oauth_consents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_consents oauth_consents_user_client_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_consents
+    ADD CONSTRAINT oauth_consents_user_client_unique UNIQUE (user_id, client_id);
+
+
+--
+-- Name: one_time_tokens one_time_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.one_time_tokens
+    ADD CONSTRAINT one_time_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens
+    ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: refresh_tokens refresh_tokens_token_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens
+    ADD CONSTRAINT refresh_tokens_token_unique UNIQUE (token);
+
+
+--
+-- Name: saml_providers saml_providers_entity_id_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_providers
+    ADD CONSTRAINT saml_providers_entity_id_key UNIQUE (entity_id);
+
+
+--
+-- Name: saml_providers saml_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_providers
+    ADD CONSTRAINT saml_providers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: saml_relay_states saml_relay_states_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_relay_states
+    ADD CONSTRAINT saml_relay_states_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sso_domains sso_domains_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sso_domains
+    ADD CONSTRAINT sso_domains_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sso_providers sso_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sso_providers
+    ADD CONSTRAINT sso_providers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_phone_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.users
+    ADD CONSTRAINT users_phone_key UNIQUE (phone);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: webauthn_challenges webauthn_challenges_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.webauthn_challenges
+    ADD CONSTRAINT webauthn_challenges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: webauthn_credentials webauthn_credentials_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.webauthn_credentials
+    ADD CONSTRAINT webauthn_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: body_metrics body_metrics_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.body_metrics
+    ADD CONSTRAINT body_metrics_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cardio_sessions cardio_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cardio_sessions
+    ADD CONSTRAINT cardio_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exercise_notes exercise_notes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_notes
+    ADD CONSTRAINT exercise_notes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exercise_notes exercise_notes_user_id_exercise_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_notes
+    ADD CONSTRAINT exercise_notes_user_id_exercise_id_key UNIQUE (user_id, exercise_id);
+
+
+--
+-- Name: exercise_sessions exercise_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_sessions
+    ADD CONSTRAINT exercise_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exercises exercises_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercises
+    ADD CONSTRAINT exercises_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: exercises exercises_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercises
+    ADD CONSTRAINT exercises_slug_key UNIQUE (slug);
+
+
+--
+-- Name: personal_records personal_records_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.personal_records
+    ADD CONSTRAINT personal_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sets sets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sets
+    ADD CONSTRAINT sets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workout_days workout_days_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_days
+    ADD CONSTRAINT workout_days_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workout_days workout_days_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_days
+    ADD CONSTRAINT workout_days_slug_key UNIQUE (slug);
+
+
+--
+-- Name: workout_exercises workout_exercises_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_exercises
+    ADD CONSTRAINT workout_exercises_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workout_sessions workout_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_sessions
+    ADD CONSTRAINT workout_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workout_templates workout_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_templates
+    ADD CONSTRAINT workout_templates_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: workout_templates workout_templates_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_templates
+    ADD CONSTRAINT workout_templates_slug_key UNIQUE (slug);
+
+
+--
+-- Name: buckets_analytics buckets_analytics_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.buckets_analytics
+    ADD CONSTRAINT buckets_analytics_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: buckets buckets_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.buckets
+    ADD CONSTRAINT buckets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: buckets_vectors buckets_vectors_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.buckets_vectors
+    ADD CONSTRAINT buckets_vectors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: migrations migrations_name_key; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.migrations
+    ADD CONSTRAINT migrations_name_key UNIQUE (name);
+
+
+--
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.migrations
+    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: objects objects_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.objects
+    ADD CONSTRAINT objects_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: s3_multipart_uploads_parts s3_multipart_uploads_parts_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads_parts
+    ADD CONSTRAINT s3_multipart_uploads_parts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: s3_multipart_uploads s3_multipart_uploads_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads
+    ADD CONSTRAINT s3_multipart_uploads_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vector_indexes vector_indexes_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.vector_indexes
+    ADD CONSTRAINT vector_indexes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_idempotency_key_key; Type: CONSTRAINT; Schema: supabase_migrations; Owner: postgres
+--
+
+ALTER TABLE ONLY supabase_migrations.schema_migrations
+    ADD CONSTRAINT schema_migrations_idempotency_key_key UNIQUE (idempotency_key);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: supabase_migrations; Owner: postgres
+--
+
+ALTER TABLE ONLY supabase_migrations.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: audit_logs_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX audit_logs_instance_id_idx ON auth.audit_log_entries USING btree (instance_id);
+
+
+--
+-- Name: confirmation_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX confirmation_token_idx ON auth.users USING btree (confirmation_token) WHERE ((confirmation_token)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: custom_oauth_providers_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_created_at_idx ON auth.custom_oauth_providers USING btree (created_at);
+
+
+--
+-- Name: custom_oauth_providers_enabled_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_enabled_idx ON auth.custom_oauth_providers USING btree (enabled);
+
+
+--
+-- Name: custom_oauth_providers_identifier_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_identifier_idx ON auth.custom_oauth_providers USING btree (identifier);
+
+
+--
+-- Name: custom_oauth_providers_provider_type_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_provider_type_idx ON auth.custom_oauth_providers USING btree (provider_type);
+
+
+--
+-- Name: email_change_token_current_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX email_change_token_current_idx ON auth.users USING btree (email_change_token_current) WHERE ((email_change_token_current)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: email_change_token_new_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX email_change_token_new_idx ON auth.users USING btree (email_change_token_new) WHERE ((email_change_token_new)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: factor_id_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX factor_id_created_at_idx ON auth.mfa_factors USING btree (user_id, created_at);
+
+
+--
+-- Name: flow_state_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX flow_state_created_at_idx ON auth.flow_state USING btree (created_at DESC);
+
+
+--
+-- Name: identities_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX identities_email_idx ON auth.identities USING btree (email text_pattern_ops);
+
+
+--
+-- Name: INDEX identities_email_idx; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON INDEX auth.identities_email_idx IS 'Auth: Ensures indexed queries on the email column';
+
+
+--
+-- Name: identities_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX identities_user_id_idx ON auth.identities USING btree (user_id);
+
+
+--
+-- Name: idx_auth_code; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_auth_code ON auth.flow_state USING btree (auth_code);
+
+
+--
+-- Name: idx_oauth_client_states_created_at; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_oauth_client_states_created_at ON auth.oauth_client_states USING btree (created_at);
+
+
+--
+-- Name: idx_user_id_auth_method; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_user_id_auth_method ON auth.flow_state USING btree (user_id, authentication_method);
+
+
+--
+-- Name: idx_users_created_at_desc; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_users_created_at_desc ON auth.users USING btree (created_at DESC);
+
+
+--
+-- Name: idx_users_email; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_users_email ON auth.users USING btree (email);
+
+
+--
+-- Name: idx_users_last_sign_in_at_desc; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_users_last_sign_in_at_desc ON auth.users USING btree (last_sign_in_at DESC);
+
+
+--
+-- Name: idx_users_name; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_users_name ON auth.users USING btree (((raw_user_meta_data ->> 'name'::text))) WHERE ((raw_user_meta_data ->> 'name'::text) IS NOT NULL);
+
+
+--
+-- Name: mfa_challenge_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX mfa_challenge_created_at_idx ON auth.mfa_challenges USING btree (created_at DESC);
+
+
+--
+-- Name: mfa_factors_user_friendly_name_unique; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX mfa_factors_user_friendly_name_unique ON auth.mfa_factors USING btree (friendly_name, user_id) WHERE (TRIM(BOTH FROM friendly_name) <> ''::text);
+
+
+--
+-- Name: mfa_factors_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX mfa_factors_user_id_idx ON auth.mfa_factors USING btree (user_id);
+
+
+--
+-- Name: oauth_auth_pending_exp_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_auth_pending_exp_idx ON auth.oauth_authorizations USING btree (expires_at) WHERE (status = 'pending'::auth.oauth_authorization_status);
+
+
+--
+-- Name: oauth_clients_deleted_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_clients_deleted_at_idx ON auth.oauth_clients USING btree (deleted_at);
+
+
+--
+-- Name: oauth_consents_active_client_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_consents_active_client_idx ON auth.oauth_consents USING btree (client_id) WHERE (revoked_at IS NULL);
+
+
+--
+-- Name: oauth_consents_active_user_client_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_consents_active_user_client_idx ON auth.oauth_consents USING btree (user_id, client_id) WHERE (revoked_at IS NULL);
+
+
+--
+-- Name: oauth_consents_user_order_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_consents_user_order_idx ON auth.oauth_consents USING btree (user_id, granted_at DESC);
+
+
+--
+-- Name: one_time_tokens_relates_to_hash_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX one_time_tokens_relates_to_hash_idx ON auth.one_time_tokens USING hash (relates_to);
+
+
+--
+-- Name: one_time_tokens_token_hash_hash_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX one_time_tokens_token_hash_hash_idx ON auth.one_time_tokens USING hash (token_hash);
+
+
+--
+-- Name: one_time_tokens_user_id_token_type_key; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX one_time_tokens_user_id_token_type_key ON auth.one_time_tokens USING btree (user_id, token_type);
+
+
+--
+-- Name: reauthentication_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX reauthentication_token_idx ON auth.users USING btree (reauthentication_token) WHERE ((reauthentication_token)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: recovery_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX recovery_token_idx ON auth.users USING btree (recovery_token) WHERE ((recovery_token)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: refresh_tokens_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_instance_id_idx ON auth.refresh_tokens USING btree (instance_id);
+
+
+--
+-- Name: refresh_tokens_instance_id_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_instance_id_user_id_idx ON auth.refresh_tokens USING btree (instance_id, user_id);
+
+
+--
+-- Name: refresh_tokens_parent_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_parent_idx ON auth.refresh_tokens USING btree (parent);
+
+
+--
+-- Name: refresh_tokens_session_id_revoked_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_session_id_revoked_idx ON auth.refresh_tokens USING btree (session_id, revoked);
+
+
+--
+-- Name: refresh_tokens_updated_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_updated_at_idx ON auth.refresh_tokens USING btree (updated_at DESC);
+
+
+--
+-- Name: saml_providers_sso_provider_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_providers_sso_provider_id_idx ON auth.saml_providers USING btree (sso_provider_id);
+
+
+--
+-- Name: saml_relay_states_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_relay_states_created_at_idx ON auth.saml_relay_states USING btree (created_at DESC);
+
+
+--
+-- Name: saml_relay_states_for_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_relay_states_for_email_idx ON auth.saml_relay_states USING btree (for_email);
+
+
+--
+-- Name: saml_relay_states_sso_provider_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_relay_states_sso_provider_id_idx ON auth.saml_relay_states USING btree (sso_provider_id);
+
+
+--
+-- Name: sessions_not_after_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sessions_not_after_idx ON auth.sessions USING btree (not_after DESC);
+
+
+--
+-- Name: sessions_oauth_client_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sessions_oauth_client_id_idx ON auth.sessions USING btree (oauth_client_id);
+
+
+--
+-- Name: sessions_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sessions_user_id_idx ON auth.sessions USING btree (user_id);
+
+
+--
+-- Name: sso_domains_domain_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX sso_domains_domain_idx ON auth.sso_domains USING btree (lower(domain));
+
+
+--
+-- Name: sso_domains_sso_provider_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sso_domains_sso_provider_id_idx ON auth.sso_domains USING btree (sso_provider_id);
+
+
+--
+-- Name: sso_providers_resource_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX sso_providers_resource_id_idx ON auth.sso_providers USING btree (lower(resource_id));
+
+
+--
+-- Name: sso_providers_resource_id_pattern_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sso_providers_resource_id_pattern_idx ON auth.sso_providers USING btree (resource_id text_pattern_ops);
+
+
+--
+-- Name: unique_phone_factor_per_user; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX unique_phone_factor_per_user ON auth.mfa_factors USING btree (user_id, phone);
+
+
+--
+-- Name: user_id_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX user_id_created_at_idx ON auth.sessions USING btree (user_id, created_at);
+
+
+--
+-- Name: users_email_partial_key; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX users_email_partial_key ON auth.users USING btree (email) WHERE (is_sso_user = false);
+
+
+--
+-- Name: INDEX users_email_partial_key; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON INDEX auth.users_email_partial_key IS 'Auth: A partial unique index that applies only when is_sso_user is false';
+
+
+--
+-- Name: users_instance_id_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX users_instance_id_email_idx ON auth.users USING btree (instance_id, lower((email)::text));
+
+
+--
+-- Name: users_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX users_instance_id_idx ON auth.users USING btree (instance_id);
+
+
+--
+-- Name: users_is_anonymous_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX users_is_anonymous_idx ON auth.users USING btree (is_anonymous);
+
+
+--
+-- Name: webauthn_challenges_expires_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX webauthn_challenges_expires_at_idx ON auth.webauthn_challenges USING btree (expires_at);
+
+
+--
+-- Name: webauthn_challenges_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX webauthn_challenges_user_id_idx ON auth.webauthn_challenges USING btree (user_id);
+
+
+--
+-- Name: webauthn_credentials_credential_id_key; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX webauthn_credentials_credential_id_key ON auth.webauthn_credentials USING btree (credential_id);
+
+
+--
+-- Name: webauthn_credentials_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX webauthn_credentials_user_id_idx ON auth.webauthn_credentials USING btree (user_id);
+
+
+--
+-- Name: idx_cardio_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_cardio_user_date ON public.cardio_sessions USING btree (user_id, performed_on DESC);
+
+
+--
+-- Name: idx_exsess_user_ex; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_exsess_user_ex ON public.exercise_sessions USING btree (user_id, exercise_id);
+
+
+--
+-- Name: idx_metrics_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_metrics_user_date ON public.body_metrics USING btree (user_id, measured_on DESC);
+
+
+--
+-- Name: idx_prs_user_ex; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_prs_user_ex ON public.personal_records USING btree (user_id, exercise_id, achieved_on DESC);
+
+
+--
+-- Name: idx_sessions_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_sessions_user_date ON public.workout_sessions USING btree (user_id, session_date DESC);
+
+
+--
+-- Name: idx_sets_user_ex; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_sets_user_ex ON public.sets USING btree (user_id, exercise_id, performed_at DESC);
+
+
+--
+-- Name: bname; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX bname ON storage.buckets USING btree (name);
+
+
+--
+-- Name: bucketid_objname; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX bucketid_objname ON storage.objects USING btree (bucket_id, name);
+
+
+--
+-- Name: buckets_analytics_unique_name_idx; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX buckets_analytics_unique_name_idx ON storage.buckets_analytics USING btree (name) WHERE (deleted_at IS NULL);
+
+
+--
+-- Name: idx_multipart_uploads_list; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX idx_multipart_uploads_list ON storage.s3_multipart_uploads USING btree (bucket_id, key, created_at);
+
+
+--
+-- Name: idx_objects_bucket_id_name; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX idx_objects_bucket_id_name ON storage.objects USING btree (bucket_id, name COLLATE "C");
+
+
+--
+-- Name: idx_objects_bucket_id_name_lower; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX idx_objects_bucket_id_name_lower ON storage.objects USING btree (bucket_id, lower(name) COLLATE "C");
+
+
+--
+-- Name: name_prefix_search; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX name_prefix_search ON storage.objects USING btree (name text_pattern_ops);
+
+
+--
+-- Name: vector_indexes_name_bucket_id_idx; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX vector_indexes_name_bucket_id_idx ON storage.vector_indexes USING btree (name, bucket_id);
+
+
+--
+-- Name: users on_auth_user_created; Type: TRIGGER; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+--
+-- Name: exercise_notes trg_exnotes_updated; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_exnotes_updated BEFORE UPDATE ON public.exercise_notes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: body_metrics trg_metrics_updated; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_metrics_updated BEFORE UPDATE ON public.body_metrics FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: profiles trg_profiles_updated; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_profiles_updated BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: workout_sessions trg_sessions_updated; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_sessions_updated BEFORE UPDATE ON public.workout_sessions FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: sets trg_sets_updated; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_sets_updated BEFORE UPDATE ON public.sets FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: buckets enforce_bucket_name_length_trigger; Type: TRIGGER; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TRIGGER enforce_bucket_name_length_trigger BEFORE INSERT OR UPDATE OF name ON storage.buckets FOR EACH ROW EXECUTE FUNCTION storage.enforce_bucket_name_length();
+
+
+--
+-- Name: buckets protect_buckets_delete; Type: TRIGGER; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TRIGGER protect_buckets_delete BEFORE DELETE ON storage.buckets FOR EACH STATEMENT EXECUTE FUNCTION storage.protect_delete();
+
+
+--
+-- Name: objects protect_objects_delete; Type: TRIGGER; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TRIGGER protect_objects_delete BEFORE DELETE ON storage.objects FOR EACH STATEMENT EXECUTE FUNCTION storage.protect_delete();
+
+
+--
+-- Name: objects update_objects_updated_at; Type: TRIGGER; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TRIGGER update_objects_updated_at BEFORE UPDATE ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.update_updated_at_column();
+
+
+--
+-- Name: identities identities_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.identities
+    ADD CONSTRAINT identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: mfa_amr_claims mfa_amr_claims_session_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_amr_claims
+    ADD CONSTRAINT mfa_amr_claims_session_id_fkey FOREIGN KEY (session_id) REFERENCES auth.sessions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: mfa_challenges mfa_challenges_auth_factor_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_challenges
+    ADD CONSTRAINT mfa_challenges_auth_factor_id_fkey FOREIGN KEY (factor_id) REFERENCES auth.mfa_factors(id) ON DELETE CASCADE;
+
+
+--
+-- Name: mfa_factors mfa_factors_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_factors
+    ADD CONSTRAINT mfa_factors_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_client_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_client_id_fkey FOREIGN KEY (client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_consents oauth_consents_client_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_consents
+    ADD CONSTRAINT oauth_consents_client_id_fkey FOREIGN KEY (client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth_consents oauth_consents_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_consents
+    ADD CONSTRAINT oauth_consents_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: one_time_tokens one_time_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.one_time_tokens
+    ADD CONSTRAINT one_time_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: refresh_tokens refresh_tokens_session_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens
+    ADD CONSTRAINT refresh_tokens_session_id_fkey FOREIGN KEY (session_id) REFERENCES auth.sessions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: saml_providers saml_providers_sso_provider_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_providers
+    ADD CONSTRAINT saml_providers_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: saml_relay_states saml_relay_states_flow_state_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_relay_states
+    ADD CONSTRAINT saml_relay_states_flow_state_id_fkey FOREIGN KEY (flow_state_id) REFERENCES auth.flow_state(id) ON DELETE CASCADE;
+
+
+--
+-- Name: saml_relay_states saml_relay_states_sso_provider_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_relay_states
+    ADD CONSTRAINT saml_relay_states_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sessions sessions_oauth_client_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sessions
+    ADD CONSTRAINT sessions_oauth_client_id_fkey FOREIGN KEY (oauth_client_id) REFERENCES auth.oauth_clients(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sessions sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sessions
+    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sso_domains sso_domains_sso_provider_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sso_domains
+    ADD CONSTRAINT sso_domains_sso_provider_id_fkey FOREIGN KEY (sso_provider_id) REFERENCES auth.sso_providers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: webauthn_challenges webauthn_challenges_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.webauthn_challenges
+    ADD CONSTRAINT webauthn_challenges_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: webauthn_credentials webauthn_credentials_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.webauthn_credentials
+    ADD CONSTRAINT webauthn_credentials_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: body_metrics body_metrics_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.body_metrics
+    ADD CONSTRAINT body_metrics_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cardio_sessions cardio_sessions_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cardio_sessions
+    ADD CONSTRAINT cardio_sessions_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.workout_sessions(id) ON DELETE SET NULL;
+
+
+--
+-- Name: cardio_sessions cardio_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cardio_sessions
+    ADD CONSTRAINT cardio_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: exercise_notes exercise_notes_exercise_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_notes
+    ADD CONSTRAINT exercise_notes_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id) ON DELETE CASCADE;
+
+
+--
+-- Name: exercise_notes exercise_notes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_notes
+    ADD CONSTRAINT exercise_notes_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: exercise_sessions exercise_sessions_exercise_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_sessions
+    ADD CONSTRAINT exercise_sessions_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: exercise_sessions exercise_sessions_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_sessions
+    ADD CONSTRAINT exercise_sessions_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.workout_sessions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: exercise_sessions exercise_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_sessions
+    ADD CONSTRAINT exercise_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: exercise_sessions exercise_sessions_workout_exercise_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.exercise_sessions
+    ADD CONSTRAINT exercise_sessions_workout_exercise_id_fkey FOREIGN KEY (workout_exercise_id) REFERENCES public.workout_exercises(id) ON DELETE SET NULL;
+
+
+--
+-- Name: personal_records personal_records_exercise_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.personal_records
+    ADD CONSTRAINT personal_records_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id) ON DELETE CASCADE;
+
+
+--
+-- Name: personal_records personal_records_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.personal_records
+    ADD CONSTRAINT personal_records_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.workout_sessions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: personal_records personal_records_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.personal_records
+    ADD CONSTRAINT personal_records_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: profiles profiles_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sets sets_exercise_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sets
+    ADD CONSTRAINT sets_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: sets sets_exercise_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sets
+    ADD CONSTRAINT sets_exercise_session_id_fkey FOREIGN KEY (exercise_session_id) REFERENCES public.exercise_sessions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: sets sets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sets
+    ADD CONSTRAINT sets_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: workout_days workout_days_template_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_days
+    ADD CONSTRAINT workout_days_template_id_fkey FOREIGN KEY (template_id) REFERENCES public.workout_templates(id) ON DELETE CASCADE;
+
+
+--
+-- Name: workout_exercises workout_exercises_day_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_exercises
+    ADD CONSTRAINT workout_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.workout_days(id) ON DELETE CASCADE;
+
+
+--
+-- Name: workout_exercises workout_exercises_exercise_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_exercises
+    ADD CONSTRAINT workout_exercises_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: workout_sessions workout_sessions_day_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_sessions
+    ADD CONSTRAINT workout_sessions_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.workout_days(id) ON DELETE SET NULL;
+
+
+--
+-- Name: workout_sessions workout_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workout_sessions
+    ADD CONSTRAINT workout_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: objects objects_bucketId_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.objects
+    ADD CONSTRAINT "objects_bucketId_fkey" FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id);
+
+
+--
+-- Name: s3_multipart_uploads s3_multipart_uploads_bucket_id_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads
+    ADD CONSTRAINT s3_multipart_uploads_bucket_id_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id);
+
+
+--
+-- Name: s3_multipart_uploads_parts s3_multipart_uploads_parts_bucket_id_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads_parts
+    ADD CONSTRAINT s3_multipart_uploads_parts_bucket_id_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id);
+
+
+--
+-- Name: s3_multipart_uploads_parts s3_multipart_uploads_parts_upload_id_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads_parts
+    ADD CONSTRAINT s3_multipart_uploads_parts_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES storage.s3_multipart_uploads(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vector_indexes vector_indexes_bucket_id_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.vector_indexes
+    ADD CONSTRAINT vector_indexes_bucket_id_fkey FOREIGN KEY (bucket_id) REFERENCES storage.buckets_vectors(id);
+
+
+--
+-- Name: audit_log_entries; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.audit_log_entries ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: flow_state; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.flow_state ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: identities; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.identities ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: instances; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.instances ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: mfa_amr_claims; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.mfa_amr_claims ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: mfa_challenges; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.mfa_challenges ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: mfa_factors; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.mfa_factors ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: one_time_tokens; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.one_time_tokens ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: refresh_tokens; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.refresh_tokens ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: saml_providers; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.saml_providers ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: saml_relay_states; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.saml_relay_states ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: schema_migrations; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.schema_migrations ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: sessions; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: sso_domains; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.sso_domains ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: sso_providers; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.sso_providers ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: users; Type: ROW SECURITY; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: body_metrics; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.body_metrics ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: cardio_sessions; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.cardio_sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: workout_days days readable; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "days readable" ON public.workout_days FOR SELECT TO authenticated, anon USING (true);
+
+
+--
+-- Name: exercise_notes; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.exercise_notes ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: exercise_sessions; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.exercise_sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: exercises; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.exercises ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: exercises exercises readable; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "exercises readable" ON public.exercises FOR SELECT TO authenticated, anon USING (true);
+
+
+--
+-- Name: body_metrics own body metrics; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own body metrics" ON public.body_metrics TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: cardio_sessions own cardio; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own cardio" ON public.cardio_sessions TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: exercise_notes own exercise notes; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own exercise notes" ON public.exercise_notes TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: exercise_sessions own exercise sessions; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own exercise sessions" ON public.exercise_sessions TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: profiles own profile; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own profile" ON public.profiles TO authenticated USING ((auth.uid() = id)) WITH CHECK ((auth.uid() = id));
+
+
+--
+-- Name: personal_records own prs; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own prs" ON public.personal_records TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: workout_sessions own sessions; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own sessions" ON public.workout_sessions TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: sets own sets; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "own sets" ON public.sets TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
+
+
+--
+-- Name: personal_records; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.personal_records ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: profiles; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: sets; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.sets ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: workout_templates templates readable; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "templates readable" ON public.workout_templates FOR SELECT TO authenticated, anon USING (true);
+
+
+--
+-- Name: workout_exercises workout exercises readable; Type: POLICY; Schema: public; Owner: postgres
+--
+
+CREATE POLICY "workout exercises readable" ON public.workout_exercises FOR SELECT TO authenticated, anon USING (true);
+
+
+--
+-- Name: workout_days; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.workout_days ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: workout_exercises; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.workout_exercises ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: workout_sessions; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.workout_sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: workout_templates; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.workout_templates ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: buckets; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.buckets ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: buckets_analytics; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.buckets_analytics ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: buckets_vectors; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.buckets_vectors ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: migrations; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.migrations ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: objects; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: s3_multipart_uploads; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.s3_multipart_uploads ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: s3_multipart_uploads_parts; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.s3_multipart_uploads_parts ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: vector_indexes; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE storage.vector_indexes ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: supabase_realtime; Type: PUBLICATION; Schema: -; Owner: postgres
+--
+
+CREATE PUBLICATION supabase_realtime WITH (publish = 'insert, update, delete, truncate');
+
+
+ALTER PUBLICATION supabase_realtime OWNER TO postgres;
+
+--
+-- Name: SCHEMA auth; Type: ACL; Schema: -; Owner: supabase_admin
+--
+
+GRANT USAGE ON SCHEMA auth TO anon;
+GRANT USAGE ON SCHEMA auth TO authenticated;
+GRANT USAGE ON SCHEMA auth TO service_role;
+GRANT ALL ON SCHEMA auth TO supabase_auth_admin;
+GRANT ALL ON SCHEMA auth TO dashboard_user;
+GRANT USAGE ON SCHEMA auth TO postgres;
+
+
+--
+-- Name: SCHEMA extensions; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT USAGE ON SCHEMA extensions TO anon;
+GRANT USAGE ON SCHEMA extensions TO authenticated;
+GRANT USAGE ON SCHEMA extensions TO service_role;
+GRANT ALL ON SCHEMA extensions TO dashboard_user;
+GRANT USAGE ON SCHEMA extensions TO sandbox_exec;
+
+
+--
+-- Name: SCHEMA private; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT USAGE ON SCHEMA private TO authenticated;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
+--
+
+GRANT USAGE ON SCHEMA public TO postgres;
+GRANT USAGE ON SCHEMA public TO anon;
+GRANT USAGE ON SCHEMA public TO authenticated;
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT USAGE ON SCHEMA public TO sandbox_exec;
+
+
+--
+-- Name: SCHEMA realtime; Type: ACL; Schema: -; Owner: supabase_admin
+--
+
+GRANT USAGE ON SCHEMA realtime TO postgres;
+
+
+--
+-- Name: SCHEMA storage; Type: ACL; Schema: -; Owner: supabase_admin
+--
+
+GRANT USAGE ON SCHEMA storage TO postgres WITH GRANT OPTION;
+GRANT USAGE ON SCHEMA storage TO anon;
+GRANT USAGE ON SCHEMA storage TO authenticated;
+GRANT USAGE ON SCHEMA storage TO service_role;
+GRANT ALL ON SCHEMA storage TO supabase_storage_admin WITH GRANT OPTION;
+GRANT ALL ON SCHEMA storage TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT USAGE ON SCHEMA storage TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: SCHEMA vault; Type: ACL; Schema: -; Owner: supabase_admin
+--
+
+GRANT USAGE ON SCHEMA vault TO postgres WITH GRANT OPTION;
+GRANT USAGE ON SCHEMA vault TO service_role;
+
+
+--
+-- Name: FUNCTION email(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON FUNCTION auth.email() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION jwt(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON FUNCTION auth.jwt() TO postgres;
+GRANT ALL ON FUNCTION auth.jwt() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION role(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON FUNCTION auth.role() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uid(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON FUNCTION auth.uid() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION armor(bytea); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.armor(bytea) FROM postgres;
+GRANT ALL ON FUNCTION extensions.armor(bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.armor(bytea) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION armor(bytea, text[], text[]); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.armor(bytea, text[], text[]) FROM postgres;
+GRANT ALL ON FUNCTION extensions.armor(bytea, text[], text[]) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.armor(bytea, text[], text[]) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION crypt(text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.crypt(text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.crypt(text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.crypt(text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION dearmor(text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.dearmor(text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.dearmor(text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.dearmor(text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION decrypt(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.decrypt(bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.decrypt(bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.decrypt(bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION decrypt_iv(bytea, bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.decrypt_iv(bytea, bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.decrypt_iv(bytea, bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.decrypt_iv(bytea, bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION digest(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.digest(bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.digest(bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.digest(bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION digest(text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.digest(text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.digest(text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.digest(text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION encrypt(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.encrypt(bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.encrypt(bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.encrypt(bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION encrypt_iv(bytea, bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.encrypt_iv(bytea, bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.encrypt_iv(bytea, bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.encrypt_iv(bytea, bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION gen_random_bytes(integer); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.gen_random_bytes(integer) FROM postgres;
+GRANT ALL ON FUNCTION extensions.gen_random_bytes(integer) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.gen_random_bytes(integer) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION gen_random_uuid(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.gen_random_uuid() FROM postgres;
+GRANT ALL ON FUNCTION extensions.gen_random_uuid() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.gen_random_uuid() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION gen_salt(text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.gen_salt(text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.gen_salt(text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.gen_salt(text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION gen_salt(text, integer); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.gen_salt(text, integer) FROM postgres;
+GRANT ALL ON FUNCTION extensions.gen_salt(text, integer) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.gen_salt(text, integer) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION grant_pg_cron_access(); Type: ACL; Schema: extensions; Owner: supabase_admin
+--
+
+REVOKE ALL ON FUNCTION extensions.grant_pg_cron_access() FROM supabase_admin;
+GRANT ALL ON FUNCTION extensions.grant_pg_cron_access() TO supabase_admin WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.grant_pg_cron_access() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION grant_pg_graphql_access(); Type: ACL; Schema: extensions; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION extensions.grant_pg_graphql_access() TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION grant_pg_net_access(); Type: ACL; Schema: extensions; Owner: supabase_admin
+--
+
+REVOKE ALL ON FUNCTION extensions.grant_pg_net_access() FROM supabase_admin;
+GRANT ALL ON FUNCTION extensions.grant_pg_net_access() TO supabase_admin WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.grant_pg_net_access() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION hmac(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.hmac(bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.hmac(bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.hmac(bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION hmac(text, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.hmac(text, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.hmac(text, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.hmac(text, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT shared_blk_read_time double precision, OUT shared_blk_write_time double precision, OUT local_blk_read_time double precision, OUT local_blk_write_time double precision, OUT temp_blk_read_time double precision, OUT temp_blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric, OUT jit_functions bigint, OUT jit_generation_time double precision, OUT jit_inlining_count bigint, OUT jit_inlining_time double precision, OUT jit_optimization_count bigint, OUT jit_optimization_time double precision, OUT jit_emission_count bigint, OUT jit_emission_time double precision, OUT jit_deform_count bigint, OUT jit_deform_time double precision, OUT stats_since timestamp with time zone, OUT minmax_stats_since timestamp with time zone); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT shared_blk_read_time double precision, OUT shared_blk_write_time double precision, OUT local_blk_read_time double precision, OUT local_blk_write_time double precision, OUT temp_blk_read_time double precision, OUT temp_blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric, OUT jit_functions bigint, OUT jit_generation_time double precision, OUT jit_inlining_count bigint, OUT jit_inlining_time double precision, OUT jit_optimization_count bigint, OUT jit_optimization_time double precision, OUT jit_emission_count bigint, OUT jit_emission_time double precision, OUT jit_deform_count bigint, OUT jit_deform_time double precision, OUT stats_since timestamp with time zone, OUT minmax_stats_since timestamp with time zone) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT shared_blk_read_time double precision, OUT shared_blk_write_time double precision, OUT local_blk_read_time double precision, OUT local_blk_write_time double precision, OUT temp_blk_read_time double precision, OUT temp_blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric, OUT jit_functions bigint, OUT jit_generation_time double precision, OUT jit_inlining_count bigint, OUT jit_inlining_time double precision, OUT jit_optimization_count bigint, OUT jit_optimization_time double precision, OUT jit_emission_count bigint, OUT jit_emission_time double precision, OUT jit_deform_count bigint, OUT jit_deform_time double precision, OUT stats_since timestamp with time zone, OUT minmax_stats_since timestamp with time zone) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT shared_blk_read_time double precision, OUT shared_blk_write_time double precision, OUT local_blk_read_time double precision, OUT local_blk_write_time double precision, OUT temp_blk_read_time double precision, OUT temp_blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric, OUT jit_functions bigint, OUT jit_generation_time double precision, OUT jit_inlining_count bigint, OUT jit_inlining_time double precision, OUT jit_optimization_count bigint, OUT jit_optimization_time double precision, OUT jit_emission_count bigint, OUT jit_emission_time double precision, OUT jit_deform_count bigint, OUT jit_deform_time double precision, OUT stats_since timestamp with time zone, OUT minmax_stats_since timestamp with time zone) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pg_stat_statements_reset(userid oid, dbid oid, queryid bigint, minmax_only boolean); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pg_stat_statements_reset(userid oid, dbid oid, queryid bigint, minmax_only boolean) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pg_stat_statements_reset(userid oid, dbid oid, queryid bigint, minmax_only boolean) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pg_stat_statements_reset(userid oid, dbid oid, queryid bigint, minmax_only boolean) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_armor_headers(text, OUT key text, OUT value text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_armor_headers(text, OUT key text, OUT value text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_armor_headers(text, OUT key text, OUT value text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_armor_headers(text, OUT key text, OUT value text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_key_id(bytea); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_key_id(bytea) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_key_id(bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_key_id(bytea) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_decrypt(bytea, bytea); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_decrypt(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_decrypt(bytea, bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_decrypt_bytea(bytea, bytea); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_decrypt_bytea(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_decrypt_bytea(bytea, bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_encrypt(text, bytea); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_encrypt(text, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_encrypt_bytea(bytea, bytea); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_pub_encrypt_bytea(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_decrypt(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_decrypt(bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_decrypt_bytea(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_decrypt_bytea(bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_encrypt(text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_encrypt(text, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_encrypt_bytea(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgp_sym_encrypt_bytea(bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text, text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text, text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text, text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION pgrst_ddl_watch(); Type: ACL; Schema: extensions; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION extensions.pgrst_ddl_watch() TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION pgrst_drop_watch(); Type: ACL; Schema: extensions; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION extensions.pgrst_drop_watch() TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION set_graphql_placeholder(); Type: ACL; Schema: extensions; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION extensions.set_graphql_placeholder() TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION uuid_generate_v1(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_generate_v1() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v1() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v1() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_generate_v1mc(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_generate_v1mc() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v1mc() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v1mc() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_generate_v3(namespace uuid, name text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_generate_v3(namespace uuid, name text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v3(namespace uuid, name text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v3(namespace uuid, name text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_generate_v4(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_generate_v4() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v4() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v4() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_generate_v5(namespace uuid, name text); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_generate_v5(namespace uuid, name text) FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v5(namespace uuid, name text) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_generate_v5(namespace uuid, name text) TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_nil(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_nil() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_nil() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_nil() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_ns_dns(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_ns_dns() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_ns_dns() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_ns_dns() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_ns_oid(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_ns_oid() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_ns_oid() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_ns_oid() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_ns_url(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_ns_url() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_ns_url() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_ns_url() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION uuid_ns_x500(); Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION extensions.uuid_ns_x500() FROM postgres;
+GRANT ALL ON FUNCTION extensions.uuid_ns_x500() TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION extensions.uuid_ns_x500() TO dashboard_user;
+
+
+--
+-- Name: FUNCTION graphql("operationName" text, query text, variables jsonb, extensions jsonb); Type: ACL; Schema: graphql_public; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO postgres;
+GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO anon;
+GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO authenticated;
+GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO service_role;
+
+
+--
+-- Name: FUNCTION pg_reload_conf(); Type: ACL; Schema: pg_catalog; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION pg_catalog.pg_reload_conf() TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: FUNCTION get_auth(p_usename text); Type: ACL; Schema: pgbouncer; Owner: supabase_admin
+--
+
+REVOKE ALL ON FUNCTION pgbouncer.get_auth(p_usename text) FROM PUBLIC;
+GRANT ALL ON FUNCTION pgbouncer.get_auth(p_usename text) TO pgbouncer;
+
+
+--
+-- Name: FUNCTION leaderboard(period_days integer); Type: ACL; Schema: private; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION private.leaderboard(period_days integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION private.leaderboard(period_days integer) TO authenticated;
+
+
+--
+-- Name: FUNCTION get_leaderboard(period_days integer); Type: ACL; Schema: public; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION public.get_leaderboard(period_days integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION public.get_leaderboard(period_days integer) TO authenticated;
+GRANT ALL ON FUNCTION public.get_leaderboard(period_days integer) TO service_role;
+
+
+--
+-- Name: FUNCTION handle_new_user(); Type: ACL; Schema: public; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC;
+GRANT ALL ON FUNCTION public.handle_new_user() TO service_role;
+
+
+--
+-- Name: FUNCTION update_updated_at_column(); Type: ACL; Schema: public; Owner: postgres
+--
+
+REVOKE ALL ON FUNCTION public.update_updated_at_column() FROM PUBLIC;
+GRANT ALL ON FUNCTION public.update_updated_at_column() TO service_role;
+
+
+--
+-- Name: FUNCTION _crypto_aead_det_decrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea); Type: ACL; Schema: vault; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION vault._crypto_aead_det_decrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION vault._crypto_aead_det_decrypt(message bytea, additional bytea, key_id bigint, context bytea, nonce bytea) TO service_role;
+
+
+--
+-- Name: FUNCTION create_secret(new_secret text, new_name text, new_description text, new_key_id uuid); Type: ACL; Schema: vault; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION vault.create_secret(new_secret text, new_name text, new_description text, new_key_id uuid) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION vault.create_secret(new_secret text, new_name text, new_description text, new_key_id uuid) TO service_role;
+
+
+--
+-- Name: FUNCTION update_secret(secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid); Type: ACL; Schema: vault; Owner: supabase_admin
+--
+
+GRANT ALL ON FUNCTION vault.update_secret(secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid) TO postgres WITH GRANT OPTION;
+GRANT ALL ON FUNCTION vault.update_secret(secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid) TO service_role;
+
+
+--
+-- Name: TABLE audit_log_entries; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.audit_log_entries TO dashboard_user;
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.audit_log_entries TO postgres;
+GRANT SELECT ON TABLE auth.audit_log_entries TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.audit_log_entries TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE custom_oauth_providers; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.custom_oauth_providers TO postgres;
+GRANT ALL ON TABLE auth.custom_oauth_providers TO dashboard_user;
+
+
+--
+-- Name: TABLE flow_state; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.flow_state TO postgres;
+GRANT SELECT ON TABLE auth.flow_state TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.flow_state TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.flow_state TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE identities; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.identities TO postgres;
+GRANT SELECT ON TABLE auth.identities TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.identities TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.identities TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE instances; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.instances TO dashboard_user;
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.instances TO postgres;
+GRANT SELECT ON TABLE auth.instances TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.instances TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE mfa_amr_claims; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.mfa_amr_claims TO postgres;
+GRANT SELECT ON TABLE auth.mfa_amr_claims TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.mfa_amr_claims TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.mfa_amr_claims TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE mfa_challenges; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.mfa_challenges TO postgres;
+GRANT SELECT ON TABLE auth.mfa_challenges TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.mfa_challenges TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.mfa_challenges TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE mfa_factors; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.mfa_factors TO postgres;
+GRANT SELECT ON TABLE auth.mfa_factors TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.mfa_factors TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.mfa_factors TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE oauth_authorizations; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.oauth_authorizations TO postgres;
+GRANT ALL ON TABLE auth.oauth_authorizations TO dashboard_user;
+
+
+--
+-- Name: TABLE oauth_client_states; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.oauth_client_states TO postgres;
+GRANT ALL ON TABLE auth.oauth_client_states TO dashboard_user;
+
+
+--
+-- Name: TABLE oauth_clients; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.oauth_clients TO postgres;
+GRANT ALL ON TABLE auth.oauth_clients TO dashboard_user;
+
+
+--
+-- Name: TABLE oauth_consents; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.oauth_consents TO postgres;
+GRANT ALL ON TABLE auth.oauth_consents TO dashboard_user;
+
+
+--
+-- Name: TABLE one_time_tokens; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.one_time_tokens TO postgres;
+GRANT SELECT ON TABLE auth.one_time_tokens TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.one_time_tokens TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.one_time_tokens TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE refresh_tokens; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.refresh_tokens TO dashboard_user;
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.refresh_tokens TO postgres;
+GRANT SELECT ON TABLE auth.refresh_tokens TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.refresh_tokens TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: SEQUENCE refresh_tokens_id_seq; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON SEQUENCE auth.refresh_tokens_id_seq TO dashboard_user;
+GRANT ALL ON SEQUENCE auth.refresh_tokens_id_seq TO postgres;
+
+
+--
+-- Name: TABLE saml_providers; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.saml_providers TO postgres;
+GRANT SELECT ON TABLE auth.saml_providers TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.saml_providers TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.saml_providers TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE saml_relay_states; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.saml_relay_states TO postgres;
+GRANT SELECT ON TABLE auth.saml_relay_states TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.saml_relay_states TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.saml_relay_states TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE schema_migrations; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT SELECT ON TABLE auth.schema_migrations TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.schema_migrations TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE sessions; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.sessions TO postgres;
+GRANT SELECT ON TABLE auth.sessions TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.sessions TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.sessions TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE sso_domains; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.sso_domains TO postgres;
+GRANT SELECT ON TABLE auth.sso_domains TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.sso_domains TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.sso_domains TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE sso_providers; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.sso_providers TO postgres;
+GRANT SELECT ON TABLE auth.sso_providers TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE auth.sso_providers TO dashboard_user;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.sso_providers TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE users; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.users TO dashboard_user;
+GRANT INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE auth.users TO postgres;
+GRANT SELECT ON TABLE auth.users TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT ON TABLE auth.users TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE webauthn_challenges; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.webauthn_challenges TO postgres;
+GRANT ALL ON TABLE auth.webauthn_challenges TO dashboard_user;
+
+
+--
+-- Name: TABLE webauthn_credentials; Type: ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+GRANT ALL ON TABLE auth.webauthn_credentials TO postgres;
+GRANT ALL ON TABLE auth.webauthn_credentials TO dashboard_user;
+
+
+--
+-- Name: TABLE pg_stat_statements; Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON TABLE extensions.pg_stat_statements FROM postgres;
+GRANT ALL ON TABLE extensions.pg_stat_statements TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE extensions.pg_stat_statements TO dashboard_user;
+GRANT SELECT,INSERT ON TABLE extensions.pg_stat_statements TO sandbox_exec;
+
+
+--
+-- Name: TABLE pg_stat_statements_info; Type: ACL; Schema: extensions; Owner: postgres
+--
+
+REVOKE ALL ON TABLE extensions.pg_stat_statements_info FROM postgres;
+GRANT ALL ON TABLE extensions.pg_stat_statements_info TO postgres WITH GRANT OPTION;
+GRANT ALL ON TABLE extensions.pg_stat_statements_info TO dashboard_user;
+GRANT SELECT,INSERT ON TABLE extensions.pg_stat_statements_info TO sandbox_exec;
+
+
+--
+-- Name: TABLE body_metrics; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.body_metrics TO anon;
+GRANT ALL ON TABLE public.body_metrics TO authenticated;
+GRANT ALL ON TABLE public.body_metrics TO service_role;
+GRANT SELECT,INSERT ON TABLE public.body_metrics TO sandbox_exec;
+
+
+--
+-- Name: TABLE cardio_sessions; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.cardio_sessions TO anon;
+GRANT ALL ON TABLE public.cardio_sessions TO authenticated;
+GRANT ALL ON TABLE public.cardio_sessions TO service_role;
+GRANT SELECT,INSERT ON TABLE public.cardio_sessions TO sandbox_exec;
+
+
+--
+-- Name: TABLE exercise_notes; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.exercise_notes TO anon;
+GRANT ALL ON TABLE public.exercise_notes TO authenticated;
+GRANT ALL ON TABLE public.exercise_notes TO service_role;
+GRANT SELECT,INSERT ON TABLE public.exercise_notes TO sandbox_exec;
+
+
+--
+-- Name: TABLE exercise_sessions; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.exercise_sessions TO anon;
+GRANT ALL ON TABLE public.exercise_sessions TO authenticated;
+GRANT ALL ON TABLE public.exercise_sessions TO service_role;
+GRANT SELECT,INSERT ON TABLE public.exercise_sessions TO sandbox_exec;
+
+
+--
+-- Name: TABLE exercises; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.exercises TO anon;
+GRANT ALL ON TABLE public.exercises TO authenticated;
+GRANT ALL ON TABLE public.exercises TO service_role;
+GRANT SELECT,INSERT ON TABLE public.exercises TO sandbox_exec;
+
+
+--
+-- Name: TABLE personal_records; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.personal_records TO anon;
+GRANT ALL ON TABLE public.personal_records TO authenticated;
+GRANT ALL ON TABLE public.personal_records TO service_role;
+GRANT SELECT,INSERT ON TABLE public.personal_records TO sandbox_exec;
+
+
+--
+-- Name: TABLE profiles; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.profiles TO anon;
+GRANT ALL ON TABLE public.profiles TO authenticated;
+GRANT ALL ON TABLE public.profiles TO service_role;
+GRANT SELECT,INSERT ON TABLE public.profiles TO sandbox_exec;
+
+
+--
+-- Name: TABLE sets; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.sets TO anon;
+GRANT ALL ON TABLE public.sets TO authenticated;
+GRANT ALL ON TABLE public.sets TO service_role;
+GRANT SELECT,INSERT ON TABLE public.sets TO sandbox_exec;
+
+
+--
+-- Name: TABLE workout_days; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.workout_days TO anon;
+GRANT ALL ON TABLE public.workout_days TO authenticated;
+GRANT ALL ON TABLE public.workout_days TO service_role;
+GRANT SELECT,INSERT ON TABLE public.workout_days TO sandbox_exec;
+
+
+--
+-- Name: TABLE workout_exercises; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.workout_exercises TO anon;
+GRANT ALL ON TABLE public.workout_exercises TO authenticated;
+GRANT ALL ON TABLE public.workout_exercises TO service_role;
+GRANT SELECT,INSERT ON TABLE public.workout_exercises TO sandbox_exec;
+
+
+--
+-- Name: TABLE workout_sessions; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.workout_sessions TO anon;
+GRANT ALL ON TABLE public.workout_sessions TO authenticated;
+GRANT ALL ON TABLE public.workout_sessions TO service_role;
+GRANT SELECT,INSERT ON TABLE public.workout_sessions TO sandbox_exec;
+
+
+--
+-- Name: TABLE workout_templates; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON TABLE public.workout_templates TO anon;
+GRANT ALL ON TABLE public.workout_templates TO authenticated;
+GRANT ALL ON TABLE public.workout_templates TO service_role;
+GRANT SELECT,INSERT ON TABLE public.workout_templates TO sandbox_exec;
+
+
+--
+-- Name: TABLE buckets; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+REVOKE ALL ON TABLE storage.buckets FROM supabase_storage_admin;
+GRANT ALL ON TABLE storage.buckets TO supabase_storage_admin WITH GRANT OPTION;
+GRANT ALL ON TABLE storage.buckets TO service_role;
+GRANT ALL ON TABLE storage.buckets TO authenticated;
+GRANT ALL ON TABLE storage.buckets TO anon;
+GRANT ALL ON TABLE storage.buckets TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT,INSERT ON TABLE storage.buckets TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE buckets_analytics; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+GRANT ALL ON TABLE storage.buckets_analytics TO service_role;
+GRANT ALL ON TABLE storage.buckets_analytics TO authenticated;
+GRANT ALL ON TABLE storage.buckets_analytics TO anon;
+
+
+--
+-- Name: TABLE buckets_vectors; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+GRANT SELECT ON TABLE storage.buckets_vectors TO service_role;
+GRANT SELECT ON TABLE storage.buckets_vectors TO authenticated;
+GRANT SELECT ON TABLE storage.buckets_vectors TO anon;
+
+
+--
+-- Name: TABLE objects; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+REVOKE ALL ON TABLE storage.objects FROM supabase_storage_admin;
+GRANT ALL ON TABLE storage.objects TO supabase_storage_admin WITH GRANT OPTION;
+GRANT ALL ON TABLE storage.objects TO service_role;
+GRANT ALL ON TABLE storage.objects TO authenticated;
+GRANT ALL ON TABLE storage.objects TO anon;
+GRANT ALL ON TABLE storage.objects TO postgres WITH GRANT OPTION;
+SET SESSION AUTHORIZATION postgres;
+GRANT SELECT,INSERT ON TABLE storage.objects TO sandbox_exec;
+RESET SESSION AUTHORIZATION;
+
+
+--
+-- Name: TABLE s3_multipart_uploads; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+GRANT ALL ON TABLE storage.s3_multipart_uploads TO service_role;
+GRANT SELECT ON TABLE storage.s3_multipart_uploads TO authenticated;
+GRANT SELECT ON TABLE storage.s3_multipart_uploads TO anon;
+
+
+--
+-- Name: TABLE s3_multipart_uploads_parts; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+GRANT ALL ON TABLE storage.s3_multipart_uploads_parts TO service_role;
+GRANT SELECT ON TABLE storage.s3_multipart_uploads_parts TO authenticated;
+GRANT SELECT ON TABLE storage.s3_multipart_uploads_parts TO anon;
+
+
+--
+-- Name: TABLE vector_indexes; Type: ACL; Schema: storage; Owner: supabase_storage_admin
+--
+
+GRANT SELECT ON TABLE storage.vector_indexes TO service_role;
+GRANT SELECT ON TABLE storage.vector_indexes TO authenticated;
+GRANT SELECT ON TABLE storage.vector_indexes TO anon;
+
+
+--
+-- Name: TABLE secrets; Type: ACL; Schema: vault; Owner: supabase_admin
+--
+
+GRANT SELECT,REFERENCES,DELETE,TRUNCATE ON TABLE vault.secrets TO postgres WITH GRANT OPTION;
+GRANT SELECT,DELETE ON TABLE vault.secrets TO service_role;
+
+
+--
+-- Name: TABLE decrypted_secrets; Type: ACL; Schema: vault; Owner: supabase_admin
+--
+
+GRANT SELECT,REFERENCES,DELETE,TRUNCATE ON TABLE vault.decrypted_secrets TO postgres WITH GRANT OPTION;
+GRANT SELECT,DELETE ON TABLE vault.decrypted_secrets TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: auth; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA auth GRANT SELECT,USAGE ON SEQUENCES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON SEQUENCES TO dashboard_user;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON FUNCTIONS TO dashboard_user;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: auth; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA auth GRANT SELECT,INSERT ON TABLES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON TABLES TO dashboard_user;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: extensions; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA extensions GRANT SELECT,USAGE ON SEQUENCES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: extensions; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA extensions GRANT ALL ON SEQUENCES TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: extensions; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA extensions GRANT ALL ON FUNCTIONS TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: extensions; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA extensions GRANT SELECT,INSERT ON TABLES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: extensions; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA extensions GRANT ALL ON TABLES TO postgres WITH GRANT OPTION;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: graphql; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON SEQUENCES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON SEQUENCES TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: graphql; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON FUNCTIONS TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON FUNCTIONS TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON FUNCTIONS TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: graphql; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql GRANT ALL ON TABLES TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: graphql_public; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON SEQUENCES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON SEQUENCES TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: graphql_public; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: graphql_public; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA graphql_public GRANT ALL ON TABLES TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,USAGE ON SEQUENCES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON SEQUENCES TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON FUNCTIONS TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON FUNCTIONS TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON FUNCTIONS TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT ON TABLES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public GRANT ALL ON TABLES TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON SEQUENCES TO dashboard_user;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON FUNCTIONS TO dashboard_user;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA realtime GRANT ALL ON TABLES TO dashboard_user;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: storage; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES TO service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT SELECT,USAGE ON SEQUENCES TO sandbox_exec;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: storage; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS TO service_role;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: storage; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES TO service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT SELECT,INSERT ON TABLES TO sandbox_exec;
+
+
+--
+-- Name: issue_graphql_placeholder; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
+--
+
+CREATE EVENT TRIGGER issue_graphql_placeholder ON sql_drop
+         WHEN TAG IN ('DROP EXTENSION')
+   EXECUTE FUNCTION extensions.set_graphql_placeholder();
+
+
+ALTER EVENT TRIGGER issue_graphql_placeholder OWNER TO supabase_admin;
+
+--
+-- Name: issue_pg_cron_access; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
+--
+
+CREATE EVENT TRIGGER issue_pg_cron_access ON ddl_command_end
+         WHEN TAG IN ('CREATE EXTENSION')
+   EXECUTE FUNCTION extensions.grant_pg_cron_access();
+
+
+ALTER EVENT TRIGGER issue_pg_cron_access OWNER TO supabase_admin;
+
+--
+-- Name: issue_pg_graphql_access; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
+--
+
+CREATE EVENT TRIGGER issue_pg_graphql_access ON ddl_command_end
+         WHEN TAG IN ('CREATE EXTENSION')
+   EXECUTE FUNCTION extensions.grant_pg_graphql_access();
+
+
+ALTER EVENT TRIGGER issue_pg_graphql_access OWNER TO supabase_admin;
+
+--
+-- Name: issue_pg_net_access; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
+--
+
+CREATE EVENT TRIGGER issue_pg_net_access ON ddl_command_end
+         WHEN TAG IN ('CREATE EXTENSION')
+   EXECUTE FUNCTION extensions.grant_pg_net_access();
+
+
+ALTER EVENT TRIGGER issue_pg_net_access OWNER TO supabase_admin;
+
+--
+-- Name: pgrst_ddl_watch; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
+--
+
+CREATE EVENT TRIGGER pgrst_ddl_watch ON ddl_command_end
+   EXECUTE FUNCTION extensions.pgrst_ddl_watch();
+
+
+ALTER EVENT TRIGGER pgrst_ddl_watch OWNER TO supabase_admin;
+
+--
+-- Name: pgrst_drop_watch; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
+--
+
+CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
+   EXECUTE FUNCTION extensions.pgrst_drop_watch();
+
+
+ALTER EVENT TRIGGER pgrst_drop_watch OWNER TO supabase_admin;
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict EREhk4RzEg6ysUSc5mRvcqDkiJ9gwZRMcihND20z6MhtJwciD7HxxFCIFt5fj6C
+
