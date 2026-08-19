@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/lib/auth";
@@ -582,7 +583,7 @@ function BodyPage() {
       </div>
 
       {/* Add measurement modal */}
-      {modalOpen && (
+      {modalOpen && typeof document !== 'undefined' && createPortal(
         <div
           style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
           onClick={() => setModalOpen(false)}
@@ -628,7 +629,8 @@ function BodyPage() {
               {isSavingMetric ? "Saving..." : editingId ? "Save changes" : "Save measurement"}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
