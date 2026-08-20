@@ -48,6 +48,8 @@ export const Route = createFileRoute("/workout/$slug")({
   ),
 });
 
+const MAX_WEIGHT_KG = 300;
+
 function WorkoutPage() {
   const { slug } = Route.useParams();
   const { user } = useAuth();
@@ -409,21 +411,30 @@ function ExerciseCard(props: {
 
   // Pre-fill the next set's inputs with the suggested weight/reps (usually last time's
   // numbers) as real, editable values — so the user can just tap Log, or type over them.
+  // Only when real history exists for this exercise; otherwise leave both blank rather
+  // than guessing a rep target out of thin air.
   useEffect(() => {
-    if (props.isCardio || weightTouched) return;
-    setWeight(suggestion.weight != null ? String(suggestion.weight) : "");
-  }, [props.isCardio, suggestion.weight, weightTouched]);
+    if (props.isCardio || weightTouched || !previous) return;
+    setWeight(suggestion.weight != null ? String(Math.min(suggestion.weight, MAX_WEIGHT_KG)) : "");
+  }, [props.isCardio, suggestion.weight, weightTouched, previous]);
 
   useEffect(() => {
-    if (props.isCardio || repsTouched) return;
+    if (props.isCardio || repsTouched || !previous) return;
     setReps(suggestion.reps != null ? String(suggestion.reps) : "");
-  }, [props.isCardio, suggestion.reps, repsTouched]);
+  }, [props.isCardio, suggestion.reps, repsTouched, previous]);
+
+  function handleWeightChange(raw: string) {
+    const num = Number(raw);
+    if (raw !== "" && Number.isFinite(num) && num > MAX_WEIGHT_KG) return;
+    setWeight(raw);
+    setWeightTouched(true);
+  }
 
   async function submit() {
     if (!props.userId || !props.exerciseSessionId) return;
     if (done) return;
-    
-    const finalWeight = props.isCardio ? null : weight ? Number(weight) : (suggestion.weight ?? null);
+
+    const finalWeight = props.isCardio ? null : weight ? Math.min(Number(weight), MAX_WEIGHT_KG) : (suggestion.weight ?? null);
     const finalReps = reps ? Number(reps) : (suggestion.reps ?? null);
     
     if (finalReps === null || (!props.isCardio && finalWeight === null)) {
@@ -499,7 +510,7 @@ function ExerciseCard(props: {
   function editSet(set: any) {
     // Mark touched so the suggestion pre-fill doesn't overwrite the values being edited.
     if (set.weight_kg) {
-      setWeight(String(set.weight_kg));
+      setWeight(String(Math.min(set.weight_kg, MAX_WEIGHT_KG)));
       setWeightTouched(true);
     }
     if (set.reps) {
@@ -661,7 +672,7 @@ function ExerciseCard(props: {
                     inputMode="decimal"
                     placeholder={suggestion.weight ? String(suggestion.weight) : ""}
                     value={weight}
-                    onChange={(e) => { setWeight(e.target.value); setWeightTouched(true); }}
+                    onChange={(e) => handleWeightChange(e.target.value)}
                     style={{ height: 30, width: 64, borderRadius: 6, border: "1px solid oklch(0.4 0.006 250)", background: "oklch(0.045 0.003 250)", color: "inherit", padding: "0 8px", fontSize: 13, fontVariantNumeric: "tabular-nums" }}
                   />
                 ) : (
