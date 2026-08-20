@@ -158,9 +158,14 @@ function WorkoutPage() {
     () => (plan?.exercises ?? []).reduce((n, e) => n + e.sets, 0),
     [plan],
   );
+  const isCompletedToday = detail?.session.status === "completed";
 
   const finish = useCallback(async () => {
-    if (!user || !sessionId || finishing) return;
+    // A session already marked completed must never be re-finished: startedAt is
+    // anchored to when it was ORIGINALLY started, so recomputing duration here (e.g.
+    // if this fires while merely editing a logged set) would overwrite the correct
+    // saved duration with a huge, wrong "hours since it first started" value.
+    if (!user || !sessionId || finishing || isCompletedToday) return;
     setFinishing(true);
     const duration = Math.round((Date.now() - startedAt) / 1000);
     const prs = await finishSession({ userId: user.id, sessionId, durationSeconds: duration });
@@ -177,7 +182,7 @@ function WorkoutPage() {
     });
     
     qc.invalidateQueries();
-  }, [user, sessionId, finishing, startedAt, qc, validSets, plan, completedSets]);
+  }, [user, sessionId, finishing, isCompletedToday, startedAt, qc, validSets, plan, completedSets]);
 
   const requestFinish = useCallback(() => {
     if (completedSets >= totalSets) {
@@ -197,7 +202,6 @@ function WorkoutPage() {
     }
   }, [completedSets, totalSets, finish, detail?.session.status]);
 
-  const isCompletedToday = detail?.session.status === "completed";
   const elapsedSeconds = isCompletedToday
     ? (detail?.session.duration_seconds ?? 0)
     : Math.round((nowMs - startedAt) / 1000);
@@ -366,7 +370,7 @@ function WorkoutPage() {
                 <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "oklch(0.92 0.25 110)" }}>{Number.isInteger(sessionVolume) ? sessionVolume : sessionVolume.toFixed(1)} kg</p>
               </div>
             </div>
-            {completedSets >= totalSets && (
+            {completedSets >= totalSets && !isCompletedToday && (
               <button
                 onClick={requestFinish}
                 disabled={finishing}
