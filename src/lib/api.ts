@@ -126,43 +126,35 @@ async function ensureExerciseSessions(
 }
 
 export async function fetchSessionDetail(sessionId: string) {
-  const { data: session, error } = await supabase
-    .from("workout_sessions")
-    .select("*")
-    .eq("id", sessionId)
-    .maybeSingle();
+  const [{ data: session, error }, { data: exSessions, error: esErr }] = await Promise.all([
+    supabase.from("workout_sessions").select("*").eq("id", sessionId).maybeSingle(),
+    supabase
+      .from("exercise_sessions")
+      .select("*, exercises(*)")
+      .eq("session_id", sessionId)
+      .order("position"),
+  ]);
   if (error) throw error;
+  if (esErr) throw esErr;
   if (!session) return null;
 
-  const { data: exSessions, error: esErr } = await supabase
-    .from("exercise_sessions")
-    .select("*, exercises(*)")
-    .eq("session_id", sessionId)
-    .order("position");
-  if (esErr) throw esErr;
-
-  const { data: sets, error: sErr } = await supabase
-    .from("sets")
-    .select("*")
-    .in("exercise_session_id", (exSessions ?? []).map((e) => e.id))
-    .order("set_number");
+  const [{ data: sets, error: sErr }, { data: pl }] = await Promise.all([
+    supabase
+      .from("sets")
+      .select("*")
+      .in("exercise_session_id", (exSessions ?? []).map((e) => e.id))
+      .order("set_number"),
+    session.day_id
+      ? supabase.from("workout_exercises").select("*, exercises(*)").eq("day_id", session.day_id).order("position")
+      : Promise.resolve({ data: [] as WorkoutExercise[] }),
+  ]);
   if (sErr) throw sErr;
-
-  let planned: WorkoutExercise[] = [];
-  if (session.day_id) {
-    const { data: pl } = await supabase
-      .from("workout_exercises")
-      .select("*, exercises(*)")
-      .eq("day_id", session.day_id)
-      .order("position");
-    planned = (pl ?? []) as WorkoutExercise[];
-  }
 
   return {
     session,
     exSessions: (exSessions ?? []) as (ExerciseSession & { exercises: Exercise })[],
     sets: sets ?? [],
-    planned,
+    planned: (pl ?? []) as WorkoutExercise[],
   };
 }
 

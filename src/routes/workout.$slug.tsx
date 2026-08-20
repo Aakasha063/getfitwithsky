@@ -273,6 +273,7 @@ function WorkoutPage() {
                 exerciseSessionId={es?.id ?? null}
                 loggedSets={(detail?.sets ?? []).filter((s) => s.exercise_session_id === es?.id)}
                 userId={user?.id ?? null}
+                sessionId={sessionId}
                 onInfo={() => setInfo(we.exercises)}
                 onLogged={() => {
                   qc.invalidateQueries({ queryKey: ["session", sessionId] });
@@ -343,6 +344,7 @@ function ExerciseCard(props: {
   exerciseSessionId: string | null;
   loggedSets: { id: string; set_number: number; weight_kg: number | null; reps: number | null }[];
   userId: string | null;
+  sessionId: string | null;
   onInfo: () => void;
   onLogged: () => void;
 }) {
@@ -394,12 +396,18 @@ function ExerciseCard(props: {
 
     setIsSubmitting(true);
     try {
-      const sessionId = props.exerciseSessionId;
-      qc.setQueryData(["session", sessionId], (old: any) => {
+      qc.setQueryData(["session", props.sessionId], (old: any) => {
         if (!old) return old;
         return {
           ...old,
-          sets: [...old.sets, { id: "temp-" + Date.now(), exercise_id: props.exerciseId, set_number: nextSetNumber, weight_kg: finalWeight, reps: finalReps }]
+          sets: [...old.sets, {
+            id: "temp-" + Date.now(),
+            exercise_id: props.exerciseId,
+            exercise_session_id: props.exerciseSessionId,
+            set_number: nextSetNumber,
+            weight_kg: finalWeight,
+            reps: finalReps,
+          }]
         };
       });
       setWeight("");
@@ -424,7 +432,7 @@ function ExerciseCard(props: {
       }).catch((e: any) => {
         console.error(e);
         toast.error("Failed to log set");
-        qc.invalidateQueries({ queryKey: ["session", props.exerciseSessionId] });
+        qc.invalidateQueries({ queryKey: ["session", props.sessionId] });
       });
 
     } catch (e: any) {
@@ -433,15 +441,18 @@ function ExerciseCard(props: {
     }
   }
 
-  async function removeSet(id: string) {
-    if (id.startsWith("temp-")) {
-      // Just remove from local cache for uncommitted optimistic sets
-      qc.setQueryData(["session", props.exerciseSessionId], (old: any) => {
-        if (!old) return old;
-        return { ...old, sets: old.sets.filter((s: any) => s.id !== id) };
+  function removeSet(id: string) {
+    const isTemp = id.startsWith("temp-");
+    qc.setQueryData(["session", props.sessionId], (old: any) => {
+      if (!old) return old;
+      return { ...old, sets: old.sets.filter((s: any) => s.id !== id) };
+    });
+    if (!isTemp) {
+      deleteSet(id).catch((e: any) => {
+        console.error(e);
+        toast.error("Failed to remove set");
+        qc.invalidateQueries({ queryKey: ["session", props.sessionId] });
       });
-    } else {
-      await deleteSet(id);
     }
     props.onLogged();
   }

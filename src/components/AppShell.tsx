@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
-import { fetchProfile, fetchDays, fetchHistory } from "@/lib/api";
+import { fetchProfile, fetchDays, fetchHistory, fetchPRs, fetchBodyMetrics, fetchExercises, fetchLeaderboard, fetchAllSets } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
@@ -45,6 +45,11 @@ export function AppShell({ children }: { children: ReactNode }) {
     const uid = session.user.id;
     qc.prefetchQuery({ queryKey: ["days"], queryFn: fetchDays });
     qc.prefetchQuery({ queryKey: ["history", uid], queryFn: () => fetchHistory(uid) });
+    qc.prefetchQuery({ queryKey: ["prs", uid], queryFn: () => fetchPRs(uid) });
+    qc.prefetchQuery({ queryKey: ["metrics", uid], queryFn: () => fetchBodyMetrics(uid) });
+    qc.prefetchQuery({ queryKey: ["exercises"], queryFn: fetchExercises });
+    qc.prefetchQuery({ queryKey: ["leaderboard", 30], queryFn: () => fetchLeaderboard(30) });
+    qc.prefetchQuery({ queryKey: ["all-sets", uid], queryFn: () => fetchAllSets(uid) });
   }, [session?.user?.id, qc]);
 
   useEffect(() => {
