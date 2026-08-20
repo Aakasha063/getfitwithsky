@@ -391,6 +391,10 @@ function ExerciseCard(props: {
 
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+  // Tracks whether the user has typed their own value for the upcoming set, so the
+  // suggestion pre-fill (below) doesn't clobber it once previous-performance data loads.
+  const [weightTouched, setWeightTouched] = useState(false);
+  const [repsTouched, setRepsTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const done = props.loggedSets.length >= props.sets;
@@ -402,6 +406,18 @@ function ExerciseCard(props: {
   useEffect(() => {
     if (done) setCollapsed(true);
   }, [done]);
+
+  // Pre-fill the next set's inputs with the suggested weight/reps (usually last time's
+  // numbers) as real, editable values — so the user can just tap Log, or type over them.
+  useEffect(() => {
+    if (props.isCardio || weightTouched) return;
+    setWeight(suggestion.weight != null ? String(suggestion.weight) : "");
+  }, [props.isCardio, suggestion.weight, weightTouched]);
+
+  useEffect(() => {
+    if (props.isCardio || repsTouched) return;
+    setReps(suggestion.reps != null ? String(suggestion.reps) : "");
+  }, [props.isCardio, suggestion.reps, repsTouched]);
 
   async function submit() {
     if (!props.userId || !props.exerciseSessionId) return;
@@ -431,8 +447,10 @@ function ExerciseCard(props: {
           }]
         };
       });
-      setWeight("");
-      setReps("");
+      // Let the pre-fill effects populate the next set's inputs from its own suggestion,
+      // rather than clearing to blank.
+      setWeightTouched(false);
+      setRepsTouched(false);
 
       // Unblock UI immediately
       setIsSubmitting(false);
@@ -479,8 +497,15 @@ function ExerciseCard(props: {
   }
 
   function editSet(set: any) {
-    if (set.weight_kg) setWeight(String(set.weight_kg));
-    if (set.reps) setReps(String(set.reps));
+    // Mark touched so the suggestion pre-fill doesn't overwrite the values being edited.
+    if (set.weight_kg) {
+      setWeight(String(set.weight_kg));
+      setWeightTouched(true);
+    }
+    if (set.reps) {
+      setReps(String(set.reps));
+      setRepsTouched(true);
+    }
     removeSet(set.id);
   }
 
@@ -636,7 +661,7 @@ function ExerciseCard(props: {
                     inputMode="decimal"
                     placeholder={suggestion.weight ? String(suggestion.weight) : ""}
                     value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+                    onChange={(e) => { setWeight(e.target.value); setWeightTouched(true); }}
                     style={{ height: 30, width: 64, borderRadius: 6, border: "1px solid oklch(0.4 0.006 250)", background: "oklch(0.045 0.003 250)", color: "inherit", padding: "0 8px", fontSize: 13, fontVariantNumeric: "tabular-nums" }}
                   />
                 ) : (
@@ -650,7 +675,7 @@ function ExerciseCard(props: {
                     inputMode="numeric"
                     placeholder={suggestion.reps ? String(suggestion.reps) : ""}
                     value={reps}
-                    onChange={(e) => setReps(e.target.value)}
+                    onChange={(e) => { setReps(e.target.value); setRepsTouched(true); }}
                     style={{ height: 30, width: 56, borderRadius: 6, border: "1px solid oklch(0.4 0.006 250)", background: "oklch(0.045 0.003 250)", color: "inherit", padding: "0 8px", fontSize: 13, fontVariantNumeric: "tabular-nums" }}
                   />
                 ) : (
