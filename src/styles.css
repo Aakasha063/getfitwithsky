@@ -265,12 +265,19 @@
   100% { background-position: 200% 0; }
 }
 
-/* ====== Page entrance animation ====== */
+/* ====== Page entrance animation ======
+   Uses `top` instead of `transform` deliberately: a non-none `transform`
+   (even translateY(0) held by animation-fill-mode) turns this element into
+   a new containing block for any `position: fixed` descendant — like a
+   modal rendered inside the page instead of portaled to <body> — which
+   then positions itself relative to this scrollable page box instead of
+   the viewport, causing it to render off the visible screen. */
 @keyframes pageEnter {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; top: 6px; }
+  to   { opacity: 1; top: 0; }
 }
 .page-enter {
+  position: relative;
   animation: pageEnter 0.18s ease-out both;
 }
 

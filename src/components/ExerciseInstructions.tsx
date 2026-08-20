@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import type { Exercise } from "@/lib/api";
 
 const DOT = (
@@ -44,9 +45,9 @@ export function ExerciseInstructions({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  if (!open || !exercise) return null;
+  if (!open || !exercise || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <>
       {/* Overlay */}
       <div
@@ -62,6 +63,7 @@ export function ExerciseInstructions({
         borderLeft: "1px solid oklch(0.27 0.005 250)",
         overflowY: "auto",
         padding: 24,
+        paddingBottom: "calc(24px + env(safe-area-inset-bottom))",
         zIndex: 51,
         display: "flex",
         flexDirection: "column",
@@ -108,6 +110,7 @@ export function ExerciseInstructions({
           </div>
         )}
       </div>
-    </>
+    </>,
+    document.body
   );
 }

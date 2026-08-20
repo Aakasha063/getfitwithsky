@@ -205,7 +205,7 @@ function WorkoutPage() {
 
   if (completedSummary && typeof document !== 'undefined') {
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "oklch(0.045 0.003 250)", overflowY: "auto", display: "flex", justifyContent: "center", padding: "40px 20px" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "oklch(0.045 0.003 250)", overflowY: "auto", display: "flex", justifyContent: "center", padding: "40px 20px", paddingBottom: "calc(40px + env(safe-area-inset-bottom))" }}>
         <div style={{ width: "100%", maxWidth: 480 }}>
           <p style={{ margin: 0, textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "oklch(0.92 0.25 110)" }}>Workout Complete</p>
           <h1 style={{ margin: "8px 0 0", textAlign: "center", fontSize: 22, fontWeight: 600 }}>{completedSummary.title}</h1>

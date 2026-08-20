@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ display: "flex", minHeight: "100dvh", alignItems: "center", justifyContent: "center" }}>
         <div style={{
           width: 32, height: 32, borderRadius: 999,
           border: "2px solid oklch(0.92 0.25 110)",
@@ -110,7 +110,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div style={{
-      minHeight: "100vh",
+      minHeight: "100dvh",
       background: "oklch(0.045 0.003 250)",
       color: "oklch(0.96 0.002 250)",
       fontFamily: "'Inter',ui-sans-serif,system-ui,sans-serif",
