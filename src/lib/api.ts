@@ -51,6 +51,22 @@ export async function fetchActiveSession(userId: string) {
   return data;
 }
 
+/** Any live session (in_progress or completed — never abandoned) already logged today for this day. */
+export async function fetchTodaySessionForDay(userId: string, dayId: string) {
+  const { data, error } = await supabase
+    .from("workout_sessions")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("day_id", dayId)
+    .eq("session_date", todayISO())
+    .in("status", ["in_progress", "completed"])
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function startSession(params: {
   userId: string;
   day: WorkoutDay;
@@ -73,18 +89,28 @@ export async function startSession(params: {
   if (existingErr) throw existingErr;
   const existing = existingRows?.[0];
   if (existing) {
-    await ensureExerciseSessions(userId, existing.id, exercises);
-    // Resuming a session started on an earlier day: re-date it to today so it
-    // counts toward the current week once finished.
-    const today = todayISO();
-    if (existing.session_date !== today) {
-      await supabase
-        .from("workout_sessions")
-        .update({ session_date: today, started_at: new Date().toISOString() })
-        .eq("id", existing.id);
-      return { ...existing, session_date: today };
+    // Only treat this as a genuine continuation (e.g. a session spanning midnight)
+    // if it started recently. A session left in_progress from days/weeks ago — most
+    // likely abandoned, possibly against a since-edited exercise plan — should not be
+    // silently inherited: that carries its old logged sets into what looks like a
+    // fresh workout, corrupting the set count and can trigger a premature auto-finish.
+    const STALE_HOURS = 18;
+    const hoursSinceStart = (Date.now() - new Date(existing.started_at).getTime()) / 3_600_000;
+    if (hoursSinceStart <= STALE_HOURS) {
+      await ensureExerciseSessions(userId, existing.id, exercises);
+      // Resuming a session started on an earlier day: re-date it to today so it
+      // counts toward the current week once finished.
+      const today = todayISO();
+      if (existing.session_date !== today) {
+        await supabase
+          .from("workout_sessions")
+          .update({ session_date: today, started_at: new Date().toISOString() })
+          .eq("id", existing.id);
+        return { ...existing, session_date: today };
+      }
+      return existing;
     }
-    return existing;
+    await supabase.from("workout_sessions").update({ status: "abandoned" }).eq("id", existing.id);
   }
 
   const { data: session, error } = await supabase

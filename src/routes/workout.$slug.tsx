@@ -10,7 +10,7 @@ import { HIITInstructions } from "@/components/HIITInstructions";
 import { WorkoutSkeleton } from "@/components/Skeleton";
 import { useAuth } from "@/lib/auth";
 import {
-  fetchActiveSession,
+  fetchTodaySessionForDay,
   fetchDayWithExercises,
   fetchPreviousPerformance,
   fetchSessionDetail,
@@ -82,26 +82,32 @@ function WorkoutPage() {
     queryFn: () => fetchDayWithExercises(slug),
   });
 
-  // Resume an already-in-progress session for this day (e.g. after a page reload)
-  // instead of showing the pre-start overview and losing logged sets/elapsed time.
-  const { data: activeSession, isLoading: activeSessionLoading } = useQuery({
-    queryKey: ["active-session", user?.id],
-    queryFn: () => fetchActiveSession(user!.id),
-    enabled: !!user,
+  // A session already logged today for this day — in_progress (e.g. after a page
+  // reload) or completed (already finished today). Either way, open it directly
+  // instead of showing the pre-start overview or letting the user spin up a
+  // duplicate session for a day that's already done.
+  const { data: todaySession, isLoading: todaySessionLoading } = useQuery({
+    queryKey: ["today-session", user?.id, plan?.day?.id],
+    queryFn: () => fetchTodaySessionForDay(user!.id, plan!.day.id),
+    enabled: !!user && !!plan?.day,
   });
 
   useEffect(() => {
     if (!user || !plan?.day || sessionId || sessionStarted) return;
-    if (activeSessionLoading) return;
+    if (todaySessionLoading) return;
 
-    const resuming = activeSession && activeSession.day_id === plan.day.id;
-    if (!resuming && !autoStart) return;
+    if (todaySession) {
+      setSessionStarted(true);
+      setSessionId(todaySession.id);
+      return;
+    }
 
+    if (!autoStart) return;
     setSessionStarted(true);
     startSession({ userId: user.id, day: plan.day, exercises: plan.exercises })
       .then((s) => setSessionId(s.id))
       .catch((e) => toast.error(e.message));
-  }, [user, plan, sessionId, autoStart, sessionStarted, activeSession, activeSessionLoading]);
+  }, [user, plan, sessionId, autoStart, sessionStarted, todaySession, todaySessionLoading]);
 
   function handleManualStart() {
     if (!user || !plan?.day || sessionId || sessionStarted) return;
@@ -126,7 +132,22 @@ function WorkoutPage() {
     }
   }, [detail?.session.started_at]);
 
-  const completedSets = detail?.sets.length ?? 0;
+  // Only count sets that belong to an exercise still in today's plan. A session can
+  // carry sets logged against a workout_exercise that's since been swapped out of the
+  // day (e.g. the plan was edited), and those must not inflate the progress count or
+  // trigger a premature auto-finish.
+  const validSets = useMemo(() => {
+    if (!detail || !plan) return [];
+    const planWorkoutExerciseIds = new Set(plan.exercises.map((we) => we.id));
+    const validExerciseSessionIds = new Set(
+      detail.exSessions
+        .filter((es) => es.workout_exercise_id != null && planWorkoutExerciseIds.has(es.workout_exercise_id))
+        .map((es) => es.id),
+    );
+    return detail.sets.filter((s) => validExerciseSessionIds.has(s.exercise_session_id));
+  }, [detail, plan]);
+
+  const completedSets = validSets.length;
   const totalSets = useMemo(
     () => (plan?.exercises ?? []).reduce((n, e) => n + e.sets, 0),
     [plan],
@@ -137,9 +158,9 @@ function WorkoutPage() {
     setFinishing(true);
     const duration = Math.round((Date.now() - startedAt) / 1000);
     const prs = await finishSession({ userId: user.id, sessionId, durationSeconds: duration });
-    
+
     // Calculate final volume
-    const finalVolume = (detail?.sets ?? []).reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
+    const finalVolume = validSets.reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
     
     setCompletedSummary({
       title: plan?.day?.name ?? "Workout",
@@ -150,7 +171,7 @@ function WorkoutPage() {
     });
     
     qc.invalidateQueries();
-  }, [user, sessionId, finishing, startedAt, qc, detail, plan, completedSets]);
+  }, [user, sessionId, finishing, startedAt, qc, validSets, plan, completedSets]);
 
   const requestFinish = useCallback(() => {
     if (completedSets >= totalSets) {
@@ -162,17 +183,23 @@ function WorkoutPage() {
   }, [completedSets, totalSets, finish]);
 
   useEffect(() => {
+    // Don't auto-pop the completion screen just from reopening a session that was
+    // already finished — only when it genuinely just crossed the finish line live.
+    if (detail?.session.status === "completed") return;
     if (completedSets > 0 && totalSets > 0 && completedSets >= totalSets) {
       finish();
     }
-  }, [completedSets, totalSets, finish]);
+  }, [completedSets, totalSets, finish, detail?.session.status]);
 
-  const elapsedSeconds = Math.round((nowMs - startedAt) / 1000);
+  const isCompletedToday = detail?.session.status === "completed";
+  const elapsedSeconds = isCompletedToday
+    ? (detail?.session.duration_seconds ?? 0)
+    : Math.round((nowMs - startedAt) / 1000);
   const workoutElapsedLabel = mmss(elapsedSeconds);
   const workoutPct = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
-  
+
   // Calculate total volume for this session
-  const sessionVolume = (detail?.sets ?? []).reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
+  const sessionVolume = validSets.reduce((acc, s) => acc + ((s.weight_kg ?? 0) * (s.reps ?? 0)), 0);
 
   if (!plan) return <WorkoutSkeleton />;
 
@@ -223,6 +250,9 @@ function WorkoutPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
             {sessionId ? (
               <div style={{ textAlign: "right" }}>
+                {isCompletedToday && (
+                  <p style={{ margin: "0 0 2px", fontSize: 11, fontWeight: 600, color: "oklch(0.92 0.25 110)" }}>✓ Completed</p>
+                )}
                 <p style={{ margin: 0, fontSize: 16, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{workoutElapsedLabel}</p>
                 <p style={{ margin: 0, fontSize: 11, color: "oklch(0.63 0.006 250)", fontVariantNumeric: "tabular-nums" }}>{completedSets}/{totalSets} · {workoutPct}%</p>
               </div>
