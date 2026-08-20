@@ -374,6 +374,7 @@ function ExerciseCard(props: {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const done = props.loggedSets.length >= props.sets;
+  const started = !!props.sessionId;
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -528,6 +529,9 @@ function ExerciseCard(props: {
         </div>
       </div>
 
+      {/* Logging UI only appears once the workout has been started (matches design reference) */}
+      {started && (
+        <>
       {/* Collapsed summary for done exercises */}
       {done && collapsed && (
         <div style={{ marginTop: 10, display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -659,6 +663,8 @@ function ExerciseCard(props: {
           })}
         </div>
       ) : null}
+        </>
+      )}
     </div>
   );
 }
