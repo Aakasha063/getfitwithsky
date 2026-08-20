@@ -12,4 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Deployed on Netlify — override the default cloudflare-module target so the SSR
+  // server builds as a Netlify Function instead of a Cloudflare Worker artifact
+  // Netlify can't run (every route 404'd until this was set).
+  nitro: {
+    preset: "netlify",
+  },
 });
