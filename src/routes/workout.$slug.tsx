@@ -412,7 +412,14 @@ function ExerciseCard(props: {
     enabled: !!props.userId && !props.isCardio,
   });
 
-  const nextSetNumber = props.loggedSets.length + 1;
+  // The lowest set number without a logged entry — NOT just loggedSets.length + 1.
+  // Editing or undoing a set that isn't the last one leaves a gap in the middle
+  // (e.g. sets 1,3,4 logged, 2 missing); using loggedSets.length + 1 there would
+  // point at set 5 (already full), leaving set 2's row permanently stuck showing
+  // "—" with no input or Log button ever appearing for it again.
+  const loggedSetNumbers = new Set(props.loggedSets.map((s) => s.set_number));
+  let nextSetNumber = 1;
+  while (loggedSetNumbers.has(nextSetNumber)) nextSetNumber++;
   const suggestion = suggestNextSet({
     prevSets: previous?.sets ?? [],
     setNumber: nextSetNumber,
@@ -527,6 +534,13 @@ function ExerciseCard(props: {
       if (!old) return old;
       return { ...old, sets: old.sets.filter((s: any) => s.id !== id) };
     });
+    // Deliberately not calling props.onLogged() here: it invalidates the session query,
+    // and since deleteSet() below is fire-and-forget, a refetch could resolve before the
+    // DELETE actually commits — reverting this optimistic removal with stale server data
+    // that still includes the set, silently leaving the exercise "done" again so the
+    // next Log click on the edited row no-ops. The optimistic cache write above is
+    // already correct; only reconcile from the server if the delete actually fails.
+    // (It also makes no sense to pop the rest timer just from an undo/edit.)
     if (!isTemp) {
       deleteSet(id).catch((e: any) => {
         console.error(e);
@@ -534,7 +548,6 @@ function ExerciseCard(props: {
         qc.invalidateQueries({ queryKey: ["session", props.sessionId] });
       });
     }
-    props.onLogged();
   }
 
   function editSet(set: any) {
