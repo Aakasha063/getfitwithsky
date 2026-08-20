@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RestTimer } from "@/components/RestTimer";
@@ -153,8 +154,8 @@ function WorkoutPage() {
 
   if (!plan) return <WorkoutSkeleton />;
 
-  if (completedSummary) {
-    return (
+  if (completedSummary && typeof document !== 'undefined') {
+    return createPortal(
       <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "oklch(0.045 0.003 250)", overflowY: "auto", display: "flex", justifyContent: "center", padding: "40px 20px" }}>
         <div style={{ width: "100%", maxWidth: 480 }}>
           <p style={{ margin: 0, textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "oklch(0.92 0.25 110)" }}>Workout Complete</p>
@@ -178,7 +179,8 @@ function WorkoutPage() {
 
           <button onClick={() => router.navigate({ to: "/history" })} style={{ marginTop: 28, width: "100%", height: 48, borderRadius: 10, border: "none", background: "oklch(0.92 0.25 110)", color: "oklch(0.07 0.01 110)", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>Done</button>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
@@ -403,7 +405,15 @@ function ExerciseCard(props: {
       setWeight("");
       setReps("");
 
-      await logSet({
+      // Unblock UI immediately
+      setIsSubmitting(false);
+
+      // Haptic feedback on mobile
+      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+      props.onLogged();
+
+      // Fire and forget the API call
+      logSet({
         userId: props.userId,
         exerciseSessionId: props.exerciseSessionId,
         exerciseId: props.exerciseId,
@@ -411,22 +421,28 @@ function ExerciseCard(props: {
         weight: finalWeight,
         reps: finalReps,
         rir: null,
+      }).catch((e: any) => {
+        console.error(e);
+        toast.error("Failed to log set");
+        qc.invalidateQueries({ queryKey: ["session", props.exerciseSessionId] });
       });
 
-      // Haptic feedback on mobile
-      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
-
-      props.onLogged();
     } catch (e: any) {
-      toast.error("Failed to log set");
-      qc.invalidateQueries({ queryKey: ["session", props.exerciseSessionId] });
-    } finally {
+      toast.error("An unexpected error occurred");
       setIsSubmitting(false);
     }
   }
 
   async function removeSet(id: string) {
-    await deleteSet(id);
+    if (id.startsWith("temp-")) {
+      // Just remove from local cache for uncommitted optimistic sets
+      qc.setQueryData(["session", props.exerciseSessionId], (old: any) => {
+        if (!old) return old;
+        return { ...old, sets: old.sets.filter((s: any) => s.id !== id) };
+      });
+    } else {
+      await deleteSet(id);
+    }
     props.onLogged();
   }
 
