@@ -131,7 +131,7 @@ export async function startSession(params: {
 }
 
 /** Make sure every planned exercise has a row for this session (handles plan updates). */
-async function ensureExerciseSessions(
+export async function ensureExerciseSessions(
   userId: string,
   sessionId: string,
   exercises: WorkoutExercise[],

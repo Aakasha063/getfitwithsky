@@ -10,6 +10,7 @@ import { HIITInstructions } from "@/components/HIITInstructions";
 import { WorkoutSkeleton } from "@/components/Skeleton";
 import { useAuth } from "@/lib/auth";
 import {
+  ensureExerciseSessions,
   fetchTodaySessionForDay,
   fetchDayWithExercises,
   fetchPreviousPerformance,
@@ -98,7 +99,12 @@ function WorkoutPage() {
 
     if (todaySession) {
       setSessionStarted(true);
-      setSessionId(todaySession.id);
+      // Backfill any exercise_sessions the plan gained since this session was first
+      // created (e.g. an exercise was swapped in later) — otherwise those exercises
+      // never get a valid exerciseSessionId and their Log/Edit buttons stay disabled.
+      ensureExerciseSessions(user.id, todaySession.id, plan.exercises)
+        .catch((e) => toast.error(e.message))
+        .finally(() => setSessionId(todaySession.id));
       return;
     }
 
