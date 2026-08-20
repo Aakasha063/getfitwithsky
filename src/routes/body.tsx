@@ -441,12 +441,12 @@ function BodyPage() {
               onClick={saveBodyFat}
               disabled={isSavingBf || bodyFat == null}
               style={{
-                height: 40, borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)",
+                height: 40, padding: "0 16px", borderRadius: 8, border: "none", background: "oklch(0.92 0.25 110)",
                 color: "oklch(0.07 0.01 110)", fontSize: 14, fontWeight: 600, cursor: isSavingBf || bodyFat == null ? "not-allowed" : "pointer",
-                opacity: isSavingBf || bodyFat == null ? 0.7 : 1
+                opacity: isSavingBf || bodyFat == null ? 0.7 : 1, whiteSpace: "nowrap"
               }}
             >
-              {isSavingBf ? "Saving..." : bodyFat != null ? `Save ${bodyFat}% body fat to log` : "Save"}
+              {isSavingBf ? "Saving..." : "Save to log"}
             </button>
           </div>
         </div>
