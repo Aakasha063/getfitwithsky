@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { fetchDays, fetchHistory } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { todayISO } from "@/lib/format";
 
 export const Route = createFileRoute("/plan")({
   head: () => ({
@@ -59,6 +60,16 @@ function PlanPage() {
   const selectedOpt =
     optional.find((d) => d.slug === selectedOptSlug) ?? optional[0];
 
+  const todayStr = todayISO();
+  function todaySessionFor(dayId: string) {
+    return (history ?? []).find((s) => s.day_id === dayId && s.session_date === todayStr && s.status !== "abandoned");
+  }
+  function buttonLabel(todaySession: ReturnType<typeof todaySessionFor>, fallback: string) {
+    if (todaySession?.status === "completed") return "✓ Completed";
+    if (todaySession?.status === "in_progress") return "Resume";
+    return fallback;
+  }
+
   return (
     <div className="page-enter" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       {/* Header */}
@@ -95,6 +106,9 @@ function PlanPage() {
           {mandatory.map((d) => {
             const isToday = d.day_of_week === dow;
             const accentColor = isToday ? "oklch(0.92 0.25 110)" : "transparent";
+            const todaySession = todaySessionFor(d.id);
+            const isCompletedToday = todaySession?.status === "completed";
+            const isResumable = todaySession?.status === "in_progress";
             return (
               <div
                 key={d.id}
@@ -125,11 +139,11 @@ function PlanPage() {
                       <button style={{
                         height: 32, padding: "0 14px", borderRadius: 8,
                         border: "none",
-                        background: isToday ? "oklch(0.92 0.25 110)" : "oklch(0.22 0.005 250)",
-                        color: isToday ? "oklch(0.07 0.01 110)" : "inherit",
-                        fontSize: 13, fontWeight: isToday ? 600 : 500, cursor: "pointer",
+                        background: isCompletedToday ? "oklch(0.92 0.25 110 / 15%)" : (isResumable || isToday) ? "oklch(0.92 0.25 110)" : "oklch(0.22 0.005 250)",
+                        color: isCompletedToday ? "oklch(0.92 0.25 110)" : (isResumable || isToday) ? "oklch(0.07 0.01 110)" : "inherit",
+                        fontSize: 13, fontWeight: (isResumable || isToday || isCompletedToday) ? 600 : 500, cursor: "pointer",
                       }}>
-                        {isToday ? "Start" : "Open"}
+                        {buttonLabel(todaySession, isToday ? "Start" : "Open")}
                       </button>
                     </Link>
                   )}
@@ -179,10 +193,12 @@ function PlanPage() {
                 <Link to="/workout/$slug" params={{ slug: selectedOpt.slug }} style={{ textDecoration: "none", flexShrink: 0 }}>
                   <button style={{
                     height: 36, padding: "0 16px", borderRadius: 8,
-                    border: "1px solid oklch(0.27 0.005 250)", background: "transparent", color: "inherit",
+                    border: todaySessionFor(selectedOpt.id)?.status === "completed" ? "1px solid oklch(0.92 0.25 110 / 40%)" : "1px solid oklch(0.27 0.005 250)",
+                    background: "transparent",
+                    color: todaySessionFor(selectedOpt.id)?.status === "completed" ? "oklch(0.92 0.25 110)" : "inherit",
                     fontSize: 13, fontWeight: 500, cursor: "pointer",
                   }}>
-                    Open
+                    {buttonLabel(todaySessionFor(selectedOpt.id), "Open")}
                   </button>
                 </Link>
               </div>
