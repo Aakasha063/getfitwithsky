@@ -58,26 +58,33 @@ export async function startSession(params: {
 }) {
   const { userId, day, exercises } = params;
 
-  const existing = await supabase
+  // Use order+limit instead of maybeSingle(): if more than one in_progress session
+  // ever accumulated for this day (e.g. an abandoned session followed by a restart),
+  // maybeSingle() would error and silently fall through to creating yet another
+  // duplicate session, orphaning whatever was already logged.
+  const { data: existingRows, error: existingErr } = await supabase
     .from("workout_sessions")
     .select("*")
     .eq("user_id", userId)
     .eq("day_id", day.id)
     .eq("status", "in_progress")
-    .maybeSingle();
-  if (existing.data) {
-    await ensureExerciseSessions(userId, existing.data.id, exercises);
+    .order("started_at", { ascending: false })
+    .limit(1);
+  if (existingErr) throw existingErr;
+  const existing = existingRows?.[0];
+  if (existing) {
+    await ensureExerciseSessions(userId, existing.id, exercises);
     // Resuming a session started on an earlier day: re-date it to today so it
     // counts toward the current week once finished.
     const today = todayISO();
-    if (existing.data.session_date !== today) {
+    if (existing.session_date !== today) {
       await supabase
         .from("workout_sessions")
         .update({ session_date: today, started_at: new Date().toISOString() })
-        .eq("id", existing.data.id);
-      return { ...existing.data, session_date: today };
+        .eq("id", existing.id);
+      return { ...existing, session_date: today };
     }
-    return existing.data;
+    return existing;
   }
 
   const { data: session, error } = await supabase

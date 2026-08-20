@@ -10,6 +10,7 @@ import { HIITInstructions } from "@/components/HIITInstructions";
 import { WorkoutSkeleton } from "@/components/Skeleton";
 import { useAuth } from "@/lib/auth";
 import {
+  fetchActiveSession,
   fetchDayWithExercises,
   fetchPreviousPerformance,
   fetchSessionDetail,
@@ -63,7 +64,7 @@ function WorkoutPage() {
   } | null>(null);
   const [rest, setRest] = useState<{ seconds: number; key: number } | null>(null);
   const [info, setInfo] = useState<Exercise | null>(null);
-  const [startedAt] = useState(() => Date.now());
+  const [startedAt, setStartedAt] = useState(() => Date.now());
   const [nowMs, setNowMs] = useState(() => Date.now());
   const search = Route.useSearch();
   const autoStart = search.start;
@@ -79,15 +80,26 @@ function WorkoutPage() {
     queryFn: () => fetchDayWithExercises(slug),
   });
 
+  // Resume an already-in-progress session for this day (e.g. after a page reload)
+  // instead of showing the pre-start overview and losing logged sets/elapsed time.
+  const { data: activeSession, isLoading: activeSessionLoading } = useQuery({
+    queryKey: ["active-session", user?.id],
+    queryFn: () => fetchActiveSession(user!.id),
+    enabled: !!user,
+  });
+
   useEffect(() => {
     if (!user || !plan?.day || sessionId || sessionStarted) return;
-    if (!autoStart) return;
-    
+    if (activeSessionLoading) return;
+
+    const resuming = activeSession && activeSession.day_id === plan.day.id;
+    if (!resuming && !autoStart) return;
+
     setSessionStarted(true);
     startSession({ userId: user.id, day: plan.day, exercises: plan.exercises })
       .then((s) => setSessionId(s.id))
       .catch((e) => toast.error(e.message));
-  }, [user, plan, sessionId, autoStart, sessionStarted]);
+  }, [user, plan, sessionId, autoStart, sessionStarted, activeSession, activeSessionLoading]);
 
   function handleManualStart() {
     if (!user || !plan?.day || sessionId || sessionStarted) return;
@@ -103,6 +115,14 @@ function WorkoutPage() {
     queryFn: () => fetchSessionDetail(sessionId!),
     enabled: !!sessionId,
   });
+
+  // Keep the elapsed-time clock anchored to when the session actually started,
+  // so resuming after a reload doesn't reset the timer to 0.
+  useEffect(() => {
+    if (detail?.session.started_at) {
+      setStartedAt(new Date(detail.session.started_at).getTime());
+    }
+  }, [detail?.session.started_at]);
 
   const completedSets = detail?.sets.length ?? 0;
   const totalSets = useMemo(
