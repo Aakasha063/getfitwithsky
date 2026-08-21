@@ -726,6 +726,7 @@ export type Database = {
           avatar_url: string | null
           display_name: string
           last_session: string
+          pr_count: number
           sessions: number
           sets_count: number
           total_volume: number
