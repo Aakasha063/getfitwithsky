@@ -15,8 +15,13 @@ const toISO = (d: Date) =>
  * Builds a `statusFor(day)` lookup for the current Mon-start week.
  * A day counts as done when any session for it was completed this week,
  * regardless of which weekday it was actually finished on.
+ *
+ * `joinedISO` (the user's account creation date) prevents days from before
+ * they even signed up from showing as "Missed" — e.g. a user who joins on
+ * Friday never had a chance to train Monday–Thursday, so those fall back to
+ * "Upcoming" instead.
  */
-export function buildWeekStatus(history: SessionRow[]) {
+export function buildWeekStatus(history: SessionRow[], joinedISO = "") {
   const now = new Date();
   const dow = now.getDay();
   const todayISOStr = toISO(now);
@@ -59,7 +64,7 @@ export function buildWeekStatus(history: SessionRow[]) {
     const session = sessionFor(day.id);
     const isDone = session?.status === "completed";
     const isPast = !!iso && iso < todayISOStr;
-    const isMissed = !day.is_rest && !isDone && isPast;
+    const isMissed = !day.is_rest && !isDone && isPast && iso! >= joinedISO;
     const isUpcoming = !day.is_rest && !isDone && !isMissed && !isToday;
     return { isToday, isDone, isMissed, isUpcoming, session };
   }

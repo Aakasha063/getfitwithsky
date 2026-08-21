@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { AppShell } from "@/components/AppShell";
-import { fetchDays, fetchHistory } from "@/lib/api";
+import { fetchDays, fetchHistory, fetchProfile } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { todayISO, DAY_LABELS } from "@/lib/format";
 import { buildWeekStatus } from "@/lib/weekStatus";
@@ -44,6 +44,11 @@ function PlanPage() {
     queryFn: () => fetchHistory(user!.id),
     enabled: !!user,
   });
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: () => fetchProfile(user!.id),
+    enabled: !!user,
+  });
   const [selectedOptSlug, setSelectedOptSlug] = useState<string | null>(null);
   const [planModalOpen, setPlanModalOpen] = useState(false);
 
@@ -51,7 +56,10 @@ function PlanPage() {
   const optional = (days ?? []).filter((d) => d.is_optional);
   const sunday = (days ?? []).find((d) => d.day_of_week === 0);
 
-  const { statusFor, weekStartISO, weekEndISO } = buildWeekStatus(history ?? []);
+  const { statusFor, weekStartISO, weekEndISO } = buildWeekStatus(
+    history ?? [],
+    profile?.created_at?.slice(0, 10) ?? "",
+  );
 
   const completedThisWeek = Math.min(
     5,

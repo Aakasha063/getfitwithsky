@@ -155,7 +155,10 @@ function Dashboard() {
 
   // --- Week status (Mon-start week) ---
   const now = new Date();
-  const { statusFor, weekStartISO, weekEndISO } = buildWeekStatus(history ?? []);
+  const { statusFor, weekStartISO, weekEndISO } = buildWeekStatus(
+    history ?? [],
+    profile?.created_at?.slice(0, 10) ?? "",
+  );
 
   // --- Stat tile context lines ---
   const sessionsThisWeek = (history ?? []).filter(
