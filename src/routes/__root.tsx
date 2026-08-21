@@ -7,10 +7,9 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -39,9 +38,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
@@ -78,26 +74,40 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" },
-      { title: "Skido — Training Tracker" },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
+      },
+      { title: "Skido — Workout Tracker & Training Plan App" },
       {
         name: "description",
         content:
-          "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",
+          "Skido is a workout tracker and training plan app: log sets and reps, follow a structured weekly workout plan, track PRs, and see your bodyweight and strength progress over time.",
       },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Skido" },
+      { property: "og:title", content: "Skido — Workout Tracker & Training Plan App" },
       {
         property: "og:description",
-        content: "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",
+        content:
+          "Skido is a workout tracker and training plan app: log sets and reps, follow a structured weekly workout plan, track PRs, and see your bodyweight and strength progress over time.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Skido" },
-      { name: "twitter:description", content: "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c17f545d-36ef-4698-af62-b4cb10d06da3" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c17f545d-36ef-4698-af62-b4cb10d06da3" },
+      { name: "twitter:title", content: "Skido — Workout Tracker & Training Plan App" },
+      {
+        name: "twitter:description",
+        content:
+          "Skido is a workout tracker and training plan app: log sets and reps, follow a structured weekly workout plan, track PRs, and see your bodyweight and strength progress over time.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c17f545d-36ef-4698-af62-b4cb10d06da3",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c17f545d-36ef-4698-af62-b4cb10d06da3",
+      },
     ],
     links: [
       {

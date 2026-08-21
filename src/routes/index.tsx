@@ -8,18 +8,45 @@ import { fetchBodyMetrics, fetchDays, fetchHistory, fetchPRs, fetchProfile } fro
 import { buildWeekStatus } from "@/lib/weekStatus";
 import { DashboardSkeleton } from "@/components/Skeleton";
 
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Skido",
+  applicationCategory: "HealthApplication",
+  operatingSystem: "Web",
+  description:
+    "Skido is a workout tracker and training plan app for logging sets and reps, following a structured weekly workout plan, tracking personal records, and monitoring bodyweight and strength progress over time.",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Skido — Log sets, see progress, keep the streak" },
+      { title: "Skido — Workout Tracker & Training Plan App" },
       {
         name: "description",
         content:
-          "Your daily training dashboard: today's session, weekly split, recent PRs and bodyweight trend for the V-taper fat-loss block.",
+          "Skido is a free workout tracker and training plan app: log sets and reps, follow a structured weekly workout plan, track PRs, and see your bodyweight and strength progress over time.",
       },
-      { property: "og:title", content: "Skido" },
+      { property: "og:title", content: "Skido — Workout Tracker & Training Plan App" },
+      {
+        property: "og:description",
+        content:
+          "Skido is a free workout tracker and training plan app: log sets and reps, follow a structured weekly workout plan, track PRs, and see your bodyweight and strength progress over time.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Skido — Workout Tracker & Training Plan App" },
+      {
+        name: "twitter:description",
+        content:
+          "Skido is a free workout tracker and training plan app: log sets and reps, follow a structured weekly workout plan, track PRs, and see your bodyweight and strength progress over time.",
+      },
+      { "script:ld+json": STRUCTURED_DATA },
     ],
   }),
   component: IndexRoute,
