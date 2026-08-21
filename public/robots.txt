@@ -8,3 +8,5 @@ Disallow: /progress
 Disallow: /history
 Disallow: /workout
 Disallow: /leaderboard
+
+Sitemap: https://skido.fit/sitemap.xml
