@@ -21,8 +21,10 @@ export type Database = {
           chest_cm: number | null
           created_at: string
           height_cm: number | null
+          hip_cm: number | null
           id: string
           measured_on: string
+          neck_cm: number | null
           notes: string | null
           target_calories: number | null
           thigh_cm: number | null
@@ -37,8 +39,10 @@ export type Database = {
           chest_cm?: number | null
           created_at?: string
           height_cm?: number | null
+          hip_cm?: number | null
           id?: string
           measured_on?: string
+          neck_cm?: number | null
           notes?: string | null
           target_calories?: number | null
           thigh_cm?: number | null
@@ -53,8 +57,10 @@ export type Database = {
           chest_cm?: number | null
           created_at?: string
           height_cm?: number | null
+          hip_cm?: number | null
           id?: string
           measured_on?: string
+          neck_cm?: number | null
           notes?: string | null
           target_calories?: number | null
           thigh_cm?: number | null
@@ -345,6 +351,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity_level: number | null
           avatar_color: string | null
           avatar_url: string | null
           created_at: string
@@ -360,6 +367,7 @@ export type Database = {
           primary_goal: string | null
           reminders_enabled: boolean
           rest_timer_seconds: number
+          sex: string | null
           starting_weight_kg: number | null
           target_body_fat: number | null
           target_weight_kg: number | null
@@ -369,6 +377,7 @@ export type Database = {
           weight_unit: string
         }
         Insert: {
+          activity_level?: number | null
           avatar_color?: string | null
           avatar_url?: string | null
           created_at?: string
@@ -384,6 +393,7 @@ export type Database = {
           primary_goal?: string | null
           reminders_enabled?: boolean
           rest_timer_seconds?: number
+          sex?: string | null
           starting_weight_kg?: number | null
           target_body_fat?: number | null
           target_weight_kg?: number | null
@@ -393,6 +403,7 @@ export type Database = {
           weight_unit?: string
         }
         Update: {
+          activity_level?: number | null
           avatar_color?: string | null
           avatar_url?: string | null
           created_at?: string
@@ -408,6 +419,7 @@ export type Database = {
           primary_goal?: string | null
           reminders_enabled?: boolean
           rest_timer_seconds?: number
+          sex?: string | null
           starting_weight_kg?: number | null
           target_body_fat?: number | null
           target_weight_kg?: number | null
@@ -710,6 +722,8 @@ export type Database = {
         Args: { period_days?: number }
         Returns: {
           active_weeks: number
+          avatar_color: string | null
+          avatar_url: string | null
           display_name: string
           last_session: string
           sessions: number

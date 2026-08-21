@@ -28,6 +28,10 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+
+# Local tooling output / scripts with embedded credentials — never commit
+graphify-out/
+create_user.cjs
 *.suo
 *.ntvs*
 *.njsproj

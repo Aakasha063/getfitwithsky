@@ -123,16 +123,11 @@
   }
 }
 
-/* Responsive stats grid — 1 col mobile, 3 col tablet+ */
+/* Stats grid — always 3 compact columns, even on phones (matches design reference) */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-@media (max-width: 440px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+  gap: 8px;
 }
 
 /* Responsive plan cards — 1 col mobile, 2 col tablet */
@@ -207,7 +202,9 @@
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
 
@@ -226,6 +223,14 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 16px 16px 96px;
+}
+
+/* Sticky sub-headers (e.g. the workout page's own header bar) must stick
+   just below the app header's own sticky bar, not at top:0 — otherwise both
+   land at the same position and the app header's tie-break win hides the
+   sub-header's content (title, timer, finish button) behind it on scroll. */
+.sticky-below-header {
+  top: 57px; /* .app-header-inner height (56px) + header's 1px border-bottom */
 }
 
 /* Hide desktop nav on mobile */
@@ -253,6 +258,9 @@
   .mobile-nav {
     display: none;
   }
+  .sticky-below-header {
+    top: 77px; /* .app-header-inner height (76px) + header's 1px border-bottom */
+  }
 }
 
 @utility num {
@@ -261,8 +269,12 @@
 
 /* ====== Shimmer skeleton animation ====== */
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* ====== Page entrance animation ======
@@ -273,8 +285,14 @@
    then positions itself relative to this scrollable page box instead of
    the viewport, causing it to render off the visible screen. */
 @keyframes pageEnter {
-  from { opacity: 0; top: 6px; }
-  to   { opacity: 1; top: 0; }
+  from {
+    opacity: 0;
+    top: 6px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
 }
 .page-enter {
   position: relative;
@@ -282,6 +300,7 @@
 }
 
 /* ====== Overscroll containment (prevents iOS bounce at top) ====== */
-html, body {
+html,
+body {
   overscroll-behavior: contain;
 }

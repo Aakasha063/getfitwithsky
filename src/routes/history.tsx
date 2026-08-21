@@ -9,9 +9,9 @@ import { fmtDuration } from "@/lib/format";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Workout History — LIFT" },
+      { title: "Workout History — Skido" },
       { name: "description", content: "Every logged training session with duration and status." },
-      { property: "og:title", content: "Workout History — LIFT" },
+      { property: "og:title", content: "Workout History — Skido" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

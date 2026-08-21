@@ -130,7 +130,7 @@ export async function startSession(params: {
   return session;
 }
 
-/** Make sure every planned exercise has a row for this session (handles plan updates). */
+/** Make sure every planned exercise has a row for this session (handles plan updates). Returns whether it actually backfilled anything. */
 export async function ensureExerciseSessions(
   userId: string,
   sessionId: string,
@@ -143,7 +143,7 @@ export async function ensureExerciseSessions(
   if (error) throw error;
   const have = new Set((current ?? []).map((r) => r.workout_exercise_id));
   const missing = exercises.filter((we) => !have.has(we.id));
-  if (missing.length === 0) return;
+  if (missing.length === 0) return false;
   const { error: esErr } = await supabase.from("exercise_sessions").insert(
     missing.map((we) => ({
       user_id: userId,
@@ -156,6 +156,7 @@ export async function ensureExerciseSessions(
     })),
   );
   if (esErr) throw esErr;
+  return true;
 }
 
 export async function fetchSessionDetail(sessionId: string) {
@@ -175,10 +176,17 @@ export async function fetchSessionDetail(sessionId: string) {
     supabase
       .from("sets")
       .select("*")
-      .in("exercise_session_id", (exSessions ?? []).map((e) => e.id))
+      .in(
+        "exercise_session_id",
+        (exSessions ?? []).map((e) => e.id),
+      )
       .order("set_number"),
     session.day_id
-      ? supabase.from("workout_exercises").select("*, exercises(*)").eq("day_id", session.day_id).order("position")
+      ? supabase
+          .from("workout_exercises")
+          .select("*, exercises(*)")
+          .eq("day_id", session.day_id)
+          .order("position")
       : Promise.resolve({ data: [] as WorkoutExercise[] }),
   ]);
   if (sErr) throw sErr;
@@ -480,18 +488,16 @@ export async function fetchProfile(userId: string) {
 }
 
 export async function uploadAvatar(userId: string, file: File) {
-  const fileExt = file.name.split('.').pop();
+  const fileExt = file.name.split(".").pop();
   const fileName = `${userId}/profile_picture_${Date.now()}.${fileExt}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('user-profile-picture')
+    .from("user-profile-picture")
     .upload(fileName, file, { upsert: true });
 
   if (uploadError) throw uploadError;
 
-  const { data: urlData } = supabase.storage
-    .from('user-profile-picture')
-    .getPublicUrl(fileName);
+  const { data: urlData } = supabase.storage.from("user-profile-picture").getPublicUrl(fileName);
 
   return urlData.publicUrl;
 }

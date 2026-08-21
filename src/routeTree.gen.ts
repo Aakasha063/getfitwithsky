@@ -13,10 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BodyRouteImport } from './routes/body'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as HistoryIdRouteImport } from './routes/history_.$id'
+import { Route as LeaderboardUserIdRouteImport } from './routes/leaderboard_.$userId'
 import { Route as WorkoutSlugRouteImport } from './routes/workout.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -39,6 +41,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlanRoute = PlanRouteImport.update({
   id: '/plan',
   path: '/plan',
@@ -59,6 +66,11 @@ const HistoryIdRoute = HistoryIdRouteImport.update({
   path: '/history/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeaderboardUserIdRoute = LeaderboardUserIdRouteImport.update({
+  id: '/leaderboard_/$userId',
+  path: '/leaderboard/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkoutSlugRoute = WorkoutSlugRouteImport.update({
   id: '/workout/$slug',
   path: '/workout/$slug',
@@ -70,10 +82,12 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/body': typeof BodyRoute
   '/history': typeof HistoryRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/plan': typeof PlanRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/history/$id': typeof HistoryIdRoute
+  '/leaderboard/$userId': typeof LeaderboardUserIdRoute
   '/workout/$slug': typeof WorkoutSlugRoute
 }
 export interface FileRoutesByTo {
@@ -81,10 +95,12 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/body': typeof BodyRoute
   '/history': typeof HistoryRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/plan': typeof PlanRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/history/$id': typeof HistoryIdRoute
+  '/leaderboard/$userId': typeof LeaderboardUserIdRoute
   '/workout/$slug': typeof WorkoutSlugRoute
 }
 export interface FileRoutesById {
@@ -93,10 +109,12 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/body': typeof BodyRoute
   '/history': typeof HistoryRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/plan': typeof PlanRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/history_/$id': typeof HistoryIdRoute
+  '/leaderboard_/$userId': typeof LeaderboardUserIdRoute
   '/workout/$slug': typeof WorkoutSlugRoute
 }
 export interface FileRouteTypes {
@@ -106,10 +124,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/body'
     | '/history'
+    | '/leaderboard'
     | '/plan'
     | '/profile'
     | '/progress'
     | '/history/$id'
+    | '/leaderboard/$userId'
     | '/workout/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,10 +137,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/body'
     | '/history'
+    | '/leaderboard'
     | '/plan'
     | '/profile'
     | '/progress'
     | '/history/$id'
+    | '/leaderboard/$userId'
     | '/workout/$slug'
   id:
     | '__root__'
@@ -128,10 +150,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/body'
     | '/history'
+    | '/leaderboard'
     | '/plan'
     | '/profile'
     | '/progress'
     | '/history_/$id'
+    | '/leaderboard_/$userId'
     | '/workout/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -140,10 +164,12 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BodyRoute: typeof BodyRoute
   HistoryRoute: typeof HistoryRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   PlanRoute: typeof PlanRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   HistoryIdRoute: typeof HistoryIdRoute
+  LeaderboardUserIdRoute: typeof LeaderboardUserIdRoute
   WorkoutSlugRoute: typeof WorkoutSlugRoute
 }
 
@@ -177,6 +203,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/plan': {
       id: '/plan'
       path: '/plan'
@@ -205,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leaderboard_/$userId': {
+      id: '/leaderboard_/$userId'
+      path: '/leaderboard/$userId'
+      fullPath: '/leaderboard/$userId'
+      preLoaderRoute: typeof LeaderboardUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/workout/$slug': {
       id: '/workout/$slug'
       path: '/workout/$slug'
@@ -220,10 +260,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BodyRoute: BodyRoute,
   HistoryRoute: HistoryRoute,
+  LeaderboardRoute: LeaderboardRoute,
   PlanRoute: PlanRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   HistoryIdRoute: HistoryIdRoute,
+  LeaderboardUserIdRoute: LeaderboardUserIdRoute,
   WorkoutSlugRoute: WorkoutSlugRoute,
 }
 export const routeTree = rootRouteImport
